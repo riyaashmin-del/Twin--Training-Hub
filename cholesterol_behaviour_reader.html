@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cholesterol Behaviour — Twin Precision Treatment</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #faf4ec;
+    --sidebar-bg: #f2e8d8;
+    --surface:    #ffffff;
+    --surface2:   #fdf8f0;
+    --surface3:   #ecddc8;
+    --border:     rgba(140,90,20,0.10);
+    --border-hi:  rgba(140,90,20,0.20);
+
+    --gold:    #a06010;
+    --amber:   #c07010;
+    --brown:   #7a4a10;
+    --rust:    #b04020;
+    --teal:    #0a7a6a;
+    --blue:    #1a60a8;
+    --rose:    #b03050;
+    --green:   #1a7a40;
+
+    --txt1: #261808;
+    --txt2: #4a3018;
+    --txt3: #8a6840;
+
+    --hl-bg:   rgba(160,96,16,0.11);
+    --hl-bdr:  #a06010;
+    --hl-txt:  #1e0e00;
+    --hl-glow: 0 0 0 3px rgba(160,96,16,0.14), 0 6px 22px rgba(160,96,16,0.09);
+
+    --title-hl-bg:   rgba(192,112,16,0.10);
+    --title-hl-bdr:  #c07010;
+    --title-hl-txt:  #1e0e00;
+    --title-hl-glow: 0 0 0 3px rgba(192,112,16,0.15), 0 6px 22px rgba(192,112,16,0.10);
+
+    --sub-hl-bg:   rgba(160,96,16,0.08);
+    --sub-hl-bdr:  #a06010;
+    --sub-hl-txt:  #1e0e00;
+    --sub-hl-glow: 0 0 0 3px rgba(160,96,16,0.12), 0 4px 18px rgba(160,96,16,0.08);
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--txt1);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* ══════════ HEADER ══════════ */
+  .hdr {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 64px;
+    display: flex; align-items: center; gap: 14px;
+    position: sticky; top: 0; z-index: 300;
+    box-shadow: 0 2px 14px rgba(100,60,10,0.07);
+  }
+  .logo {
+    width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--amber), var(--blue));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; color: #fff; font-weight: 700;
+  }
+  .hdr-info { flex: 1; min-width: 0; }
+  .hdr-title { font-size: 14px; font-weight: 600; color: var(--txt1); line-height: 1.2; }
+  .hdr-sub   { font-size: 11px; color: var(--txt3); font-style: italic; margin-top: 1px; }
+
+  .live-pill {
+    display: none; align-items: center; gap: 8px;
+    background: rgba(160,96,16,0.09);
+    border: 1px solid rgba(160,96,16,0.28);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 11px; font-weight: 600; color: var(--amber);
+    max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    flex-shrink: 0;
+  }
+  .live-pill.on { display: flex; }
+  .bars { display:flex; gap:2px; align-items:flex-end; height:12px; flex-shrink:0; }
+  .bars span {
+    display:block; width:3px; background:var(--amber);
+    border-radius:2px; animation:bar 1.2s ease-in-out infinite;
+  }
+  .bars span:nth-child(2){animation-delay:.15s;}
+  .bars span:nth-child(3){animation-delay:.3s;}
+  @keyframes bar{0%,100%{height:4px}50%{height:12px}}
+
+  /* ══════════ PLAYER ══════════ */
+  .player {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 28px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    box-shadow: 0 1px 6px rgba(100,60,10,0.05);
+  }
+  .ctrls { display:flex; align-items:center; gap:8px; }
+  .btn {
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; transition: all .17s; font-family: inherit;
+  }
+  .btn-play {
+    width: 46px; height: 46px; font-size: 17px; color: #fff;
+    background: linear-gradient(135deg, var(--amber), var(--blue));
+    box-shadow: 0 4px 16px rgba(160,96,16,0.30);
+  }
+  .btn-play:hover { transform: scale(1.07); box-shadow: 0 6px 22px rgba(160,96,16,0.44); }
+  .btn-play:active { transform: scale(.94); }
+  .btn-nav {
+    width: 34px; height: 34px; font-size: 12px;
+    background: var(--surface2); color: var(--txt2);
+    border: 1px solid var(--border-hi);
+  }
+  .btn-nav:hover { background: var(--surface3); color: var(--txt1); }
+
+  .prog { flex: 1; min-width: 150px; }
+  .prog-top {
+    display:flex; justify-content:space-between;
+    font-size:11px; color:var(--txt3); margin-bottom:7px;
+  }
+  .prog-top span:first-child { color:var(--txt2); font-weight:500; }
+  .track { height:5px; background:var(--surface3); border-radius:3px; overflow:hidden; }
+  .fill  { height:100%; width:0%; border-radius:3px;
+            background: linear-gradient(90deg, var(--amber), var(--blue));
+            transition: width .4s linear; }
+
+  .voice-wr { display:flex; align-items:center; gap:7px; }
+  .voice-wr label { font-size:11px; color:var(--txt3); white-space:nowrap; }
+  .voice-wr select {
+    background: var(--surface2); border: 1px solid var(--border-hi);
+    border-radius: 7px; padding: 5px 9px; font-size: 12px; color: var(--txt1);
+    font-family: 'Inter', sans-serif; cursor: pointer; outline: none; max-width: 170px;
+  }
+  .spd { display:flex; align-items:center; gap:7px; }
+  .spd label { font-size:11px; color:var(--txt3); }
+  .spd select {
+    background: var(--surface2); border: 1px solid var(--border-hi);
+    border-radius: 7px; padding: 5px 9px; font-size: 12px; color: var(--txt1);
+    font-family: 'Inter', sans-serif; cursor: pointer; outline: none;
+  }
+
+  /* ══════════ CHIPS ══════════ */
+  .chips {
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+    padding: 8px 28px; display:flex; gap:5px; overflow-x:auto;
+  }
+  .chips::-webkit-scrollbar{display:none;}
+  .chip {
+    padding: 5px 13px; border-radius:20px; font-size: 11px; font-weight:500; cursor:pointer;
+    border: 1px solid var(--border-hi); flex-shrink:0; white-space:nowrap; transition:all .2s;
+    color:var(--txt3); background:var(--surface);
+  }
+  .chip:hover { color:var(--txt1); border-color:var(--amber); }
+  .chip.active { background:var(--amber); border-color:var(--amber); color:#fff; font-weight:600; }
+
+  /* ══════════ LAYOUT ══════════ */
+  .layout { display:flex; flex:1; }
+
+  .sidebar {
+    width: 252px; flex-shrink:0; background: var(--sidebar-bg);
+    border-right: 1px solid var(--border); padding: 20px 12px; overflow-y:auto;
+    position: sticky; top:64px; height:calc(100vh - 64px);
+  }
+  .sidebar::-webkit-scrollbar{width:3px;}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+  .toc-hd {
+    font-size:9px; font-weight:700; letter-spacing:1.6px;
+    text-transform:uppercase; color:var(--txt3); padding:0 8px; margin-bottom:10px;
+  }
+  .toc-row {
+    display:flex; align-items:center; gap:10px; padding:8px; border-radius:9px; cursor:pointer;
+    transition:all .17s; margin-bottom:2px; border:1px solid transparent;
+  }
+  .toc-row:hover{background:var(--surface3);}
+  .toc-row.active{ background:var(--surface); border-color:var(--border-hi); box-shadow:0 1px 6px rgba(100,60,10,0.08); }
+  .toc-num {
+    width:22px; height:22px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:9px; font-weight:700; background:var(--surface3); color:var(--txt3); transition:all .2s;
+  }
+  .toc-row.active .toc-num { background:var(--amber); color:#fff; }
+  .toc-txt { font-size:12px; color:var(--txt3); line-height:1.35; }
+  .toc-row.active .toc-txt { color:var(--txt1); font-weight:500; }
+
+  /* ══════════ CONTENT ══════════ */
+  .content { flex:1; padding:40px 56px; overflow-y:auto; max-width:860px; }
+  .content::-webkit-scrollbar{width:4px;}
+  .content::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+
+  /* ══════════ HERO ══════════ */
+  .hero {
+    background: linear-gradient(135deg, rgba(192,112,16,.08), rgba(26,96,168,.09));
+    border: 1px solid rgba(160,96,16,.20); border-radius: 20px;
+    padding: 38px 42px; margin-bottom: 44px; scroll-margin-top: 20px; transition: opacity .35s;
+  }
+  .hero.dim{opacity:.26;}
+  .hero-eyebrow {
+    font-size:10px; font-weight:700; letter-spacing:1.5px;
+    text-transform:uppercase; color:var(--amber); margin-bottom:14px;
+  }
+  .doc-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 700; color: var(--txt1); line-height: 1.22; margin-bottom: 8px;
+    padding: 8px 12px; margin-left: -12px; border-radius: 10px; border-left: 4px solid transparent;
+    transition: background .22s, color .22s, box-shadow .22s, border-color .15s;
+  }
+  .doc-title.hl { background: var(--title-hl-bg); color: var(--title-hl-txt); box-shadow: var(--title-hl-glow); border-left-color: var(--title-hl-bdr); padding-left: 16px; margin-left: -16px; }
+  .doc-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; font-style: italic; color: var(--gold); margin-bottom: 24px;
+    padding: 6px 12px; margin-left: -12px; border-radius: 8px; border-left: 4px solid transparent;
+    transition: background .22s, color .22s, box-shadow .22s, border-color .15s;
+  }
+  .doc-subtitle.hl { background: var(--sub-hl-bg); color: var(--sub-hl-txt); box-shadow: var(--sub-hl-glow); border-left-color: var(--sub-hl-bdr); padding-left: 16px; margin-left: -16px; }
+
+  /* ══════════ SECTION ══════════ */
+  .sec { margin-bottom: 50px; scroll-margin-top:20px; transition:opacity .35s; }
+  .sec.dim{opacity:.26;}
+  .sec-hd{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px;}
+  .sec-icon{width:46px;height:46px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;}
+  .i0{background:rgba(192,112,16,.13); box-shadow:inset 0 0 0 1.5px rgba(192,112,16,.30);}
+  .i1{background:rgba(176,64,32,.13);  box-shadow:inset 0 0 0 1.5px rgba(176,64,32,.30);}
+  .i2{background:rgba(26,96,168,.13);  box-shadow:inset 0 0 0 1.5px rgba(26,96,168,.30);}
+  .i3{background:rgba(26,122,64,.13);  box-shadow:inset 0 0 0 1.5px rgba(26,122,64,.30);}
+  .i4{background:rgba(10,122,106,.13); box-shadow:inset 0 0 0 1.5px rgba(10,122,106,.30);}
+  .i5{background:rgba(160,96,16,.13);  box-shadow:inset 0 0 0 1.5px rgba(160,96,16,.30);}
+  .i6{background:rgba(176,64,32,.13);  box-shadow:inset 0 0 0 1.5px rgba(176,64,32,.30);}
+
+  .sec-ey{font-size:10px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--txt3);margin-bottom:4px;}
+  .sec-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--txt1);line-height:1.25;}
+  .sec-body{padding-left:60px;}
+
+  /* ══════════ SPEAKABLE ELEMENTS ══════════ */
+  .sp {
+    font-size:15px; line-height:1.88; color:var(--txt2); margin-bottom:14px; border-radius:8px;
+    padding:6px 12px; margin-left:-12px; border-left:4px solid transparent;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .sp.hl { background:var(--hl-bg); color:var(--hl-txt); box-shadow:var(--hl-glow); border-left-color:var(--hl-bdr); padding-left:15px; margin-left:-15px; }
+
+  /* Insight callout */
+  .insight {
+    background:var(--surface2); border-radius:10px; border-left:4px solid var(--amber);
+    padding:13px 16px; margin:12px 0 16px; font-size:14px; color:var(--txt2); line-height:1.78;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .insight.hl { background:var(--hl-bg); color:var(--hl-txt); box-shadow:var(--hl-glow); border-left-color:var(--hl-bdr); }
+
+  /* Timeline phase cards — D90 / D180 */
+  .timeline { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0 20px; }
+  .phase-card {
+    border-radius:14px; border:1px solid var(--border); padding:18px 20px;
+    box-shadow:0 1px 6px rgba(100,60,10,0.06);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .phase-card.hl { background:var(--hl-bg); border-color:rgba(160,96,16,.45); box-shadow:var(--hl-glow); }
+  .ph-d90  { background:rgba(176,64,32,.05); }
+  .ph-d180 { background:rgba(26,122,64,.05); }
+  .ph-tag {
+    display:inline-block; padding:3px 10px; border-radius:20px;
+    font-size:10px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; margin-bottom:8px;
+  }
+  .ph-d90  .ph-tag { background:rgba(176,64,32,.12); color:var(--rust); }
+  .ph-d180 .ph-tag { background:rgba(26,122,64,.12);  color:var(--green); }
+  .ph-head { font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--txt1); margin-bottom:6px; }
+  .ph-body { font-size:13px; color:var(--txt2); line-height:1.70; transition:color .22s; }
+  .phase-card.hl .ph-body { color:var(--hl-txt); }
+
+  /* Reason cards — why it happens */
+  .reason-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0 18px; }
+  .reason-card {
+    background:var(--surface); border-radius:12px; border:1px solid var(--border); padding:16px;
+    box-shadow:0 1px 5px rgba(100,60,10,0.05);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .reason-card.hl { background:var(--hl-bg); border-color:rgba(160,96,16,.45); box-shadow:var(--hl-glow); }
+  .re-num { font-size:9px; font-weight:800; letter-spacing:.8px; text-transform:uppercase; margin-bottom:4px; }
+  .rc0 .re-num{color:var(--amber);}
+  .rc1 .re-num{color:var(--rust);}
+  .rc2 .re-num{color:var(--blue);}
+  .re-head { font-size:13px; font-weight:600; color:var(--txt1); margin-bottom:4px; }
+  .re-body { font-size:13px; color:var(--txt2); line-height:1.65; transition:color .22s; }
+  .reason-card.hl .re-body { color:var(--hl-txt); }
+
+  /* Metric row cards */
+  .metric-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0 18px; }
+  .metric-card {
+    background:var(--surface); border-radius:11px; border:1px solid var(--border);
+    padding:13px 15px; display:flex; gap:12px; align-items:flex-start;
+    box-shadow:0 1px 4px rgba(100,60,10,0.05);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .metric-card.hl { background:var(--hl-bg); border-color:rgba(160,96,16,.45); box-shadow:var(--hl-glow); }
+  .metric-icon {
+    width:34px; height:34px; border-radius:9px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:15px;
+  }
+  .metric-info { flex:1; }
+  .metric-lbl { font-size:10px; font-weight:700; letter-spacing:.7px; text-transform:uppercase; margin-bottom:2px; }
+  .metric-txt { font-size:12px; color:var(--txt2); line-height:1.55; transition:color .22s; }
+  .metric-card.hl .metric-txt { color:var(--hl-txt); }
+
+  /* Compare two columns */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px;}
+  .cmp-col{border-radius:12px;padding:16px;border:1px solid var(--border);transition:border-color .22s,background .22s,box-shadow .22s;}
+  .cmp-col.hl{background:var(--hl-bg);border-color:rgba(160,96,16,.45);box-shadow:var(--hl-glow);}
+  .cmp-bad {background:rgba(176,64,32,.05);}
+  .cmp-good{background:rgba(26,122,64,.05);}
+  .cmp-lbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;}
+  .cmp-bad  .cmp-lbl{color:var(--rust);}
+  .cmp-good .cmp-lbl{color:var(--green);}
+  .cmp-items{font-size:13px;color:var(--txt2);line-height:2.1;}
+  .cmp-col.hl .cmp-items{color:var(--hl-txt);}
+
+  /* Final */
+  .final-wrap{
+    background:linear-gradient(135deg,rgba(192,112,16,.07),rgba(26,96,168,.08));
+    border:1px solid rgba(160,96,16,.20);border-radius:18px;
+    padding:30px 34px;box-shadow:0 2px 14px rgba(100,60,10,0.07);
+  }
+  .final-big{
+    font-family:'Playfair Display',serif;
+    font-size:19px;color:var(--txt1);line-height:1.72;margin-bottom:18px;
+    padding:8px 12px;border-radius:8px;border-left:4px solid transparent;
+    transition:background .22s,box-shadow .22s,color .22s,border-color .15s;
+  }
+  .final-big.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+  .final-tagline{
+    font-size:14px;font-weight:600;color:var(--amber);letter-spacing:.2px;
+    padding:8px 12px;border-radius:8px;border-left:4px solid transparent;
+    transition:background .22s,box-shadow .22s,color .22s,border-color .15s;
+  }
+  .final-tagline.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+
+  .divider{height:1px;background:var(--border);margin:38px 0;}
+
+  @media(max-width:860px){
+    .sidebar{display:none;}
+    .content{padding:24px 20px;}
+    .sec-body{padding-left:0;}
+    .timeline{grid-template-columns:1fr;}
+    .reason-grid{grid-template-columns:1fr;}
+    .metric-grid{grid-template-columns:1fr;}
+    .compare{grid-template-columns:1fr;}
+    .hero{padding:24px 22px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="logo">tw</div>
+  <div class="hdr-info">
+    <div class="hdr-title">Cholesterol Behaviour — Twin Precision Treatment</div>
+    <div class="hdr-sub">Why Cholesterol Sometimes Rises at Day 90 — and Regulates by Day 180</div>
+  </div>
+  <div class="live-pill" id="livePill">
+    <div class="bars"><span></span><span></span><span></span></div>
+    <span id="liveText">Reading…</span>
+  </div>
+</header>
+
+<div class="player">
+  <div class="ctrls">
+    <button class="btn btn-nav" id="prevBtn" title="Previous section">&#9664;&#9664;</button>
+    <button class="btn btn-play" id="playBtn" title="Play / Pause">&#9654;</button>
+    <button class="btn btn-nav" id="nextBtn" title="Next section">&#9654;&#9654;</button>
+  </div>
+  <div class="prog">
+    <div class="prog-top">
+      <span id="secLbl">—</span>
+      <span id="pctLbl">0%</span>
+    </div>
+    <div class="track"><div class="fill" id="fillBar"></div></div>
+  </div>
+  <div class="voice-wr">
+    <label>Voice</label>
+    <select id="voiceSel"><option value="">Loading…</option></select>
+  </div>
+  <div class="spd">
+    <label>Speed</label>
+    <select id="spdSel">
+      <option value="0.78">0.78×</option>
+      <option value="0.88">0.88×</option>
+      <option value="0.95" selected>0.95×</option>
+      <option value="1.05">1.05×</option>
+      <option value="1.15">1.15×</option>
+    </select>
+  </div>
+</div>
+
+<div class="chips" id="chipBar"></div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="toc-hd">Contents</div>
+    <div id="toc"></div>
+  </aside>
+  <main class="content" id="main"></main>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   FULL PDF CONTENT — both pages, every point
+══════════════════════════════════════════════ */
+const DOC = [
+
+  /* 0 — HERO */
+  {
+    type:'hero', id:'s0',
+    eyebrow:'Twin Precision Treatment — Member Education',
+    title:'Why Cholesterol Sometimes Goes Up in Twin Precision Treatment at Day 90 — and Why It Usually Regulates by Day 180',
+    subtitle:'Understanding the natural metabolic arc of cholesterol during precision nutrition healing',
+    items:[
+      { t:'doc-title',    text:'Why Cholesterol Sometimes Goes Up in Twin Precision Treatment at Day 90 — and Why It Usually Regulates by Day 180' },
+      { t:'doc-subtitle', text:'Understanding the natural metabolic arc of cholesterol during precision nutrition healing' }
+    ]
+  },
+
+  /* 1 — WHAT WE SEE */
+  {
+    type:'sec', id:'s1', icon:'📊', ic:'i0',
+    eyebrow:'Point 1',
+    title:'What We See in Twin Precision Treatment',
+    items:[
+      { t:'sp', text:'Many members notice that total cholesterol or LDL cholesterol rises in the first 2 to 3 months of a low-carb, precision nutrition plan. By around Day 180, most members see these values normalise — or even improve compared to their baseline.' },
+      { t:'timeline',
+        d90:  { tag:'Day 90', head:'Early Phase', body:'Temporary rise in total cholesterol or LDL is commonly observed as the body adjusts to fat-based fuel metabolism.' },
+        d180: { tag:'Day 180', head:'Regulation Phase', body:'Values normalise or improve compared to baseline as metabolism stabilises and fat clearance improves.' }
+      }
+    ]
+  },
+
+  /* 2 — WHY THIS HAPPENS */
+  {
+    type:'sec', id:'s2', icon:'🔬', ic:'i1',
+    eyebrow:'Point 2',
+    title:'Why This Happens — Three Key Mechanisms',
+    items:[
+      { t:'sp', text:'Three biological mechanisms explain the temporary rise in cholesterol during the early phase of precision nutrition.' },
+      { t:'reasons', items:[
+        { cls:'rc0', num:'Mechanism 1', head:'Metabolic Shift',
+          body:'When carbohydrates are reduced, the body switches to using fats as the main fuel. This means fat stores are mobilised, and more fatty acids and cholesterol circulate in the blood temporarily.' },
+        { cls:'rc1', num:'Mechanism 2', head:'Weight and Fat Loss',
+          body:'As visceral and subcutaneous fat breaks down, stored triglycerides and cholesterol are released into the bloodstream before being processed and cleared by the liver.' },
+        { cls:'rc2', num:'Mechanism 3', head:'Particle Remodelling',
+          body:'In the early phase, LDL particles can become more numerous. But over time they remodel into larger, less harmful particles — which carry significantly lower cardiovascular risk.' }
+      ]}
+    ]
+  },
+
+  /* 3 — WHAT REGULATES IT */
+  {
+    type:'sec', id:'s3', icon:'⚖️', ic:'i2',
+    eyebrow:'Point 3',
+    title:'What Regulates It by Day 180',
+    items:[
+      { t:'sp', text:'Three converging processes bring cholesterol back into balance by the 180-day mark.' },
+      { t:'compare',
+        bad:  { label:'Early phase (D90)', items:['Fat stores actively mobilising','High VLDL production from liver','LDL particles more numerous','Cholesterol in transit — not yet cleared'] },
+        good: { label:'Regulation phase (D180)', items:['Weight loss stabilised — less fat releasing daily','Improved insulin sensitivity reduces liver fat','VLDL and ApoB particle burden decreases','Cholesterol transport and clearance normalise'] }
+      },
+      { t:'insight', text:'Improved insulin sensitivity lowers liver fat and reduces overproduction of VLDL particles. As weight loss stabilises and metabolism balances, cholesterol transport, clearance, and inflammatory stress all improve together.' }
+    ]
+  },
+
+  /* 4 — WHAT REALLY MATTERS */
+  {
+    type:'sec', id:'s4', icon:'❤️', ic:'i3',
+    eyebrow:'Point 4',
+    title:'What Really Matters — The Complete Metabolic Picture',
+    items:[
+      { t:'sp', text:'Short-term rises in cholesterol are usually temporary. What matters far more is the overall metabolic healing happening beneath the surface.' },
+      { t:'metrics', items:[
+        { icon:'📉', bg:'rgba(26,122,64,.10)', lbl:'Triglycerides', lblColor:'#1a7a40', text:'Decreased — one of the strongest predictors of cardiovascular risk reduction' },
+        { icon:'📈', bg:'rgba(26,96,168,.10)',  lbl:'HDL Cholesterol', lblColor:'#1a60a8', text:'Increased — improved protective lipoprotein function' },
+        { icon:'🔥', bg:'rgba(176,64,32,.10)', lbl:'Inflammation (hs-CRP)', lblColor:'#b04020', text:'Decreased — reduced systemic inflammatory stress' },
+        { icon:'⚖️', bg:'rgba(160,96,16,.10)', lbl:'Blood Pressure & Weight', lblColor:'#a06010', text:'Improved — reflecting genuine metabolic healing' }
+      ]},
+      { t:'insight', text:'These four markers — not LDL alone — are the strongest predictors of long-term cardiovascular risk reduction. And all four typically improve through Twin Precision Treatment.' }
+    ]
+  },
+
+  /* 5 — COMPLETE RISK PICTURE */
+  {
+    type:'final', id:'s5', icon:'🎯', ic:'i4',
+    eyebrow:'Point 5 — Closing',
+    title:'At Twin, We Don\'t Just Look at LDL in Isolation',
+    items:[
+      { t:'final-big',     text:'At Twin, we track the complete cardiovascular risk picture — not just a single number. We track ApoB particle count, LDL particle size distinguishing small dense LDL from large LDL, the Triglyceride-to-HDL ratio as a reliable marker of insulin resistance, and inflammatory markers including hs-CRP.' },
+      { t:'final-tagline', text:'Together, these tell a far more complete cardiovascular risk story than LDL cholesterol alone — and together, they improve as your metabolism heals.' }
+    ]
+  }
+
+];
+
+/* ══════════════════════════════════════════════
+   BUILD DOM
+══════════════════════════════════════════════ */
+const registry=[], secEls=[];
+const mainEl=document.getElementById('main');
+const tocEl =document.getElementById('toc');
+const chipEl=document.getElementById('chipBar');
+
+DOC.forEach((sec,si)=>{
+  const tr=document.createElement('div');
+  tr.className='toc-row';
+  tr.innerHTML=`<div class="toc-num">${si+1}</div><div class="toc-txt">${sec.title}</div>`;
+  tr.onclick=()=>{stop();jumpTo(si);};
+  tocEl.appendChild(tr);
+
+  const ch=document.createElement('div');
+  ch.className='chip';
+  const ws=sec.title.split(' ');
+  ch.textContent=ws.slice(0,4).join(' ')+(ws.length>4?'…':'');
+  ch.onclick=()=>{stop();jumpTo(si);};
+  chipEl.appendChild(ch);
+
+  let block;
+
+  if(sec.type==='hero'){
+    block=document.createElement('div');
+    block.className='hero'; block.id='sec-'+si;
+    block.innerHTML=`<div class="hero-eyebrow">${sec.eyebrow}</div>`;
+    sec.items.forEach(it=>{
+      const el=document.createElement(it.t==='sp'?'p':'div');
+      el.className=it.t; el.dataset.si=si; el.dataset.spk=it.text;
+      el.textContent=it.text;
+      block.appendChild(el);
+    });
+
+  } else if(sec.type==='sec'){
+    block=document.createElement('section');
+    block.className='sec'; block.id='sec-'+si;
+    let h=`<div class="sec-hd">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body">`;
+
+    let compareInserted=false, timelineInserted=false, reasonsInserted=false, metricsInserted=false;
+    sec.items.forEach(it=>{
+      if(it.t==='sp'){
+        h+=`<p class="sp" data-si="${si}">${it.text}</p>`;
+      } else if(it.t==='insight'){
+        h+=`<div class="insight" data-si="${si}">${it.text}</div>`;
+      } else if(it.t==='timeline'&&!timelineInserted){
+        timelineInserted=true;
+        h+=`<div class="timeline">
+          <div class="phase-card ph-d90" data-si="${si}">
+            <div class="ph-tag">${it.d90.tag}</div>
+            <div class="ph-head">${it.d90.head}</div>
+            <div class="ph-body">${it.d90.body}</div>
+          </div>
+          <div class="phase-card ph-d180" data-si="${si}">
+            <div class="ph-tag">${it.d180.tag}</div>
+            <div class="ph-head">${it.d180.head}</div>
+            <div class="ph-body">${it.d180.body}</div>
+          </div>
+        </div>`;
+      } else if(it.t==='reasons'&&!reasonsInserted){
+        reasonsInserted=true;
+        h+=`<div class="reason-grid">`;
+        it.items.forEach(r=>{
+          h+=`<div class="reason-card ${r.cls}" data-si="${si}">
+            <div class="re-num">${r.num}</div>
+            <div class="re-head">${r.head}</div>
+            <div class="re-body">${r.body}</div>
+          </div>`;
+        });
+        h+=`</div>`;
+      } else if(it.t==='compare'&&!compareInserted){
+        compareInserted=true;
+        h+=`<div class="compare">
+          <div class="cmp-col cmp-bad" data-si="${si}">
+            <div class="cmp-lbl">${it.bad.label}</div>
+            <div class="cmp-items">${it.bad.items.map(x=>`• ${x}`).join('<br>')}</div>
+          </div>
+          <div class="cmp-col cmp-good" data-si="${si}">
+            <div class="cmp-lbl">${it.good.label}</div>
+            <div class="cmp-items">${it.good.items.map(x=>`• ${x}`).join('<br>')}</div>
+          </div>
+        </div>`;
+      } else if(it.t==='metrics'&&!metricsInserted){
+        metricsInserted=true;
+        h+=`<div class="metric-grid">`;
+        it.items.forEach(m=>{
+          h+=`<div class="metric-card" data-si="${si}">
+            <div class="metric-icon" style="background:${m.bg}">${m.icon}</div>
+            <div class="metric-info">
+              <div class="metric-lbl" style="color:${m.lblColor}">${m.lbl}</div>
+              <div class="metric-txt">${m.text}</div>
+            </div>
+          </div>`;
+        });
+        h+=`</div>`;
+      }
+    });
+    h+=`</div>`;
+    block.innerHTML=h;
+
+  } else if(sec.type==='final'){
+    block=document.createElement('section');
+    block.className='sec'; block.id='sec-'+si;
+    let h=`<div class="sec-hd">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body"><div class="final-wrap">`;
+    sec.items.forEach(it=>{
+      h+=`<div class="${it.t}" data-si="${si}">${it.text}</div>`;
+      if(it.t==='final-big') h+=`<div class="divider"></div>`;
+    });
+    h+=`</div></div>`;
+    block.innerHTML=h;
+  }
+
+  if(si<DOC.length-1){ const d=document.createElement('div'); d.className='divider'; block.appendChild(d); }
+  mainEl.appendChild(block);
+  secEls.push(block);
+});
+
+document.querySelectorAll('[data-si]').forEach(el=>{ registry.push({el, si:+el.dataset.si}); });
+
+/* ══════════════════════════════════════════════
+   VOICE SYSTEM
+══════════════════════════════════════════════ */
+const voiceSel=document.getElementById('voiceSel');
+let voiceList=[];
+
+function scoreVoice(v){
+  let s=0;
+  if(v.lang==='en-US')             s+=40;
+  else if(v.lang==='en-GB')        s+=30;
+  else if(v.lang==='en-AU')        s+=20;
+  else if(v.lang.startsWith('en')) s+=10;
+  else return -1;
+  const n=v.name.toLowerCase();
+  if(n.includes('neural'))   s+=30;
+  if(n.includes('enhanced')) s+=25;
+  if(n.includes('premium'))  s+=25;
+  if(n.includes('natural'))  s+=20;
+  if(n.includes('samantha')) s+=22;
+  if(n.includes('ava'))      s+=20;
+  if(n.includes('allison'))  s+=18;
+  if(n.includes('victoria')) s+=16;
+  if(n.includes('karen'))    s+=16;
+  if(n.includes('daniel'))   s+=16;
+  if(n.includes('moira'))    s+=16;
+  if(n.includes('zira'))     s+=14;
+  if(n.includes('susan'))    s+=14;
+  if(n.includes('alex'))     s+=14;
+  if(n.includes('compact'))  s-=20;
+  if(n.includes('espeak'))   s-=30;
+  if(n.includes('mbrola'))   s-=30;
+  return s;
+}
+
+function populateVoices(){
+  const raw=window.speechSynthesis.getVoices();
+  if(!raw.length) return;
+  const scored=raw.map(v=>({v,s:scoreVoice(v)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);
+  if(!scored.length) return;
+  voiceList=scored.map(x=>x.v);
+  voiceSel.innerHTML='';
+  voiceList.forEach((v,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=`${v.name} (${v.lang})`; voiceSel.appendChild(o); });
+  voiceSel.value='0';
+}
+populateVoices();
+if(window.speechSynthesis.onvoiceschanged!==undefined) window.speechSynthesis.onvoiceschanged=populateVoices;
+function getVoice(){ const i=+voiceSel.value; return voiceList[i]||null; }
+
+/* ══════════════════════════════════════════════
+   AUDIO ENGINE
+══════════════════════════════════════════════ */
+let cur=0, playing=false, idx=0, active=null;
+const synth=window.speechSynthesis;
+const total=registry.length;
+
+function hl(el,on){ if(el) el.classList.toggle('hl',on); }
+function clearHl(){ if(active){hl(active,false);active=null;} }
+
+function activate(el,si){
+  clearHl(); hl(el,true); active=el;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  if(si!==cur) cur=si;
+  ui();
+}
+
+function ui(){
+  document.querySelectorAll('.toc-row').forEach((r,i)=>r.classList.toggle('active',i===cur));
+  document.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('active',i===cur));
+  secEls.forEach((s,i)=>s.classList.toggle('dim',i!==cur));
+  const pct=total>0?Math.round((idx/total)*100):0;
+  document.getElementById('fillBar').style.width=pct+'%';
+  document.getElementById('pctLbl').textContent=pct+'%';
+  document.getElementById('secLbl').textContent=DOC[cur].title;
+  document.getElementById('playBtn').innerHTML=playing?'&#9646;&#9646;':'&#9654;';
+  const pill=document.getElementById('livePill');
+  if(playing){ pill.classList.add('on'); document.getElementById('liveText').textContent=DOC[cur].title; }
+  else pill.classList.remove('on');
+}
+
+function jumpTo(si){
+  cur=si; secEls[si].scrollIntoView({behavior:'smooth',block:'start'});
+  const i=registry.findIndex(r=>r.si===si); if(i>=0) idx=i;
+  ui();
+}
+
+function getCleanText(el){ return (el.dataset.spk||el.innerText||'').replace(/•/g,'').trim(); }
+
+function speakNext(){
+  if(!playing) return;
+  if(idx>=registry.length){ playing=false; clearHl(); ui(); return; }
+  const {el,si}=registry[idx++];
+  activate(el,si);
+  const text=getCleanText(el);
+  if(!text){ speakNext(); return; }
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=+document.getElementById('spdSel').value;
+  u.pitch=1.0; u.volume=1.0;
+  const v=getVoice(); if(v) u.voice=v;
+  u.onend=()=>{ if(playing) speakNext(); };
+  u.onerror=()=>{ if(playing) speakNext(); };
+  synth.speak(u);
+}
+
+function start(){ synth.cancel(); playing=true; ui(); speakNext(); }
+function stop() { playing=false; synth.cancel(); clearHl(); ui(); }
+
+document.getElementById('playBtn').onclick=()=>playing?stop():start();
+document.getElementById('prevBtn').onclick=()=>{ stop(); jumpTo(Math.max(0,cur-1)); };
+document.getElementById('nextBtn').onclick=()=>{ stop(); jumpTo(Math.min(DOC.length-1,cur+1)); };
+document.getElementById('spdSel').onchange=()=>{ if(playing){ synth.cancel(); setTimeout(()=>{ if(playing) speakNext(); },80); } };
+document.getElementById('voiceSel').onchange=()=>{ if(playing){ synth.cancel(); setTimeout(()=>{ if(playing) speakNext(); },80); } };
+
+/* Init */
+secEls.forEach((s,i)=>s.classList.toggle('dim',i!==0));
+document.querySelectorAll('.toc-row')[0].classList.add('active');
+document.querySelectorAll('.chip')[0].classList.add('active');
+ui();
+
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting&&!playing){ cur=+e.target.id.replace('sec-',''); ui(); } });
+},{threshold:0.3});
+secEls.forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
