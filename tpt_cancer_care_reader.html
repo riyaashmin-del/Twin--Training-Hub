@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cancer, Metabolism & Twin Precision Treatment</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #ecf5f3;
+    --sidebar-bg: #ddeee9;
+    --surface:    #ffffff;
+    --surface2:   #f0faf7;
+    --surface3:   #d4ebe4;
+    --border:     rgba(10,110,80,0.10);
+    --border-hi:  rgba(10,110,80,0.20);
+
+    --teal:    #0a7a6a;
+    --green:   #0d9e6e;
+    --sage:    #2d7a5c;
+    --moss:    #1a5c48;
+    --sky:     #1a7fa8;
+    --amber:   #a86008;
+    --rose:    #b03050;
+    --violet:  #5535a0;
+
+    --txt1: #0d1f1a;
+    --txt2: #2a4a3e;
+    --txt3: #5e8a7a;
+
+    --hl-bg:   rgba(10,122,106,0.11);
+    --hl-bdr:  #0a7a6a;
+    --hl-txt:  #041a14;
+    --hl-glow: 0 0 0 3px rgba(10,122,106,0.14), 0 6px 22px rgba(10,122,106,0.09);
+
+    --title-hl-bg:   rgba(13,158,110,0.10);
+    --title-hl-bdr:  #0d9e6e;
+    --title-hl-txt:  #041a10;
+    --title-hl-glow: 0 0 0 3px rgba(13,158,110,0.14), 0 6px 22px rgba(13,158,110,0.09);
+
+    --sub-hl-bg:   rgba(10,122,106,0.08);
+    --sub-hl-bdr:  #0a7a6a;
+    --sub-hl-txt:  #041a14;
+    --sub-hl-glow: 0 0 0 3px rgba(10,122,106,0.12), 0 4px 18px rgba(10,122,106,0.08);
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--txt1);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* ══════════ HEADER ══════════ */
+  .hdr {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 64px;
+    display: flex; align-items: center; gap: 14px;
+    position: sticky; top: 0; z-index: 300;
+    box-shadow: 0 2px 14px rgba(10,80,60,0.07);
+  }
+  .logo {
+    width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--teal), var(--sky));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; color: #fff; font-weight: 700;
+  }
+  .hdr-info { flex: 1; min-width: 0; }
+  .hdr-title { font-size: 14px; font-weight: 600; color: var(--txt1); line-height: 1.2; }
+  .hdr-sub   { font-size: 11px; color: var(--txt3); font-style: italic; margin-top: 1px; }
+
+  .live-pill {
+    display: none; align-items: center; gap: 8px;
+    background: rgba(10,122,106,0.09);
+    border: 1px solid rgba(10,122,106,0.28);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 11px; font-weight: 600; color: var(--teal);
+    max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    flex-shrink: 0;
+  }
+  .live-pill.on { display: flex; }
+  .bars { display:flex; gap:2px; align-items:flex-end; height:12px; flex-shrink:0; }
+  .bars span {
+    display:block; width:3px; background:var(--teal);
+    border-radius:2px; animation:bar 1.2s ease-in-out infinite;
+  }
+  .bars span:nth-child(2){animation-delay:.15s;}
+  .bars span:nth-child(3){animation-delay:.3s;}
+  @keyframes bar{0%,100%{height:4px}50%{height:12px}}
+
+  /* ══════════ PLAYER ══════════ */
+  .player {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 28px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    box-shadow: 0 1px 6px rgba(10,80,60,0.05);
+  }
+  .ctrls { display:flex; align-items:center; gap:8px; }
+  .btn {
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; transition: all .17s; font-family: inherit;
+  }
+  .btn-play {
+    width: 46px; height: 46px; font-size: 17px; color: #fff;
+    background: linear-gradient(135deg, var(--teal), var(--sky));
+    box-shadow: 0 4px 16px rgba(10,122,106,0.32);
+  }
+  .btn-play:hover { transform: scale(1.07); box-shadow: 0 6px 22px rgba(10,122,106,0.46); }
+  .btn-play:active { transform: scale(.94); }
+  .btn-nav {
+    width: 34px; height: 34px; font-size: 12px;
+    background: var(--surface2); color: var(--txt2);
+    border: 1px solid var(--border-hi);
+  }
+  .btn-nav:hover { background: var(--surface3); color: var(--txt1); }
+
+  .prog { flex: 1; min-width: 150px; }
+  .prog-top {
+    display:flex; justify-content:space-between;
+    font-size:11px; color:var(--txt3); margin-bottom:7px;
+  }
+  .prog-top span:first-child { color:var(--txt2); font-weight:500; }
+  .track { height:5px; background:var(--surface3); border-radius:3px; overflow:hidden; }
+  .fill  { height:100%; width:0%; border-radius:3px;
+            background: linear-gradient(90deg, var(--teal), var(--sky));
+            transition: width .4s linear; }
+
+  .voice-wr { display:flex; align-items:center; gap:7px; }
+  .voice-wr label { font-size:11px; color:var(--txt3); white-space:nowrap; }
+  .voice-wr select {
+    background: var(--surface2); border: 1px solid var(--border-hi);
+    border-radius: 7px; padding: 5px 9px; font-size: 12px; color: var(--txt1);
+    font-family: 'Inter', sans-serif; cursor: pointer; outline: none; max-width: 170px;
+  }
+  .spd { display:flex; align-items:center; gap:7px; }
+  .spd label { font-size:11px; color:var(--txt3); }
+  .spd select {
+    background: var(--surface2); border: 1px solid var(--border-hi);
+    border-radius: 7px; padding: 5px 9px; font-size: 12px; color: var(--txt1);
+    font-family: 'Inter', sans-serif; cursor: pointer; outline: none;
+  }
+
+  /* ══════════ CHIPS ══════════ */
+  .chips {
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+    padding: 8px 28px; display:flex; gap:5px; overflow-x:auto;
+  }
+  .chips::-webkit-scrollbar{display:none;}
+  .chip {
+    padding: 5px 13px; border-radius:20px; font-size: 11px; font-weight:500; cursor:pointer;
+    border: 1px solid var(--border-hi); flex-shrink:0; white-space:nowrap; transition:all .2s;
+    color:var(--txt3); background:var(--surface);
+  }
+  .chip:hover { color:var(--txt1); border-color:var(--teal); }
+  .chip.active { background:var(--teal); border-color:var(--teal); color:#fff; font-weight:600; }
+
+  /* ══════════ LAYOUT ══════════ */
+  .layout { display:flex; flex:1; }
+
+  .sidebar {
+    width: 252px; flex-shrink:0; background: var(--sidebar-bg);
+    border-right: 1px solid var(--border); padding: 20px 12px; overflow-y:auto;
+    position: sticky; top:64px; height:calc(100vh - 64px);
+  }
+  .sidebar::-webkit-scrollbar{width:3px;}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+  .toc-hd {
+    font-size:9px; font-weight:700; letter-spacing:1.6px;
+    text-transform:uppercase; color:var(--txt3); padding:0 8px; margin-bottom:10px;
+  }
+  .toc-row {
+    display:flex; align-items:center; gap:10px; padding:8px; border-radius:9px; cursor:pointer;
+    transition:all .17s; margin-bottom:2px; border:1px solid transparent;
+  }
+  .toc-row:hover{background:var(--surface3);}
+  .toc-row.active{ background:var(--surface); border-color:var(--border-hi); box-shadow:0 1px 6px rgba(10,80,60,0.08); }
+  .toc-num {
+    width:22px; height:22px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:9px; font-weight:700; background:var(--surface3); color:var(--txt3); transition:all .2s;
+  }
+  .toc-row.active .toc-num{background:var(--teal);color:#fff;}
+  .toc-txt{font-size:12px;color:var(--txt3);line-height:1.35;}
+  .toc-row.active .toc-txt{color:var(--txt1);font-weight:500;}
+
+  /* ══════════ CONTENT ══════════ */
+  .content { flex:1; padding:40px 56px; overflow-y:auto; max-width:860px; }
+  .content::-webkit-scrollbar{width:4px;}
+  .content::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+
+  /* ══════════ HERO ══════════ */
+  .hero {
+    background: linear-gradient(135deg,rgba(10,122,106,.08),rgba(26,127,168,.10));
+    border: 1px solid rgba(10,122,106,.20); border-radius: 20px;
+    padding: 38px 42px; margin-bottom: 44px; scroll-margin-top: 20px; transition: opacity .35s;
+  }
+  .hero.dim{opacity:.26;}
+  .hero-eyebrow {
+    font-size:10px; font-weight:700; letter-spacing:1.5px;
+    text-transform:uppercase; color:var(--teal); margin-bottom:14px;
+  }
+  .doc-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px; font-weight: 700; color: var(--txt1); line-height: 1.22; margin-bottom: 8px;
+    padding: 8px 12px; margin-left: -12px; border-radius: 10px; border-left: 4px solid transparent;
+    transition: background .22s, color .22s, box-shadow .22s, border-color .15s;
+  }
+  .doc-title.hl { background: var(--title-hl-bg); color: var(--title-hl-txt); box-shadow: var(--title-hl-glow); border-left-color: var(--title-hl-bdr); padding-left: 16px; margin-left: -16px; }
+  .doc-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-style: italic; color: var(--sage); margin-bottom: 24px;
+    padding: 6px 12px; margin-left: -12px; border-radius: 8px; border-left: 4px solid transparent;
+    transition: background .22s, color .22s, box-shadow .22s, border-color .15s;
+  }
+  .doc-subtitle.hl { background: var(--sub-hl-bg); color: var(--sub-hl-txt); box-shadow: var(--sub-hl-glow); border-left-color: var(--sub-hl-bdr); padding-left: 16px; margin-left: -16px; }
+
+  /* ══════════ SECTION ══════════ */
+  .sec { margin-bottom: 50px; scroll-margin-top:20px; transition:opacity .35s; }
+  .sec.dim{opacity:.26;}
+  .sec-hd{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px;}
+  .sec-icon{width:46px;height:46px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;}
+  .i0{background:rgba(10,122,106,.12);box-shadow:inset 0 0 0 1.5px rgba(10,122,106,.28);}
+  .i1{background:rgba(26,127,168,.12);box-shadow:inset 0 0 0 1.5px rgba(26,127,168,.28);}
+  .i2{background:rgba(13,158,110,.12);box-shadow:inset 0 0 0 1.5px rgba(13,158,110,.28);}
+  .i3{background:rgba(168,96,8,.12);  box-shadow:inset 0 0 0 1.5px rgba(168,96,8,.28);}
+  .i4{background:rgba(176,48,80,.12); box-shadow:inset 0 0 0 1.5px rgba(176,48,80,.28);}
+  .i5{background:rgba(85,53,160,.12); box-shadow:inset 0 0 0 1.5px rgba(85,53,160,.28);}
+  .i6{background:rgba(10,122,106,.12);box-shadow:inset 0 0 0 1.5px rgba(10,122,106,.28);}
+  .i7{background:rgba(26,127,168,.12);box-shadow:inset 0 0 0 1.5px rgba(26,127,168,.28);}
+
+  .sec-ey{font-size:10px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--txt3);margin-bottom:4px;}
+  .sec-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--txt1);line-height:1.25;}
+  .sec-body{padding-left:60px;}
+
+  /* ══════════ SPEAKABLE ELEMENTS ══════════ */
+  .sp {
+    font-size:15px; line-height:1.88; color:var(--txt2); margin-bottom:14px; border-radius:8px;
+    padding:6px 12px; margin-left:-12px; border-left:4px solid transparent;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .sp.hl { background:var(--hl-bg); color:var(--hl-txt); box-shadow:var(--hl-glow); border-left-color:var(--hl-bdr); padding-left:15px; margin-left:-15px; }
+
+  .insight {
+    background:var(--surface2); border-radius:10px; border-left:4px solid var(--teal);
+    padding:13px 16px; margin:12px 0 16px; font-size:14px; color:var(--txt2); line-height:1.78;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .insight.hl { background:var(--hl-bg); color:var(--hl-txt); box-shadow:var(--hl-glow); border-left-color:var(--hl-bdr); }
+
+  /* Warning / disclaimer box */
+  .disclaimer {
+    background: rgba(176,48,80,0.05); border-radius:12px;
+    border: 1px solid rgba(176,48,80,0.20); border-left:4px solid var(--rose);
+    padding:16px 18px; margin:14px 0 18px;
+    font-size:14px; color:var(--txt2); line-height:1.80;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .disclaimer.hl { background:rgba(176,48,80,0.10); color:var(--hl-txt); box-shadow:0 0 0 3px rgba(176,48,80,0.12),0 6px 22px rgba(176,48,80,0.08); border-left-color:var(--rose); }
+
+  /* Science highlight card */
+  .science-card {
+    background:var(--surface); border-radius:14px; border:1px solid var(--border);
+    padding:18px 20px; margin-bottom:16px;
+    box-shadow:0 1px 6px rgba(10,80,60,0.06);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .science-card.hl { background:var(--hl-bg); border-color:rgba(10,122,106,.42); box-shadow:var(--hl-glow); }
+  .sci-num { font-size:10px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; margin-bottom:4px; }
+  .sc0 .sci-num{color:var(--teal);}
+  .sc1 .sci-num{color:var(--sky);}
+  .sc2 .sci-num{color:var(--green);}
+  .sc3 .sci-num{color:var(--amber);}
+  .sci-head { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--txt1); margin-bottom:8px; }
+  .sci-body { font-size:14px; color:var(--txt2); line-height:1.78; transition:color .22s; }
+  .science-card.hl .sci-body { color:var(--hl-txt); }
+
+  /* Two-column compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px;}
+  .cmp-col{ border-radius:12px;padding:16px;border:1px solid var(--border); transition:border-color .22s,background .22s,box-shadow .22s; }
+  .cmp-col.hl{background:var(--hl-bg);border-color:rgba(10,122,106,.42);box-shadow:var(--hl-glow);}
+  .cmp-bad {background:rgba(176,48,80,.05);}
+  .cmp-good{background:rgba(10,122,106,.05);}
+  .cmp-lbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;}
+  .cmp-bad  .cmp-lbl{color:var(--rose);}
+  .cmp-good .cmp-lbl{color:var(--teal);}
+  .cmp-items{font-size:13px;color:var(--txt2);line-height:2.1;}
+  .cmp-col.hl .cmp-items{color:var(--hl-txt);}
+
+  /* Five-domain cards */
+  .domain-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px;}
+  .domain-card{
+    background:var(--surface);border-radius:12px;border:1px solid var(--border);padding:16px;
+    box-shadow:0 1px 6px rgba(10,80,60,0.06);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .domain-card.hl{background:var(--hl-bg);border-color:rgba(10,122,106,.42);box-shadow:var(--hl-glow);}
+  .dom-lbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px;}
+  .dc0 .dom-lbl{color:var(--teal);}
+  .dc1 .dom-lbl{color:var(--sky);}
+  .dc2 .dom-lbl{color:var(--green);}
+  .dc3 .dom-lbl{color:var(--amber);}
+  .dc4 .dom-lbl{color:var(--violet);}
+  .dom-head{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--txt1);margin-bottom:5px;}
+  .dom-txt{font-size:13px;color:var(--txt2);line-height:1.65;transition:color .22s;}
+  .domain-card.hl .dom-txt{color:var(--hl-txt);}
+
+  /* Final */
+  .final-wrap{
+    background:linear-gradient(135deg,rgba(10,122,106,.07),rgba(26,127,168,.08));
+    border:1px solid rgba(10,122,106,.20);border-radius:18px;
+    padding:30px 34px;box-shadow:0 2px 14px rgba(10,80,60,0.07);
+  }
+  .final-big{
+    font-family:'Playfair Display',serif;
+    font-size:19px;color:var(--txt1);line-height:1.72;margin-bottom:18px;
+    padding:8px 12px;border-radius:8px;border-left:4px solid transparent;
+    transition:background .22s,box-shadow .22s,color .22s,border-color .15s;
+  }
+  .final-big.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+  .final-tagline{
+    font-size:14px;font-weight:600;color:var(--teal);letter-spacing:.2px;
+    padding:8px 12px;border-radius:8px;border-left:4px solid transparent;
+    transition:background .22s,box-shadow .22s,color .22s,border-color .15s;
+  }
+  .final-tagline.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+
+  .divider{height:1px;background:var(--border);margin:38px 0;}
+
+  @media(max-width:860px){
+    .sidebar{display:none;}
+    .content{padding:24px 20px;}
+    .sec-body{padding-left:0;}
+    .compare{grid-template-columns:1fr;}
+    .domain-grid{grid-template-columns:1fr;}
+    .hero{padding:24px 22px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="logo">tw</div>
+  <div class="hdr-info">
+    <div class="hdr-title">Cancer, Metabolism & Twin Precision Treatment</div>
+    <div class="hdr-sub">A whole-body, whole-system perspective</div>
+  </div>
+  <div class="live-pill" id="livePill">
+    <div class="bars"><span></span><span></span><span></span></div>
+    <span id="liveText">Reading…</span>
+  </div>
+</header>
+
+<div class="player">
+  <div class="ctrls">
+    <button class="btn btn-nav" id="prevBtn" title="Previous section">&#9664;&#9664;</button>
+    <button class="btn btn-play" id="playBtn" title="Play / Pause">&#9654;</button>
+    <button class="btn btn-nav" id="nextBtn" title="Next section">&#9654;&#9654;</button>
+  </div>
+  <div class="prog">
+    <div class="prog-top">
+      <span id="secLbl">—</span>
+      <span id="pctLbl">0%</span>
+    </div>
+    <div class="track"><div class="fill" id="fillBar"></div></div>
+  </div>
+  <div class="voice-wr">
+    <label>Voice</label>
+    <select id="voiceSel"><option value="">Loading…</option></select>
+  </div>
+  <div class="spd">
+    <label>Speed</label>
+    <select id="spdSel">
+      <option value="0.78">0.78×</option>
+      <option value="0.88">0.88×</option>
+      <option value="0.95" selected>0.95×</option>
+      <option value="1.05">1.05×</option>
+      <option value="1.15">1.15×</option>
+    </select>
+  </div>
+</div>
+
+<div class="chips" id="chipBar"></div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="toc-hd">Contents</div>
+    <div id="toc"></div>
+  </aside>
+  <main class="content" id="main"></main>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   FULL PDF CONTENT — all 4 pages, every paragraph
+══════════════════════════════════════════════════ */
+const DOC = [
+
+  /* 0 — HERO */
+  {
+    type:'hero', id:'s0',
+    eyebrow:'Twin Health — Clinical Education',
+    title:'Cancer, Metabolism, and Why Twin Precision Treatment Matters',
+    subtitle:'A whole-body, whole-system perspective',
+    items:[
+      { t:'doc-title',    text:'Cancer, Metabolism, and Why Twin Precision Treatment Matters' },
+      { t:'doc-subtitle', text:'A whole-body, whole-system perspective' },
+      { t:'sp', text:'Twin Precision Treatment is not a disease-specific program. It does not claim to treat or cure cancer, including blood cancers such as multiple myeloma or extramedullary plasmacytoma. Twin does not replace oncology care, chemotherapy, radiation, surgery, or any disease-directed cancer treatment.' },
+      { t:'sp', text:'Twin always works alongside standard medical care — never instead of it.' }
+    ]
+  },
+
+  /* 1 — CANCER METABOLISM */
+  {
+    type:'sec', id:'s1', icon:'🔬', ic:'i0',
+    eyebrow:'Section 1',
+    title:'What Cancer Metabolism Teaches Us — Beyond Food Alone',
+    items:[
+      { t:'sp', text:'Cancer cells are known to take up unusually large amounts of glucose — a principle used in FDG-PET scans and often simplified as "sugar feeds cancer." While the observation is real, the interpretation is often incomplete.' },
+      { t:'sp', text:'Cancer cells do not consume glucose simply because they divide faster. Many normal cells — embryonic cells, stem cells, activated immune cells — show the same metabolic behaviour when they enter growth or repair states.' },
+      { t:'insight', text:'This reveals a deeper principle: growth, repair, and stress adaptation require a different metabolic operating system than maintenance. Nutrition alone is not the control knob. The entire metabolic system matters.' }
+    ]
+  },
+
+  /* 2 — WARBURG EFFECT */
+  {
+    type:'sec', id:'s2', icon:'⚡', ic:'i1',
+    eyebrow:'Section 2',
+    title:'The Warburg Effect — Signalling and Biosynthesis, Not Broken Energy',
+    items:[
+      { t:'sp', text:'Many cancer cells rely heavily on aerobic glycolysis — the Warburg effect — using glucose rapidly even when oxygen is available. This is often misunderstood as inefficient energy production.' },
+      { t:'sp', text:'In reality, ATP is rarely the limiting factor in growing or stressed cells. What matters is metabolic routing and signalling. High glucose flux allows cells to generate DNA and RNA building blocks, membrane and lipid precursors, intermediates for amino acid synthesis, and NADPH for oxidative stress control.' },
+      { t:'sp', text:'Glucose is being used as a signalling and construction substrate — not just as fuel. This same metabolic pattern appears in activated immune cells, wound healing, and embryonic development. Cancer hijacks this normal growth programme and keeps it permanently switched on.' }
+    ]
+  },
+
+  /* 3 — AMINO ACIDS */
+  {
+    type:'sec', id:'s3', icon:'🧬', ic:'i2',
+    eyebrow:'Section 3',
+    title:'Amino Acids — Selective Dependence, Not Excess Intake',
+    items:[
+      { t:'sp', text:'Cancer cells do not indiscriminately consume protein or amino acids. They rely on the circulating amino-acid pool, regulated by digestion, liver metabolism, and tissue turnover.' },
+      { t:'sp', text:'Many cancers show selective dependency on specific amino acids — such as glutamine, serine, glycine, and methionine — rather than bulk overconsumption.' },
+      { t:'insight', text:'Cancer metabolism is about misdirected metabolic purpose — not excess hunger. Restricting all protein or amino acids indiscriminately is therefore unlikely to help and may cause harm.' }
+    ]
+  },
+
+  /* 4 — DIET TO METABOLIC SYSTEMS */
+  {
+    type:'sec', id:'s4', icon:'🌐', ic:'i3',
+    eyebrow:'Section 4',
+    title:'Why This Shifts the Conversation from Diet to Metabolic Systems',
+    items:[
+      { t:'sp', text:'Because cancer and its treatments place the body under extreme stress, outcomes are influenced not just by nutrients, but by how the body regulates insulin and energy signalling, handles inflammation and oxidative stress, preserves muscle and organ function, adapts autonomic and circadian rhythms, and recovers between treatment cycles.' },
+      { t:'insight', text:'This is far bigger than nutrition alone.' },
+      { t:'compare',
+        bad:  { label:'Generic dietary rules can unintentionally…', items:['Increase metabolic stress','Worsen fatigue and muscle loss','Impair immune resilience','Reduce treatment tolerance'] },
+        good: { label:'What is actually needed…', items:['System-level metabolic support','Personalised energy regulation','Recovery-adapted recommendations','Preservation of muscle and resilience'] }
+      }
+    ]
+  },
+
+  /* 5 — WHERE TPT FITS */
+  {
+    type:'sec', id:'s5', icon:'🎯', ic:'i4',
+    eyebrow:'Section 5',
+    title:'Where Twin Precision Treatment Fits',
+    items:[
+      { t:'sp', text:'Twin Precision Treatment focuses on healing dysfunctional metabolism at the cellular and mitochondrial level — the biological foundation that governs how the body produces and signals energy, regulates inflammation, manages oxidative stress, adapts to physiologic and treatment stress, and maintains immune and organ resilience.' },
+      { t:'sp', text:'These processes are not diseases themselves — but when impaired, they increase vulnerability to fatigue, cardiometabolic strain, treatment intolerance, and long-term health decline.' },
+      { t:'sp', text:'Decades of research show that chronic metabolic dysfunction — including insulin resistance, mitochondrial inefficiency, persistent inflammation, oxidative stress, and autonomic imbalance — can worsen recovery and quality of life in people facing serious illnesses, including cancer.' },
+      { t:'insight', text:'Twin addresses these foundational stressors regardless of whether someone has diabetes, obesity, or "normal" lab values.' }
+    ]
+  },
+
+  /* 6 — WHAT MAKES TPT DIFFERENT */
+  {
+    type:'sec', id:'s6', icon:'⚙️', ic:'i5',
+    eyebrow:'Section 6',
+    title:'What Makes Twin Precision Treatment Different',
+    items:[
+      { t:'sp', text:'Twin is not just precision nutrition. It is an integrated precision system that continuously adapts — all guided by a living Digital Twin that learns how your body responds over time.' },
+      { t:'domains', items:[
+        { cls:'dc0', icon:'🥗', lbl:'Domain 1', head:'Nutrition',          text:'Insulin load, nutrient timing, and personalised metabolic response' },
+        { cls:'dc1', icon:'🏃', lbl:'Domain 2', head:'Activity',           text:'Movement matched to recovery capacity — never imposed regardless of state' },
+        { cls:'dc2', icon:'😴', lbl:'Domain 3', head:'Sleep',              text:'Circadian repair and autonomic balance — essential for healing' },
+        { cls:'dc3', icon:'🧘', lbl:'Domain 4', head:'Stress Physiology',  text:'HRV-based regulation of the autonomic nervous system' },
+        { cls:'dc4', icon:'🫀', lbl:'Domain 5', head:'Organ-Level Signals',text:'Liver, heart, muscle, and kidney metabolic monitoring' }
+      ]},
+      { t:'sp', text:'This allows Twin to reduce metabolic strain rather than impose restriction, support recovery while preserving muscle and energy, adapt recommendations dynamically as physiology changes, and complement medical treatment without interfering with it.' }
+    ]
+  },
+
+  /* 7 — WHAT TWIN DOES NOT DO */
+  {
+    type:'sec', id:'s7', icon:'🚫', ic:'i6',
+    eyebrow:'Section 7',
+    title:'What Twin Does Not Do',
+    items:[
+      { t:'disclaimer', text:'Twin does not diagnose or treat cancer. It does not interfere with oncology care. It does not make disease-specific claims. Twin works alongside medical treatment — strengthening the metabolic terrain in which healing and recovery occur.' },
+      { t:'sp', text:'Cancer biology shows us that metabolism is about coordination, not calories. Twin Precision Treatment is not about treating a disease. It is about restoring the body\'s internal operating system, so energy, recovery, resilience, and adaptation function as efficiently as possible over time.' }
+    ]
+  },
+
+  /* 8 — FINAL */
+  {
+    type:'final', id:'s8', icon:'❤️', ic:'i7',
+    eyebrow:'Closing',
+    title:'Why Members Choose Twin',
+    items:[
+      { t:'final-big',     text:'Many members choose Twin not because they are "sick," but because they want to reduce metabolic stress during illness or recovery, prevent downstream complications, and build long-term resilience at the cellular level.' },
+      { t:'final-tagline', text:'If you enrol, Twin doctors and coaches — guided by your Digital Twin — will always work within safe boundaries, respect your existing medical care, and tailor recommendations based on what your body can safely handle.' }
+    ]
+  }
+
+];
+
+/* ══════════════════════════════════════════════════
+   BUILD DOM
+══════════════════════════════════════════════════ */
+const registry=[], secEls=[];
+const mainEl=document.getElementById('main');
+const tocEl =document.getElementById('toc');
+const chipEl=document.getElementById('chipBar');
+
+DOC.forEach((sec,si)=>{
+  const tr=document.createElement('div');
+  tr.className='toc-row';
+  tr.innerHTML=`<div class="toc-num">${si+1}</div><div class="toc-txt">${sec.title}</div>`;
+  tr.onclick=()=>{stop();jumpTo(si);};
+  tocEl.appendChild(tr);
+
+  const ch=document.createElement('div');
+  ch.className='chip';
+  const ws=sec.title.split(' ');
+  ch.textContent=ws.slice(0,4).join(' ')+(ws.length>4?'…':'');
+  ch.onclick=()=>{stop();jumpTo(si);};
+  chipEl.appendChild(ch);
+
+  let block;
+
+  if(sec.type==='hero'){
+    block=document.createElement('div');
+    block.className='hero'; block.id='sec-'+si;
+    block.innerHTML=`<div class="hero-eyebrow">${sec.eyebrow}</div>`;
+    sec.items.forEach(it=>{
+      const el=document.createElement(it.t==='sp'?'p':'div');
+      el.className=it.t; el.dataset.si=si; el.dataset.spk=it.text;
+      el.textContent=it.text;
+      block.appendChild(el);
+    });
+
+  } else if(sec.type==='sec'){
+    block=document.createElement('section');
+    block.className='sec'; block.id='sec-'+si;
+    let h=`<div class="sec-hd">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body">`;
+
+    let compareInserted=false, domainsInserted=false;
+    sec.items.forEach(it=>{
+      if(it.t==='sp'){
+        h+=`<p class="sp" data-si="${si}">${it.text}</p>`;
+      } else if(it.t==='insight'){
+        h+=`<div class="insight" data-si="${si}">${it.text}</div>`;
+      } else if(it.t==='disclaimer'){
+        h+=`<div class="disclaimer" data-si="${si}">${it.text}</div>`;
+      } else if(it.t==='compare'&&!compareInserted){
+        compareInserted=true;
+        h+=`<div class="compare">
+          <div class="cmp-col cmp-bad" data-si="${si}">
+            <div class="cmp-lbl">${it.bad.label}</div>
+            <div class="cmp-items">${it.bad.items.map(x=>`• ${x}`).join('<br>')}</div>
+          </div>
+          <div class="cmp-col cmp-good" data-si="${si}">
+            <div class="cmp-lbl">${it.good.label}</div>
+            <div class="cmp-items">${it.good.items.map(x=>`• ${x}`).join('<br>')}</div>
+          </div>
+        </div>`;
+      } else if(it.t==='domains'&&!domainsInserted){
+        domainsInserted=true;
+        h+=`<div class="domain-grid">`;
+        it.items.forEach(d=>{
+          h+=`<div class="domain-card ${d.cls}" data-si="${si}">
+            <div class="dom-lbl">${d.lbl}</div>
+            <div class="dom-head">${d.icon} ${d.head}</div>
+            <div class="dom-txt">${d.text}</div>
+          </div>`;
+        });
+        h+=`</div>`;
+      }
+    });
+    h+=`</div>`;
+    block.innerHTML=h;
+
+  } else if(sec.type==='final'){
+    block=document.createElement('section');
+    block.className='sec'; block.id='sec-'+si;
+    let h=`<div class="sec-hd">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body"><div class="final-wrap">`;
+    sec.items.forEach(it=>{
+      h+=`<div class="${it.t}" data-si="${si}">${it.text}</div>`;
+      if(it.t==='final-big') h+=`<div class="divider"></div>`;
+    });
+    h+=`</div></div>`;
+    block.innerHTML=h;
+  }
+
+  if(si<DOC.length-1){ const d=document.createElement('div'); d.className='divider'; block.appendChild(d); }
+  mainEl.appendChild(block);
+  secEls.push(block);
+});
+
+document.querySelectorAll('[data-si]').forEach(el=>{ registry.push({el, si:+el.dataset.si}); });
+
+/* ══════════════════════════════════════════════════
+   VOICE SYSTEM
+══════════════════════════════════════════════════ */
+const voiceSel=document.getElementById('voiceSel');
+let voiceList=[];
+
+function scoreVoice(v){
+  let s=0;
+  if(v.lang==='en-US')             s+=40;
+  else if(v.lang==='en-GB')        s+=30;
+  else if(v.lang==='en-AU')        s+=20;
+  else if(v.lang.startsWith('en')) s+=10;
+  else return -1;
+  const n=v.name.toLowerCase();
+  if(n.includes('neural'))   s+=30;
+  if(n.includes('enhanced')) s+=25;
+  if(n.includes('premium'))  s+=25;
+  if(n.includes('natural'))  s+=20;
+  if(n.includes('samantha')) s+=22;
+  if(n.includes('ava'))      s+=20;
+  if(n.includes('allison'))  s+=18;
+  if(n.includes('victoria')) s+=16;
+  if(n.includes('karen'))    s+=16;
+  if(n.includes('daniel'))   s+=16;
+  if(n.includes('moira'))    s+=16;
+  if(n.includes('zira'))     s+=14;
+  if(n.includes('susan'))    s+=14;
+  if(n.includes('alex'))     s+=14;
+  if(n.includes('compact'))  s-=20;
+  if(n.includes('espeak'))   s-=30;
+  if(n.includes('mbrola'))   s-=30;
+  return s;
+}
+
+function populateVoices(){
+  const raw=window.speechSynthesis.getVoices();
+  if(!raw.length) return;
+  const scored=raw.map(v=>({v,s:scoreVoice(v)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);
+  if(!scored.length) return;
+  voiceList=scored.map(x=>x.v);
+  voiceSel.innerHTML='';
+  voiceList.forEach((v,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=`${v.name} (${v.lang})`; voiceSel.appendChild(o); });
+  voiceSel.value='0';
+}
+populateVoices();
+if(window.speechSynthesis.onvoiceschanged!==undefined) window.speechSynthesis.onvoiceschanged=populateVoices;
+function getVoice(){ const i=+voiceSel.value; return voiceList[i]||null; }
+
+/* ══════════════════════════════════════════════════
+   AUDIO ENGINE
+══════════════════════════════════════════════════ */
+let cur=0, playing=false, idx=0, active=null;
+const synth=window.speechSynthesis;
+const total=registry.length;
+
+function hl(el,on){ if(el) el.classList.toggle('hl',on); }
+function clearHl(){ if(active){hl(active,false);active=null;} }
+
+function activate(el,si){
+  clearHl(); hl(el,true); active=el;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  if(si!==cur) cur=si;
+  ui();
+}
+
+function ui(){
+  document.querySelectorAll('.toc-row').forEach((r,i)=>r.classList.toggle('active',i===cur));
+  document.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('active',i===cur));
+  secEls.forEach((s,i)=>s.classList.toggle('dim',i!==cur));
+  const pct=total>0?Math.round((idx/total)*100):0;
+  document.getElementById('fillBar').style.width=pct+'%';
+  document.getElementById('pctLbl').textContent=pct+'%';
+  document.getElementById('secLbl').textContent=DOC[cur].title;
+  document.getElementById('playBtn').innerHTML=playing?'&#9646;&#9646;':'&#9654;';
+  const pill=document.getElementById('livePill');
+  if(playing){ pill.classList.add('on'); document.getElementById('liveText').textContent=DOC[cur].title; }
+  else pill.classList.remove('on');
+}
+
+function jumpTo(si){
+  cur=si; secEls[si].scrollIntoView({behavior:'smooth',block:'start'});
+  const i=registry.findIndex(r=>r.si===si); if(i>=0) idx=i;
+  ui();
+}
+
+function getCleanText(el){ return (el.dataset.spk||el.innerText||'').replace(/•/g,'').trim(); }
+
+function speakNext(){
+  if(!playing) return;
+  if(idx>=registry.length){ playing=false; clearHl(); ui(); return; }
+  const {el,si}=registry[idx++];
+  activate(el,si);
+  const text=getCleanText(el);
+  if(!text){ speakNext(); return; }
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=+document.getElementById('spdSel').value;
+  u.pitch=1.0; u.volume=1.0;
+  const v=getVoice(); if(v) u.voice=v;
+  u.onend=()=>{ if(playing) speakNext(); };
+  u.onerror=()=>{ if(playing) speakNext(); };
+  synth.speak(u);
+}
+
+function start(){ synth.cancel(); playing=true; ui(); speakNext(); }
+function stop() { playing=false; synth.cancel(); clearHl(); ui(); }
+
+document.getElementById('playBtn').onclick=()=>playing?stop():start();
+document.getElementById('prevBtn').onclick=()=>{ stop(); jumpTo(Math.max(0,cur-1)); };
+document.getElementById('nextBtn').onclick=()=>{ stop(); jumpTo(Math.min(DOC.length-1,cur+1)); };
+document.getElementById('spdSel').onchange=()=>{ if(playing){ synth.cancel(); setTimeout(()=>{ if(playing) speakNext(); },80); } };
+document.getElementById('voiceSel').onchange=()=>{ if(playing){ synth.cancel(); setTimeout(()=>{ if(playing) speakNext(); },80); } };
+
+/* Init */
+secEls.forEach((s,i)=>s.classList.toggle('dim',i!==0));
+document.querySelectorAll('.toc-row')[0].classList.add('active');
+document.querySelectorAll('.chip')[0].classList.add('active');
+ui();
+
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting&&!playing){ cur=+e.target.id.replace('sec-',''); ui(); } });
+},{threshold:0.3});
+secEls.forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

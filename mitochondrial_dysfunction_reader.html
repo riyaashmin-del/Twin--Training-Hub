@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mitochondrial Dysfunction — Twin Precision Treatment</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #f0edf9;
+    --sidebar-bg: #e5e0f5;
+    --surface:    #ffffff;
+    --surface2:   #f7f4fd;
+    --surface3:   #dcd5f0;
+    --border:     rgba(80,50,180,0.10);
+    --border-hi:  rgba(80,50,180,0.20);
+
+    --violet:  #5b3ab8;
+    --purple:  #7c3aed;
+    --indigo:  #3730a3;
+    --sky:     #1e7fc8;
+    --rose:    #b03060;
+    --amber:   #a86008;
+    --teal:    #0a7a6a;
+    --crimson: #9b1c3a;
+
+    --txt1: #1a1030;
+    --txt2: #3a2f60;
+    --txt3: #7068a8;
+
+    --hl-bg:   rgba(91,58,184,0.11);
+    --hl-bdr:  #5b3ab8;
+    --hl-txt:  #0e0820;
+    --hl-glow: 0 0 0 3px rgba(91,58,184,0.14), 0 6px 22px rgba(91,58,184,0.09);
+
+    --title-hl-bg:   rgba(91,58,184,0.10);
+    --title-hl-bdr:  #5b3ab8;
+    --title-hl-txt:  #0e0820;
+    --title-hl-glow: 0 0 0 3px rgba(91,58,184,0.15), 0 6px 22px rgba(91,58,184,0.10);
+
+    --sub-hl-bg:   rgba(124,58,237,0.08);
+    --sub-hl-bdr:  #7c3aed;
+    --sub-hl-txt:  #0e0820;
+    --sub-hl-glow: 0 0 0 3px rgba(124,58,237,0.12), 0 4px 18px rgba(124,58,237,0.08);
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--txt1);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* ══════════ HEADER ══════════ */
+  .hdr {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 64px;
+    display: flex; align-items: center; gap: 14px;
+    position: sticky; top: 0; z-index: 300;
+    box-shadow: 0 2px 14px rgba(60,30,140,0.07);
+  }
+  .logo {
+    width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--violet), var(--sky));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; color: #fff; font-weight: 700;
+  }
+  .hdr-info { flex: 1; min-width: 0; }
+  .hdr-title { font-size: 14px; font-weight: 600; color: var(--txt1); line-height: 1.2; }
+  .hdr-sub   { font-size: 11px; color: var(--txt3); font-style: italic; margin-top: 1px; }
+
+  .live-pill {
+    display: none; align-items: center; gap: 8px;
+    background: rgba(91,58,184,0.09);
+    border: 1px solid rgba(91,58,184,0.28);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 11px; font-weight: 600; color: var(--violet);
+    max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    flex-shrink: 0;
+  }
+  .live-pill.on { display: flex; }
+  .bars { display:flex; gap:2px; align-items:flex-end; height:12px; flex-shrink:0; }
+  .bars span {
+    display:block; width:3px; background:var(--violet);
+    border-radius:2px; animation:bar 1.2s ease-in-out infinite;
+  }
+  .bars span:nth-child(2){animation-delay:.15s;}
+  .bars span:nth-child(3){animation-delay:.3s;}
+  @keyframes bar{0%,100%{height:4px}50%{height:12px}}
+
+  /* ══════════ PLAYER ══════════ */
+  .player {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 28px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    box-shadow: 0 1px 6px rgba(60,30,140,0.05);
+  }
+  .ctrls { display:flex; align-items:center; gap:8px; }
+  .btn {
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; transition: all .17s; font-family: inherit;
+  }
+  .btn-play {
+    width: 46px; height: 46px; font-size: 17px; color: #fff;
+    background: linear-gradient(135deg, var(--violet), var(--sky));
+    box-shadow: 0 4px 16px rgba(91,58,184,0.32);
+  }
+  .btn-play:hover { transform: scale(1.07); box-shadow: 0 6px 22px rgba(91,58,184,0.46); }
+  .btn-play:active { transform: scale(.94); }
+  .btn-nav {
+    width: 34px; height: 34px; font-size: 12px;
+    background: var(--surface2); color: var(--txt2);
+    border: 1px solid var(--border-hi);
+  }
+  .btn-nav:hover { background: var(--surface3); color: var(--txt1); }
+
+  .prog { flex: 1; min-width: 150px; }
+  .prog-top {
+    display:flex; justify-content:space-between;
+    font-size:11px; color:var(--txt3); margin-bottom:7px;
+  }
+  .prog-top span:first-child { color:var(--txt2); font-weight:500; }
+  .track { height:5px; background:var(--surface3); border-radius:3px; overflow:hidden; }
+  .fill  { height:100%; width:0%; border-radius:3px;
+            background: linear-gradient(90deg, var(--violet), var(--sky));
+            transition: width .4s linear; }
+
+  .voice-wr { display:flex; align-items:center; gap:7px; }
+  .voice-wr label { font-size:11px; color:var(--txt3); white-space:nowrap; }
+  .voice-wr select {
+    background: var(--surface2); border: 1px solid var(--border-hi);
+    border-radius: 7px; padding: 5px 9px; font-size: 12px; color: var(--txt1);
+    font-family: 'Inter', sans-serif; cursor: pointer; outline: none; max-width: 170px;
+  }
+  .spd { display:flex; align-items:center; gap:7px; }
+  .spd label { font-size:11px; color:var(--txt3); }
+  .spd select {
+    background: var(--surface2); border: 1px solid var(--border-hi);
+    border-radius: 7px; padding: 5px 9px; font-size: 12px; color: var(--txt1);
+    font-family: 'Inter', sans-serif; cursor: pointer; outline: none;
+  }
+
+  /* ══════════ CHIPS ══════════ */
+  .chips {
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+    padding: 8px 28px; display:flex; gap:5px; overflow-x:auto;
+  }
+  .chips::-webkit-scrollbar{display:none;}
+  .chip {
+    padding: 5px 13px; border-radius:20px; font-size: 11px; font-weight:500; cursor:pointer;
+    border: 1px solid var(--border-hi); flex-shrink:0; white-space:nowrap; transition:all .2s;
+    color:var(--txt3); background:var(--surface);
+  }
+  .chip:hover { color:var(--txt1); border-color:var(--violet); }
+  .chip.active { background:var(--violet); border-color:var(--violet); color:#fff; font-weight:600; }
+
+  /* ══════════ LAYOUT ══════════ */
+  .layout { display:flex; flex:1; }
+
+  .sidebar {
+    width: 252px; flex-shrink:0; background: var(--sidebar-bg);
+    border-right: 1px solid var(--border); padding: 20px 12px; overflow-y:auto;
+    position: sticky; top:64px; height:calc(100vh - 64px);
+  }
+  .sidebar::-webkit-scrollbar{width:3px;}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+  .toc-hd {
+    font-size:9px; font-weight:700; letter-spacing:1.6px;
+    text-transform:uppercase; color:var(--txt3); padding:0 8px; margin-bottom:10px;
+  }
+  .toc-row {
+    display:flex; align-items:center; gap:10px; padding:8px; border-radius:9px; cursor:pointer;
+    transition:all .17s; margin-bottom:2px; border:1px solid transparent;
+  }
+  .toc-row:hover{background:var(--surface3);}
+  .toc-row.active{ background:var(--surface); border-color:var(--border-hi); box-shadow:0 1px 6px rgba(60,30,140,0.08); }
+  .toc-num {
+    width:22px; height:22px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:9px; font-weight:700; background:var(--surface3); color:var(--txt3); transition:all .2s;
+  }
+  .toc-row.active .toc-num { background:var(--violet); color:#fff; }
+  .toc-txt { font-size:12px; color:var(--txt3); line-height:1.35; }
+  .toc-row.active .toc-txt { color:var(--txt1); font-weight:500; }
+
+  /* ══════════ CONTENT ══════════ */
+  .content { flex:1; padding:40px 56px; overflow-y:auto; max-width:860px; }
+  .content::-webkit-scrollbar{width:4px;}
+  .content::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+
+  /* ══════════ HERO ══════════ */
+  .hero {
+    background: linear-gradient(135deg,rgba(91,58,184,.08),rgba(30,127,200,.10));
+    border: 1px solid rgba(91,58,184,.20); border-radius: 20px;
+    padding: 38px 42px; margin-bottom: 44px; scroll-margin-top: 20px; transition: opacity .35s;
+  }
+  .hero.dim{opacity:.26;}
+  .hero-eyebrow {
+    font-size:10px; font-weight:700; letter-spacing:1.5px;
+    text-transform:uppercase; color:var(--violet); margin-bottom:14px;
+  }
+  .doc-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 700; color: var(--txt1); line-height: 1.22; margin-bottom: 8px;
+    padding: 8px 12px; margin-left: -12px; border-radius: 10px; border-left: 4px solid transparent;
+    transition: background .22s, color .22s, box-shadow .22s, border-color .15s;
+  }
+  .doc-title.hl { background: var(--title-hl-bg); color: var(--title-hl-txt); box-shadow: var(--title-hl-glow); border-left-color: var(--title-hl-bdr); padding-left: 16px; margin-left: -16px; }
+  .doc-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; font-style: italic; color: var(--purple); margin-bottom: 24px;
+    padding: 6px 12px; margin-left: -12px; border-radius: 8px; border-left: 4px solid transparent;
+    transition: background .22s, color .22s, box-shadow .22s, border-color .15s;
+  }
+  .doc-subtitle.hl { background: var(--sub-hl-bg); color: var(--sub-hl-txt); box-shadow: var(--sub-hl-glow); border-left-color: var(--sub-hl-bdr); padding-left: 16px; margin-left: -16px; }
+
+  /* ══════════ SECTION ══════════ */
+  .sec { margin-bottom: 50px; scroll-margin-top:20px; transition:opacity .35s; }
+  .sec.dim{opacity:.26;}
+  .sec-hd{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px;}
+  .sec-icon{width:46px;height:46px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;}
+  .i0{background:rgba(91,58,184,.13); box-shadow:inset 0 0 0 1.5px rgba(91,58,184,.30);}
+  .i1{background:rgba(30,127,200,.13);box-shadow:inset 0 0 0 1.5px rgba(30,127,200,.30);}
+  .i2{background:rgba(124,58,237,.13);box-shadow:inset 0 0 0 1.5px rgba(124,58,237,.30);}
+  .i3{background:rgba(176,48,96,.13); box-shadow:inset 0 0 0 1.5px rgba(176,48,96,.30);}
+  .i4{background:rgba(168,96,8,.13);  box-shadow:inset 0 0 0 1.5px rgba(168,96,8,.30);}
+  .i5{background:rgba(10,122,106,.13);box-shadow:inset 0 0 0 1.5px rgba(10,122,106,.30);}
+  .i6{background:rgba(55,48,163,.13); box-shadow:inset 0 0 0 1.5px rgba(55,48,163,.30);}
+  .i7{background:rgba(91,58,184,.13); box-shadow:inset 0 0 0 1.5px rgba(91,58,184,.30);}
+
+  .sec-ey{font-size:10px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--txt3);margin-bottom:4px;}
+  .sec-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--txt1);line-height:1.25;}
+  .sec-body{padding-left:60px;}
+
+  /* ══════════ SPEAKABLE ELEMENTS ══════════ */
+  .sp {
+    font-size:15px; line-height:1.88; color:var(--txt2); margin-bottom:14px; border-radius:8px;
+    padding:6px 12px; margin-left:-12px; border-left:4px solid transparent;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .sp.hl { background:var(--hl-bg); color:var(--hl-txt); box-shadow:var(--hl-glow); border-left-color:var(--hl-bdr); padding-left:15px; margin-left:-15px; }
+
+  /* Insight / Twin Insight callout */
+  .insight {
+    background:var(--surface2); border-radius:10px; border-left:4px solid var(--violet);
+    padding:13px 16px; margin:12px 0 16px; font-size:14px; color:var(--txt2); line-height:1.78;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .insight.hl { background:var(--hl-bg); color:var(--hl-txt); box-shadow:var(--hl-glow); border-left-color:var(--hl-bdr); }
+  .insight-lbl {
+    font-size:9px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase;
+    color:var(--violet); margin-bottom:6px;
+  }
+
+  /* Maladaptive state cards — A, B, C */
+  .state-card {
+    background: var(--surface); border-radius:14px; border:1px solid var(--border);
+    padding:20px 22px; margin-bottom:18px;
+    box-shadow:0 1px 8px rgba(60,30,140,0.07);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .state-card.hl { background:var(--hl-bg); border-color:rgba(91,58,184,.42); box-shadow:var(--hl-glow); }
+  .state-tag {
+    display:inline-flex; align-items:center; gap:6px; margin-bottom:10px;
+    padding:3px 10px; border-radius:20px; font-size:10px; font-weight:700;
+    letter-spacing:.8px; text-transform:uppercase;
+  }
+  .st-a .state-tag { background:rgba(176,48,96,.10); color:var(--rose); }
+  .st-b .state-tag { background:rgba(168,96,8,.10);  color:var(--amber); }
+  .st-c .state-tag { background:rgba(10,122,106,.10);color:var(--teal); }
+  .state-head {
+    font-family:'Playfair Display',serif; font-size:17px; font-weight:700;
+    color:var(--txt1); margin-bottom:4px;
+  }
+  .state-sub {
+    font-size:12px; font-style:italic; color:var(--txt3); margin-bottom:12px; font-weight:500;
+  }
+  .state-body { font-size:14px; color:var(--txt2); line-height:1.78; transition:color .22s; }
+  .state-card.hl .state-body { color:var(--hl-txt); }
+
+  /* Compare two columns */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px;}
+  .cmp-col{border-radius:12px;padding:16px;border:1px solid var(--border);transition:border-color .22s,background .22s,box-shadow .22s;}
+  .cmp-col.hl{background:var(--hl-bg);border-color:rgba(91,58,184,.42);box-shadow:var(--hl-glow);}
+  .cmp-bad {background:rgba(176,48,96,.05);}
+  .cmp-good{background:rgba(91,58,184,.05);}
+  .cmp-lbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;}
+  .cmp-bad  .cmp-lbl{color:var(--rose);}
+  .cmp-good .cmp-lbl{color:var(--violet);}
+  .cmp-items{font-size:13px;color:var(--txt2);line-height:2.1;}
+  .cmp-col.hl .cmp-items{color:var(--hl-txt);}
+
+  /* Five-method cards for TPT approach */
+  .method-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px;}
+  .method-card{
+    background:var(--surface);border-radius:12px;border:1px solid var(--border);padding:15px 16px;
+    box-shadow:0 1px 6px rgba(60,30,140,0.05);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .method-card.hl{background:var(--hl-bg);border-color:rgba(91,58,184,.42);box-shadow:var(--hl-glow);}
+  .mth-lbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;}
+  .mc0 .mth-lbl{color:var(--violet);}
+  .mc1 .mth-lbl{color:var(--sky);}
+  .mc2 .mth-lbl{color:var(--rose);}
+  .mc3 .mth-lbl{color:var(--amber);}
+  .mc4 .mth-lbl{color:var(--teal);}
+  .mth-head{font-size:13px;font-weight:600;color:var(--txt1);margin-bottom:3px;}
+  .mth-txt{font-size:12px;color:var(--txt2);line-height:1.6;transition:color .22s;}
+  .method-card.hl .mth-txt{color:var(--hl-txt);}
+
+  /* Final */
+  .final-wrap{
+    background:linear-gradient(135deg,rgba(91,58,184,.07),rgba(30,127,200,.08));
+    border:1px solid rgba(91,58,184,.20);border-radius:18px;
+    padding:30px 34px;box-shadow:0 2px 14px rgba(60,30,140,0.07);
+  }
+  .final-big{
+    font-family:'Playfair Display',serif;
+    font-size:19px;color:var(--txt1);line-height:1.72;margin-bottom:18px;
+    padding:8px 12px;border-radius:8px;border-left:4px solid transparent;
+    transition:background .22s,box-shadow .22s,color .22s,border-color .15s;
+  }
+  .final-big.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+  .final-tagline{
+    font-size:14px;font-weight:600;color:var(--violet);letter-spacing:.2px;
+    padding:8px 12px;border-radius:8px;border-left:4px solid transparent;
+    transition:background .22s,box-shadow .22s,color .22s,border-color .15s;
+  }
+  .final-tagline.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+
+  .divider{height:1px;background:var(--border);margin:38px 0;}
+
+  @media(max-width:860px){
+    .sidebar{display:none;}
+    .content{padding:24px 20px;}
+    .sec-body{padding-left:0;}
+    .compare{grid-template-columns:1fr;}
+    .method-grid{grid-template-columns:1fr;}
+    .hero{padding:24px 22px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="logo">tw</div>
+  <div class="hdr-info">
+    <div class="hdr-title">Mitochondrial Dysfunction as a Central Driver of Maladaptive Myeloid States</div>
+    <div class="hdr-sub">Twin Precision Treatment — Systems Biology Framework</div>
+  </div>
+  <div class="live-pill" id="livePill">
+    <div class="bars"><span></span><span></span><span></span></div>
+    <span id="liveText">Reading…</span>
+  </div>
+</header>
+
+<div class="player">
+  <div class="ctrls">
+    <button class="btn btn-nav" id="prevBtn" title="Previous section">&#9664;&#9664;</button>
+    <button class="btn btn-play" id="playBtn" title="Play / Pause">&#9654;</button>
+    <button class="btn btn-nav" id="nextBtn" title="Next section">&#9654;&#9654;</button>
+  </div>
+  <div class="prog">
+    <div class="prog-top">
+      <span id="secLbl">—</span>
+      <span id="pctLbl">0%</span>
+    </div>
+    <div class="track"><div class="fill" id="fillBar"></div></div>
+  </div>
+  <div class="voice-wr">
+    <label>Voice</label>
+    <select id="voiceSel"><option value="">Loading…</option></select>
+  </div>
+  <div class="spd">
+    <label>Speed</label>
+    <select id="spdSel">
+      <option value="0.78">0.78×</option>
+      <option value="0.88">0.88×</option>
+      <option value="0.95" selected>0.95×</option>
+      <option value="1.05">1.05×</option>
+      <option value="1.15">1.15×</option>
+    </select>
+  </div>
+</div>
+
+<div class="chips" id="chipBar"></div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="toc-hd">Contents</div>
+    <div id="toc"></div>
+  </aside>
+  <main class="content" id="main"></main>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   FULL PDF CONTENT — all 3 pages, every paragraph
+══════════════════════════════════════════════════ */
+const DOC = [
+
+  /* 0 — HERO */
+  {
+    type:'hero', id:'s0',
+    eyebrow:'Twin Precision Treatment — Systems Biology',
+    title:'Mitochondrial Dysfunction as a Central Driver of Maladaptive Myeloid States',
+    subtitle:'Twin Precision Treatment views mitochondrial dysfunction not as a downstream consequence of disease, but as a central, upstream systems failure that shapes immune behaviour over time.',
+    items:[
+      { t:'doc-title',    text:'Mitochondrial Dysfunction as a Central Driver of Maladaptive Myeloid States' },
+      { t:'doc-subtitle', text:'Twin Precision Treatment views mitochondrial dysfunction not as a downstream consequence of disease, but as a central, upstream systems failure that shapes immune behaviour over time.' },
+      { t:'sp', text:'When mitochondrial health deteriorates, immune cells — especially myeloid cells — lose their ability to sense energy, regulate inflammation, and resolve immune responses appropriately. This creates a chronic, self-reinforcing immune dysregulation state seen across autoimmune and inflammatory diseases.' }
+    ]
+  },
+
+  /* 1 — SELF-AMPLIFYING LOOP */
+  {
+    type:'sec', id:'s1', icon:'🔄', ic:'i0',
+    eyebrow:'Section 1',
+    title:'A Self-Amplifying Metabolic–Immune Loop',
+    items:[
+      { t:'sp', text:'Twin\'s systems biology framework highlights a closed-loop interaction between three elements: mitochondrial dysfunction, pro-inflammatory stress signalling, and repeated immune activation.' },
+      { t:'sp', text:'Mitochondrial damage increases reactive oxygen species, alters ATP signalling, and triggers the release of mitochondrial danger signals known as DAMPs. These signals activate innate immune pathways, increasing inflammatory cell death and immune activation.' },
+      { t:'sp', text:'In turn, repeated immune activation further impairs mitochondrial function — creating a metabolic–inflammatory loop that persists even in the absence of acute triggers.' },
+      { t:'insight', text:'Twin\'s objective is to interrupt this loop at the metabolic control layer — not merely suppress inflammation downstream.' }
+    ]
+  },
+
+  /* 2 — THREE MYELOID STATES OVERVIEW */
+  {
+    type:'sec', id:'s2', icon:'🧫', ic:'i1',
+    eyebrow:'Section 2',
+    title:'Divergent Myeloid Outcomes Driven by Mitochondrial Stress',
+    items:[
+      { t:'sp', text:'Twin Precision Treatment recognises three distinct pathological immune adaptations that arise from shared mitochondrial dysfunction, each relevant to chronic autoimmune disease. These are not linear stages — they are parallel maladaptive states.' }
+    ]
+  },
+
+  /* 3 — STATE A: EXHAUSTION */
+  {
+    type:'sec', id:'s3', icon:'🔋', ic:'i2',
+    eyebrow:'Maladaptive State A',
+    title:'Myeloid Cell Exhaustion — Energy-Deficient Immunity',
+    items:[
+      { t:'state-a', text:'Under sustained mitochondrial stress, myeloid cells enter a state of functional exhaustion marked by reduced phagocytic and clearance capacity, diminished responsiveness to cytokine signalling, and expression of exhaustion-associated molecular markers. Although these cells accumulate in inflamed tissues, their energy-deficient state prevents effective immune resolution — allowing inflammation to smoulder.' },
+      { t:'insight', text:'Twin Insight: Exhaustion reflects bioenergetic failure, not immune "over-activation." Restoring mitochondrial efficiency is necessary to restore immune competence.' }
+    ]
+  },
+
+  /* 4 — STATE B: SENESCENCE */
+  {
+    type:'sec', id:'s4', icon:'⏳', ic:'i3',
+    eyebrow:'Maladaptive State B',
+    title:'Myeloid Cell Senescence — Inflammation Without Repair',
+    items:[
+      { t:'state-b', text:'Mitochondrial dysfunction can also drive immune senescence, characterised by stable cell-cycle arrest, telomere attrition and DNA damage signalling, and development of a senescence-associated secretory phenotype known as SASP. Senescent myeloid cells lose regenerative capacity but continue secreting inflammatory mediators — sustaining tissue inflammation despite reduced immune adaptability.' },
+      { t:'insight', text:'Twin Insight: This represents a metabolic ageing phenotype of immune cells, driven by mitochondrial decline rather than chronological age.' }
+    ]
+  },
+
+  /* 5 — STATE C: TRAINED IMMUNITY */
+  {
+    type:'sec', id:'s5', icon:'🧠', ic:'i4',
+    eyebrow:'Maladaptive State C',
+    title:'Trained Immunity — Metabolic Memory of Inflammation',
+    items:[
+      { t:'state-c', text:'In some contexts, mitochondrial stress induces trained immunity — where metabolic rewiring and epigenetic reprogramming occur at the level of haematopoietic stem and progenitor cells. This leads to long-lasting inflammatory bias in myeloid lineage output and exaggerated responses of neutrophils, monocytes, macrophages, and dendritic cells upon re-stimulation. This "metabolic memory" promotes persistent, amplified inflammation even to minor stimuli.' },
+      { t:'insight', text:'Twin Insight: Trained immunity is not simply immune learning — it is pathological metabolic imprinting, driven by mitochondrial stress signals.' }
+    ]
+  },
+
+  /* 6 — UNIFYING FRAMEWORK */
+  {
+    type:'sec', id:'s6', icon:'🔗', ic:'i5',
+    eyebrow:'Section 6',
+    title:"Twin's Unifying Conceptual Framework",
+    items:[
+      { t:'sp', text:'Twin Precision Treatment emphasises that myeloid exhaustion, senescence, and trained immunity are not sequential stages. They are parallel maladaptive immune fates arising from the same upstream mitochondrial dysfunction.' },
+      { t:'insight', text:'Together, these three states sustain chronic inflammation, impair immune resolution, erode tolerance, and drive progression of autoimmune pathology.' }
+    ]
+  },
+
+  /* 7 — WHY TPT IS DIFFERENT */
+  {
+    type:'sec', id:'s7', icon:'⚡', ic:'i6',
+    eyebrow:'Section 7',
+    title:'Why Twin Precision Treatment is Fundamentally Different',
+    items:[
+      { t:'sp', text:'Traditional approaches focus on suppressing immune output, blocking cytokines, and targeting single inflammatory pathways. Twin targets the metabolic control system upstream — by restoring mitochondrial function.' },
+      { t:'compare',
+        bad:  { label:'Traditional approach', items:['Suppressing immune output','Blocking cytokines','Targeting single inflammatory pathways','Downstream symptom management'] },
+        good: { label:'Twin\'s upstream approach', items:['Restoring mitochondrial function','Reversing insulin resistance','Reducing inflammation load','Circadian and stress regulation','Digital Twin–guided adaptive interventions'] }
+      }
+    ]
+  },
+
+  /* 8 — FINAL */
+  {
+    type:'final', id:'s8', icon:'🌟', ic:'i7',
+    eyebrow:'Closing',
+    title:'Reshaping Immune Cell Fate',
+    items:[
+      { t:'final-big',     text:'Mitochondrial dysfunction is the central integrator of metabolic stress and immune signalling. By restoring mitochondrial health, Twin Precision Treatment reshapes immune cell fate — from chronic inflammation toward resilience, regulation, and repair.' },
+      { t:'final-tagline', text:'Twin does not simply suppress immune dysfunction. It corrects the metabolic root from which it arises.' }
+    ]
+  }
+
+];
+
+/* ══════════════════════════════════════════════════
+   BUILD DOM
+══════════════════════════════════════════════════ */
+const registry=[], secEls=[];
+const mainEl=document.getElementById('main');
+const tocEl =document.getElementById('toc');
+const chipEl=document.getElementById('chipBar');
+
+DOC.forEach((sec,si)=>{
+  const tr=document.createElement('div');
+  tr.className='toc-row';
+  tr.innerHTML=`<div class="toc-num">${si+1}</div><div class="toc-txt">${sec.title}</div>`;
+  tr.onclick=()=>{stop();jumpTo(si);};
+  tocEl.appendChild(tr);
+
+  const ch=document.createElement('div');
+  ch.className='chip';
+  const ws=sec.title.split(' ');
+  ch.textContent=ws.slice(0,4).join(' ')+(ws.length>4?'…':'');
+  ch.onclick=()=>{stop();jumpTo(si);};
+  chipEl.appendChild(ch);
+
+  let block;
+
+  if(sec.type==='hero'){
+    block=document.createElement('div');
+    block.className='hero'; block.id='sec-'+si;
+    block.innerHTML=`<div class="hero-eyebrow">${sec.eyebrow}</div>`;
+    sec.items.forEach(it=>{
+      const el=document.createElement(it.t==='sp'?'p':'div');
+      el.className=it.t; el.dataset.si=si; el.dataset.spk=it.text;
+      el.textContent=it.text;
+      block.appendChild(el);
+    });
+
+  } else if(sec.type==='sec'){
+    block=document.createElement('section');
+    block.className='sec'; block.id='sec-'+si;
+    let h=`<div class="sec-hd">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body">`;
+
+    let compareInserted=false;
+    sec.items.forEach(it=>{
+      if(it.t==='sp'){
+        h+=`<p class="sp" data-si="${si}">${it.text}</p>`;
+      } else if(it.t==='insight'){
+        h+=`<div class="insight" data-si="${si}"><div class="insight-lbl">Twin Insight</div>${it.text}</div>`;
+      } else if(it.t==='state-a'){
+        h+=`<div class="state-card st-a" data-si="${si}">
+          <div class="state-tag">⚡ State A</div>
+          <div class="state-head">Myeloid Cell Exhaustion</div>
+          <div class="state-sub">Energy-deficient immunity</div>
+          <div class="state-body">${it.text}</div>
+        </div>`;
+      } else if(it.t==='state-b'){
+        h+=`<div class="state-card st-b" data-si="${si}">
+          <div class="state-tag">⏳ State B</div>
+          <div class="state-head">Myeloid Cell Senescence</div>
+          <div class="state-sub">Inflammation without repair</div>
+          <div class="state-body">${it.text}</div>
+        </div>`;
+      } else if(it.t==='state-c'){
+        h+=`<div class="state-card st-c" data-si="${si}">
+          <div class="state-tag">🧠 State C</div>
+          <div class="state-head">Trained Immunity</div>
+          <div class="state-sub">Metabolic memory of inflammation</div>
+          <div class="state-body">${it.text}</div>
+        </div>`;
+      } else if(it.t==='compare'&&!compareInserted){
+        compareInserted=true;
+        h+=`<div class="compare">
+          <div class="cmp-col cmp-bad" data-si="${si}">
+            <div class="cmp-lbl">${it.bad.label}</div>
+            <div class="cmp-items">${it.bad.items.map(x=>`• ${x}`).join('<br>')}</div>
+          </div>
+          <div class="cmp-col cmp-good" data-si="${si}">
+            <div class="cmp-lbl">${it.good.label}</div>
+            <div class="cmp-items">${it.good.items.map(x=>`• ${x}`).join('<br>')}</div>
+          </div>
+        </div>`;
+      }
+    });
+    h+=`</div>`;
+    block.innerHTML=h;
+
+  } else if(sec.type==='final'){
+    block=document.createElement('section');
+    block.className='sec'; block.id='sec-'+si;
+    let h=`<div class="sec-hd">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body"><div class="final-wrap">`;
+    sec.items.forEach(it=>{
+      h+=`<div class="${it.t}" data-si="${si}">${it.text}</div>`;
+      if(it.t==='final-big') h+=`<div class="divider"></div>`;
+    });
+    h+=`</div></div>`;
+    block.innerHTML=h;
+  }
+
+  if(si<DOC.length-1){ const d=document.createElement('div'); d.className='divider'; block.appendChild(d); }
+  mainEl.appendChild(block);
+  secEls.push(block);
+});
+
+document.querySelectorAll('[data-si]').forEach(el=>{ registry.push({el, si:+el.dataset.si}); });
+
+/* ══════════════════════════════════════════════════
+   VOICE SYSTEM
+══════════════════════════════════════════════════ */
+const voiceSel=document.getElementById('voiceSel');
+let voiceList=[];
+
+function scoreVoice(v){
+  let s=0;
+  if(v.lang==='en-US')             s+=40;
+  else if(v.lang==='en-GB')        s+=30;
+  else if(v.lang==='en-AU')        s+=20;
+  else if(v.lang.startsWith('en')) s+=10;
+  else return -1;
+  const n=v.name.toLowerCase();
+  if(n.includes('neural'))   s+=30;
+  if(n.includes('enhanced')) s+=25;
+  if(n.includes('premium'))  s+=25;
+  if(n.includes('natural'))  s+=20;
+  if(n.includes('samantha')) s+=22;
+  if(n.includes('ava'))      s+=20;
+  if(n.includes('allison'))  s+=18;
+  if(n.includes('victoria')) s+=16;
+  if(n.includes('karen'))    s+=16;
+  if(n.includes('daniel'))   s+=16;
+  if(n.includes('moira'))    s+=16;
+  if(n.includes('zira'))     s+=14;
+  if(n.includes('susan'))    s+=14;
+  if(n.includes('alex'))     s+=14;
+  if(n.includes('compact'))  s-=20;
+  if(n.includes('espeak'))   s-=30;
+  if(n.includes('mbrola'))   s-=30;
+  return s;
+}
+
+function populateVoices(){
+  const raw=window.speechSynthesis.getVoices();
+  if(!raw.length) return;
+  const scored=raw.map(v=>({v,s:scoreVoice(v)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);
+  if(!scored.length) return;
+  voiceList=scored.map(x=>x.v);
+  voiceSel.innerHTML='';
+  voiceList.forEach((v,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=`${v.name} (${v.lang})`; voiceSel.appendChild(o); });
+  voiceSel.value='0';
+}
+populateVoices();
+if(window.speechSynthesis.onvoiceschanged!==undefined) window.speechSynthesis.onvoiceschanged=populateVoices;
+function getVoice(){ const i=+voiceSel.value; return voiceList[i]||null; }
+
+/* ══════════════════════════════════════════════════
+   AUDIO ENGINE
+══════════════════════════════════════════════════ */
+let cur=0, playing=false, idx=0, active=null;
+const synth=window.speechSynthesis;
+const total=registry.length;
+
+function hl(el,on){ if(el) el.classList.toggle('hl',on); }
+function clearHl(){ if(active){hl(active,false);active=null;} }
+
+function activate(el,si){
+  clearHl(); hl(el,true); active=el;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  if(si!==cur) cur=si;
+  ui();
+}
+
+function ui(){
+  document.querySelectorAll('.toc-row').forEach((r,i)=>r.classList.toggle('active',i===cur));
+  document.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('active',i===cur));
+  secEls.forEach((s,i)=>s.classList.toggle('dim',i!==cur));
+  const pct=total>0?Math.round((idx/total)*100):0;
+  document.getElementById('fillBar').style.width=pct+'%';
+  document.getElementById('pctLbl').textContent=pct+'%';
+  document.getElementById('secLbl').textContent=DOC[cur].title;
+  document.getElementById('playBtn').innerHTML=playing?'&#9646;&#9646;':'&#9654;';
+  const pill=document.getElementById('livePill');
+  if(playing){ pill.classList.add('on'); document.getElementById('liveText').textContent=DOC[cur].title; }
+  else pill.classList.remove('on');
+}
+
+function jumpTo(si){
+  cur=si; secEls[si].scrollIntoView({behavior:'smooth',block:'start'});
+  const i=registry.findIndex(r=>r.si===si); if(i>=0) idx=i;
+  ui();
+}
+
+function getCleanText(el){ return (el.dataset.spk||el.innerText||'').replace(/•/g,'').trim(); }
+
+function speakNext(){
+  if(!playing) return;
+  if(idx>=registry.length){ playing=false; clearHl(); ui(); return; }
+  const {el,si}=registry[idx++];
+  activate(el,si);
+  const text=getCleanText(el);
+  if(!text){ speakNext(); return; }
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=+document.getElementById('spdSel').value;
+  u.pitch=1.0; u.volume=1.0;
+  const v=getVoice(); if(v) u.voice=v;
+  u.onend=()=>{ if(playing) speakNext(); };
+  u.onerror=()=>{ if(playing) speakNext(); };
+  synth.speak(u);
+}
+
+function start(){ synth.cancel(); playing=true; ui(); speakNext(); }
+function stop() { playing=false; synth.cancel(); clearHl(); ui(); }
+
+document.getElementById('playBtn').onclick=()=>playing?stop():start();
+document.getElementById('prevBtn').onclick=()=>{ stop(); jumpTo(Math.max(0,cur-1)); };
+document.getElementById('nextBtn').onclick=()=>{ stop(); jumpTo(Math.min(DOC.length-1,cur+1)); };
+document.getElementById('spdSel').onchange=()=>{ if(playing){ synth.cancel(); setTimeout(()=>{ if(playing) speakNext(); },80); } };
+document.getElementById('voiceSel').onchange=()=>{ if(playing){ synth.cancel(); setTimeout(()=>{ if(playing) speakNext(); },80); } };
+
+/* Init */
+secEls.forEach((s,i)=>s.classList.toggle('dim',i!==0));
+document.querySelectorAll('.toc-row')[0].classList.add('active');
+document.querySelectorAll('.chip')[0].classList.add('active');
+ui();
+
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting&&!playing){ cur=+e.target.id.replace('sec-',''); ui(); } });
+},{threshold:0.3});
+secEls.forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

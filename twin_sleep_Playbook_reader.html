@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twin Sleep Score Playbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #edf0f9;
+    --sidebar-bg: #e2e7f5;
+    --surface:    #ffffff;
+    --surface2:   #f2f4fc;
+    --surface3:   #dce2f2;
+    --border:     rgba(50,70,160,0.09);
+    --border-hi:  rgba(50,70,160,0.18);
+
+    --indigo:  #3b4fc8;
+    --blue:    #2058a0;
+    --teal:    #0a897e;
+    --rose:    #b8324a;
+    --amber:   #a84f08;
+    --violet:  #5535a0;
+    --emerald: #087250;
+    --sky:     #0670a8;
+
+    --txt1: #171b2d;
+    --txt2: #384060;
+    --txt3: #727ca8;
+
+    --hl-bg:   rgba(59,79,200,0.10);
+    --hl-bdr:  #3b4fc8;
+    --hl-txt:  #080f38;
+    --hl-glow: 0 0 0 3px rgba(59,79,200,0.13), 0 6px 22px rgba(59,79,200,0.09);
+
+    --title-hl-bg:   rgba(32,88,160,0.10);
+    --title-hl-bdr:  #2058a0;
+    --title-hl-txt:  #0a1830;
+    --title-hl-glow: 0 0 0 3px rgba(32,88,160,0.14), 0 6px 22px rgba(32,88,160,0.09);
+
+    --sub-hl-bg:   rgba(59,79,200,0.08);
+    --sub-hl-bdr:  #3b4fc8;
+    --sub-hl-txt:  #080f38;
+    --sub-hl-glow: 0 0 0 3px rgba(59,79,200,0.12), 0 4px 18px rgba(59,79,200,0.08);
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--txt1);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* ══════════ HEADER ══════════ */
+  .hdr {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 64px;
+    display: flex; align-items: center; gap: 14px;
+    position: sticky; top: 0; z-index: 300;
+    box-shadow: 0 2px 14px rgba(20,40,130,0.07);
+  }
+  .logo {
+    width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--indigo), var(--sky));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; color: #fff; font-weight: 700;
+  }
+  .hdr-info { flex: 1; min-width: 0; }
+  .hdr-title { font-size: 14px; font-weight: 600; color: var(--txt1); line-height: 1.2; }
+  .hdr-sub   { font-size: 11px; color: var(--txt3); font-style: italic; margin-top: 1px; }
+
+  .live-pill {
+    display: none; align-items: center; gap: 8px;
+    background: rgba(59,79,200,0.08);
+    border: 1px solid rgba(59,79,200,0.28);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 11px; font-weight: 600; color: var(--indigo);
+    max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    flex-shrink: 0;
+  }
+  .live-pill.on { display: flex; }
+  .bars { display:flex; gap:2px; align-items:flex-end; height:12px; flex-shrink:0; }
+  .bars span {
+    display:block; width:3px; background:var(--indigo);
+    border-radius:2px; animation:bar 1.2s ease-in-out infinite;
+  }
+  .bars span:nth-child(2){animation-delay:.15s;}
+  .bars span:nth-child(3){animation-delay:.3s;}
+  @keyframes bar{0%,100%{height:4px}50%{height:12px}}
+
+  /* ══════════ PLAYER ══════════ */
+  .player {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 28px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    box-shadow: 0 1px 6px rgba(20,40,130,0.05);
+  }
+  .ctrls { display:flex; align-items:center; gap:8px; }
+  .btn {
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; transition: all .17s; font-family: inherit;
+  }
+  .btn-play {
+    width: 46px; height: 46px; font-size: 17px; color: #fff;
+    background: linear-gradient(135deg, var(--indigo), var(--sky));
+    box-shadow: 0 4px 16px rgba(59,79,200,0.30);
+  }
+  .btn-play:hover { transform: scale(1.07); box-shadow: 0 6px 22px rgba(59,79,200,0.44); }
+  .btn-play:active { transform: scale(.94); }
+  .btn-nav {
+    width: 34px; height: 34px; font-size: 12px;
+    background: var(--surface2); color: var(--txt2);
+    border: 1px solid var(--border-hi);
+  }
+  .btn-nav:hover { background: var(--surface3); color: var(--txt1); }
+
+  .prog { flex: 1; min-width: 150px; }
+  .prog-top {
+    display:flex; justify-content:space-between;
+    font-size:11px; color:var(--txt3); margin-bottom:7px;
+  }
+  .prog-top span:first-child { color:var(--txt2); font-weight:500; }
+  .track { height:5px; background:var(--surface3); border-radius:3px; overflow:hidden; }
+  .fill  { height:100%; width:0%; border-radius:3px;
+            background: linear-gradient(90deg, var(--indigo), var(--sky));
+            transition: width .4s linear; }
+
+  .voice-wr { display:flex; align-items:center; gap:7px; }
+  .voice-wr label { font-size:11px; color:var(--txt3); white-space:nowrap; }
+  .voice-wr select {
+    background: var(--surface2); border: 1px solid var(--border-hi);
+    border-radius: 7px; padding: 5px 9px;
+    font-size: 12px; color: var(--txt1);
+    font-family: 'Inter', sans-serif; cursor: pointer; outline: none;
+    max-width: 170px;
+  }
+  .spd { display:flex; align-items:center; gap:7px; }
+  .spd label { font-size:11px; color:var(--txt3); }
+  .spd select {
+    background: var(--surface2); border: 1px solid var(--border-hi);
+    border-radius: 7px; padding: 5px 9px;
+    font-size: 12px; color: var(--txt1);
+    font-family: 'Inter', sans-serif; cursor: pointer; outline: none;
+  }
+
+  /* ══════════ CHIPS ══════════ */
+  .chips {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 28px; display:flex; gap:5px; overflow-x:auto;
+  }
+  .chips::-webkit-scrollbar{display:none;}
+  .chip {
+    padding: 5px 13px; border-radius:20px;
+    font-size: 11px; font-weight:500; cursor:pointer;
+    border: 1px solid var(--border-hi); flex-shrink:0;
+    white-space:nowrap; transition:all .2s;
+    color:var(--txt3); background:var(--surface);
+  }
+  .chip:hover { color:var(--txt1); border-color:var(--indigo); }
+  .chip.active { background:var(--indigo); border-color:var(--indigo); color:#fff; font-weight:600; }
+
+  /* ══════════ LAYOUT ══════════ */
+  .layout { display:flex; flex:1; }
+
+  .sidebar {
+    width: 252px; flex-shrink:0;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    padding: 20px 12px; overflow-y:auto;
+    position: sticky; top:64px; height:calc(100vh - 64px);
+  }
+  .sidebar::-webkit-scrollbar{width:3px;}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+  .toc-hd {
+    font-size:9px; font-weight:700; letter-spacing:1.6px;
+    text-transform:uppercase; color:var(--txt3);
+    padding:0 8px; margin-bottom:10px;
+  }
+  .toc-row {
+    display:flex; align-items:center; gap:10px;
+    padding:8px; border-radius:9px; cursor:pointer;
+    transition:all .17s; margin-bottom:2px;
+    border:1px solid transparent;
+  }
+  .toc-row:hover{background:var(--surface3);}
+  .toc-row.active{
+    background:var(--surface);
+    border-color:var(--border-hi);
+    box-shadow:0 1px 6px rgba(20,40,130,0.08);
+  }
+  .toc-num {
+    width:22px; height:22px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:9px; font-weight:700;
+    background:var(--surface3); color:var(--txt3); transition:all .2s;
+  }
+  .toc-row.active .toc-num{background:var(--indigo);color:#fff;}
+  .toc-txt{font-size:12px;color:var(--txt3);line-height:1.35;}
+  .toc-row.active .toc-txt{color:var(--txt1);font-weight:500;}
+
+  /* ══════════ CONTENT ══════════ */
+  .content {
+    flex:1; padding:40px 56px; overflow-y:auto; max-width:860px;
+  }
+  .content::-webkit-scrollbar{width:4px;}
+  .content::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+
+  /* ══════════ HERO ══════════ */
+  .hero {
+    background: linear-gradient(135deg,rgba(59,79,200,.07),rgba(6,112,168,.09));
+    border: 1px solid rgba(59,79,200,.18);
+    border-radius: 20px; padding: 38px 42px; margin-bottom: 44px;
+    scroll-margin-top: 20px; transition: opacity .35s;
+  }
+  .hero.dim{opacity:.26;}
+  .hero-eyebrow {
+    font-size:10px; font-weight:700; letter-spacing:1.5px;
+    text-transform:uppercase; color:var(--indigo); margin-bottom:14px;
+  }
+
+  /* Title */
+  .doc-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px; font-weight: 700; color: var(--txt1);
+    line-height: 1.22; margin-bottom: 8px;
+    padding: 8px 12px; margin-left: -12px; border-radius: 10px;
+    border-left: 4px solid transparent;
+    transition: background .22s, color .22s, box-shadow .22s, border-color .15s;
+  }
+  .doc-title.hl {
+    background: var(--title-hl-bg); color: var(--title-hl-txt);
+    box-shadow: var(--title-hl-glow); border-left-color: var(--title-hl-bdr);
+    padding-left: 16px; margin-left: -16px;
+  }
+
+  /* Subtitle */
+  .doc-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-style: italic; color: var(--indigo);
+    margin-bottom: 24px;
+    padding: 6px 12px; margin-left: -12px; border-radius: 8px;
+    border-left: 4px solid transparent;
+    transition: background .22s, color .22s, box-shadow .22s, border-color .15s;
+  }
+  .doc-subtitle.hl {
+    background: var(--sub-hl-bg); color: var(--sub-hl-txt);
+    box-shadow: var(--sub-hl-glow); border-left-color: var(--sub-hl-bdr);
+    padding-left: 16px; margin-left: -16px;
+  }
+
+  /* ══════════ SECTION ══════════ */
+  .sec {
+    margin-bottom: 50px; scroll-margin-top:20px; transition:opacity .35s;
+  }
+  .sec.dim{opacity:.26;}
+  .sec-hd{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px;}
+  .sec-icon{
+    width:46px;height:46px;border-radius:13px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:20px;
+  }
+  .i0{background:rgba(59,79,200,.12);  box-shadow:inset 0 0 0 1.5px rgba(59,79,200,.28);}
+  .i1{background:rgba(6,112,168,.12);  box-shadow:inset 0 0 0 1.5px rgba(6,112,168,.28);}
+  .i2{background:rgba(10,137,126,.12); box-shadow:inset 0 0 0 1.5px rgba(10,137,126,.28);}
+  .i3{background:rgba(168,79,8,.12);   box-shadow:inset 0 0 0 1.5px rgba(168,79,8,.28);}
+  .i4{background:rgba(184,50,74,.12);  box-shadow:inset 0 0 0 1.5px rgba(184,50,74,.28);}
+  .i5{background:rgba(85,53,160,.12);  box-shadow:inset 0 0 0 1.5px rgba(85,53,160,.28);}
+  .i6{background:rgba(8,114,80,.12);   box-shadow:inset 0 0 0 1.5px rgba(8,114,80,.28);}
+  .i7{background:rgba(59,79,200,.12);  box-shadow:inset 0 0 0 1.5px rgba(59,79,200,.28);}
+  .i8{background:rgba(6,112,168,.12);  box-shadow:inset 0 0 0 1.5px rgba(6,112,168,.28);}
+  .i9{background:rgba(10,137,126,.12); box-shadow:inset 0 0 0 1.5px rgba(10,137,126,.28);}
+  .i10{background:rgba(168,79,8,.12);  box-shadow:inset 0 0 0 1.5px rgba(168,79,8,.28);}
+  .i11{background:rgba(184,50,74,.12); box-shadow:inset 0 0 0 1.5px rgba(184,50,74,.28);}
+  .i12{background:rgba(85,53,160,.12); box-shadow:inset 0 0 0 1.5px rgba(85,53,160,.28);}
+  .i13{background:rgba(8,114,80,.12);  box-shadow:inset 0 0 0 1.5px rgba(8,114,80,.28);}
+  .i14{background:rgba(59,79,200,.12); box-shadow:inset 0 0 0 1.5px rgba(59,79,200,.28);}
+  .i15{background:rgba(6,112,168,.12); box-shadow:inset 0 0 0 1.5px rgba(6,112,168,.28);}
+
+  .sec-ey{font-size:10px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--txt3);margin-bottom:4px;}
+  .sec-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--txt1);line-height:1.25;}
+  .sec-body{padding-left:60px;}
+
+  /* ══════════ SPEAKABLE ELEMENTS ══════════ */
+
+  .sp {
+    font-size:15px; line-height:1.88; color:var(--txt2);
+    margin-bottom:14px; border-radius:8px;
+    padding:6px 12px; margin-left:-12px;
+    border-left:4px solid transparent;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .sp.hl {
+    background:var(--hl-bg); color:var(--hl-txt);
+    box-shadow:var(--hl-glow); border-left-color:var(--hl-bdr);
+    padding-left:15px; margin-left:-15px;
+  }
+
+  /* Insight callout */
+  .insight {
+    background:var(--surface2);
+    border-radius:10px; border-left:4px solid var(--indigo);
+    padding:13px 16px; margin:12px 0 16px;
+    font-size:14px; color:var(--txt2); line-height:1.78;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .insight.hl {
+    background:var(--hl-bg); color:var(--hl-txt);
+    box-shadow:var(--hl-glow); border-left-color:var(--hl-bdr);
+  }
+
+  /* Coach script / quote block */
+  .script-block {
+    background: rgba(59,79,200,0.05);
+    border: 1px solid rgba(59,79,200,0.18);
+    border-left: 4px solid var(--indigo);
+    border-radius: 10px; padding:16px 18px; margin:12px 0 16px;
+    font-size:14px; font-style:italic; color:var(--txt2); line-height:1.82;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .script-block.hl {
+    background:var(--hl-bg); color:var(--hl-txt);
+    box-shadow:var(--hl-glow); border-left-color:var(--hl-bdr);
+  }
+
+  /* Warning / never say box */
+  .warn-block {
+    background: rgba(184,50,74,0.05);
+    border: 1px solid rgba(184,50,74,0.18);
+    border-left: 4px solid var(--rose);
+    border-radius: 10px; padding:14px 18px; margin:12px 0 16px;
+    font-size:14px; color:var(--txt2); line-height:1.78;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .warn-block.hl {
+    background:rgba(184,50,74,0.10); color:var(--hl-txt);
+    box-shadow:0 0 0 3px rgba(184,50,74,0.12),0 6px 22px rgba(184,50,74,0.08);
+    border-left-color:var(--rose);
+  }
+
+  /* Compare two columns */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px;}
+  .cmp-col{
+    border-radius:12px;padding:16px;border:1px solid var(--border);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .cmp-col.hl{background:var(--hl-bg);border-color:rgba(59,79,200,.40);box-shadow:var(--hl-glow);}
+  .cmp-a{background:rgba(59,79,200,.05);}
+  .cmp-b{background:rgba(6,112,168,.05);}
+  .cmp-lbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;}
+  .cmp-a .cmp-lbl{color:var(--indigo);}
+  .cmp-b .cmp-lbl{color:var(--sky);}
+  .cmp-items{font-size:13px;color:var(--txt2);line-height:2.1;}
+  .cmp-col.hl .cmp-items{color:var(--hl-txt);}
+
+  /* Scenario card */
+  .scenario-card {
+    background:var(--surface); border-radius:14px;
+    border:1px solid var(--border); padding:18px 20px; margin-bottom:16px;
+    box-shadow:0 1px 6px rgba(20,40,130,0.06);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .scenario-card.hl {
+    background:var(--hl-bg);
+    border-color:rgba(59,79,200,.40);
+    box-shadow:var(--hl-glow);
+  }
+  .scenario-q {
+    font-family:'Playfair Display',serif;
+    font-size:14px;font-weight:700;font-style:italic;color:var(--indigo);margin-bottom:10px;
+  }
+  .scenario-txt{font-size:14px;color:var(--txt2);line-height:1.78;transition:color .22s;}
+  .scenario-card.hl .scenario-txt{color:var(--hl-txt);}
+
+  /* Device comparison table */
+  .device-table { width:100%; border-collapse:collapse; margin:14px 0 18px; border-radius:12px; overflow:hidden; box-shadow:0 1px 6px rgba(20,40,130,0.06); }
+  .device-table th { background:var(--surface3); font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--txt3); padding:10px 14px; text-align:left; }
+  .device-table td { background:var(--surface); font-size:13px; color:var(--txt2); padding:10px 14px; border-top:1px solid var(--border); }
+  .device-table tr:hover td { background:var(--surface2); }
+
+  /* Decision tree */
+  .decision-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 18px;}
+  .decision-row{
+    background:var(--surface);border-radius:10px;
+    border:1px solid var(--border);padding:12px 14px;
+    display:flex;gap:10px;align-items:flex-start;
+    box-shadow:0 1px 4px rgba(20,40,130,0.05);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .decision-row.hl{background:var(--hl-bg);border-color:rgba(59,79,200,.40);box-shadow:var(--hl-glow);}
+  .dec-dot{
+    width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;
+  }
+  .dec-txt{font-size:13px;color:var(--txt2);line-height:1.6;transition:color .22s;}
+  .decision-row.hl .dec-txt{color:var(--hl-txt);}
+
+  /* Final */
+  .final-wrap{
+    background:linear-gradient(135deg,rgba(59,79,200,.06),rgba(6,112,168,.07));
+    border:1px solid rgba(59,79,200,.18);border-radius:18px;
+    padding:30px 34px;box-shadow:0 2px 14px rgba(20,40,130,0.07);
+  }
+  .final-big{
+    font-family:'Playfair Display',serif;
+    font-size:19px;color:var(--txt1);line-height:1.72;margin-bottom:18px;
+    padding:8px 12px;border-radius:8px;border-left:4px solid transparent;
+    transition:background .22s,box-shadow .22s,color .22s,border-color .15s;
+  }
+  .final-big.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+  .final-tagline{
+    font-size:14px;font-weight:600;color:var(--indigo);letter-spacing:.2px;
+    padding:8px 12px;border-radius:8px;border-left:4px solid transparent;
+    transition:background .22s,box-shadow .22s,color .22s,border-color .15s;
+  }
+  .final-tagline.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+
+  .divider{height:1px;background:var(--border);margin:38px 0;}
+
+  @media(max-width:860px){
+    .sidebar{display:none;}
+    .content{padding:24px 20px;}
+    .sec-body{padding-left:0;}
+    .compare{grid-template-columns:1fr;}
+    .decision-grid{grid-template-columns:1fr;}
+    .hero{padding:24px 22px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="logo">tw</div>
+  <div class="hdr-info">
+    <div class="hdr-title">Twin Sleep Score Playbook</div>
+    <div class="hdr-sub">Care Team Reference Guide — Sleep Score Explanation & Coaching</div>
+  </div>
+  <div class="live-pill" id="livePill">
+    <div class="bars"><span></span><span></span><span></span></div>
+    <span id="liveText">Reading…</span>
+  </div>
+</header>
+
+<div class="player">
+  <div class="ctrls">
+    <button class="btn btn-nav" id="prevBtn" title="Previous section">&#9664;&#9664;</button>
+    <button class="btn btn-play" id="playBtn" title="Play / Pause">&#9654;</button>
+    <button class="btn btn-nav" id="nextBtn" title="Next section">&#9654;&#9654;</button>
+  </div>
+  <div class="prog">
+    <div class="prog-top">
+      <span id="secLbl">—</span>
+      <span id="pctLbl">0%</span>
+    </div>
+    <div class="track"><div class="fill" id="fillBar"></div></div>
+  </div>
+  <div class="voice-wr">
+    <label>Voice</label>
+    <select id="voiceSel"><option value="">Loading…</option></select>
+  </div>
+  <div class="spd">
+    <label>Speed</label>
+    <select id="spdSel">
+      <option value="0.78">0.78×</option>
+      <option value="0.88">0.88×</option>
+      <option value="0.95" selected>0.95×</option>
+      <option value="1.05">1.05×</option>
+      <option value="1.15">1.15×</option>
+    </select>
+  </div>
+</div>
+
+<div class="chips" id="chipBar"></div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="toc-hd">Contents</div>
+    <div id="toc"></div>
+  </aside>
+  <main class="content" id="main"></main>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════
+   FULL PDF CONTENT — all 8 pages, every section
+════════════════════════════════════════════════════ */
+const DOC = [
+
+  /* 0 — HERO */
+  {
+    type:'hero', id:'s0',
+    eyebrow:'Twin Health — Care Team Playbook',
+    title:'Twin Sleep Score Playbook',
+    subtitle:'Purpose: Enable care teams to confidently explain sleep scores, handle discrepancies, respond to fatigue concerns, and preserve member trust — without over-medicalising or dismissing lived experience.',
+    items:[
+      { t:'doc-title',    text:'Twin Sleep Score Playbook' },
+      { t:'doc-subtitle', text:'Purpose: Enable care teams to confidently explain sleep scores, handle discrepancies, respond to fatigue concerns, and preserve member trust — without over-medicalising or dismissing lived experience.' }
+    ]
+  },
+
+  /* 1 — WHAT IT IS */
+  {
+    type:'sec', id:'s1', icon:'😴', ic:'i0',
+    eyebrow:'Section 1',
+    title:'What the Twin Sleep Score Is — Non-Negotiable Foundation',
+    items:[
+      { t:'insight', text:'Twin Sleep Score measures daily recovery sufficiency — not stress, not sleep perfection, and not long-term health. It answers one question only: Did last night\'s sleep meet this member\'s recovery needs for today?' },
+      { t:'sp', text:'The Twin Sleep Score is short-memory, actionable, and behaviour-guiding. It is specifically designed for daily decisions — not long-term trend analysis.' }
+    ]
+  },
+
+  /* 2 — WHAT IT IS NOT */
+  {
+    type:'sec', id:'s2', icon:'🚫', ic:'i1',
+    eyebrow:'Section 2',
+    title:'What the Twin Sleep Score Is NOT',
+    items:[
+      { t:'sp', text:'Care teams should never imply that the Twin Sleep Score reflects cumulative metabolic health, measures nervous system stress, predicts how energetic someone should feel, or replaces metabolic or inflammatory markers.' },
+      { t:'insight', text:'Those signals are tracked elsewhere in Twin. The sleep score has one job: daily recovery sufficiency. Nothing more.' }
+    ]
+  },
+
+  /* 3 — INPUTS */
+  {
+    type:'sec', id:'s3', icon:'⚙️', ic:'i2',
+    eyebrow:'Section 3',
+    title:'Inputs to Twin Sleep Score — Coach-Level Understanding',
+    items:[
+      { t:'sp', text:'Twin Sleep Score is calculated using four inputs. First, Precision Sleep Duration — the personalised nightly sleep requirement, adjusted only based on the previous night\'s sleep debt, and which resets once recovery is achieved.' },
+      { t:'sp', text:'Second, Hours Slept — measured from the wearable and compared against Precision Sleep Duration, not population averages.' },
+      { t:'sp', text:'Third, Sleep Debt — which is short-term only, covering yesterday to today, and is not cumulative across weeks.' },
+      { t:'sp', text:'Fourth, Deep and REM sleep when available — these are supportive signals only, carry lower weight than duration, and are never used punitively.' }
+    ]
+  },
+
+  /* 4 — GARMIN VS TWIN */
+  {
+    type:'sec', id:'s4', icon:'⌚', ic:'i3',
+    eyebrow:'Section 4',
+    title:'Garmin vs Twin: The Canonical Framing',
+    items:[
+      { t:'insight', text:'One-sentence truth for coaches to anchor on: Garmin measures sleep stress. Twin measures sleep recovery.' },
+      { t:'compare',
+        a: { label:'Garmin', items:['Stress-weighted','Cumulative','HRV-sensitive','Slow to change'] },
+        b: { label:'Twin',   items:['Recovery-adequacy–weighted','Short-memory','Actionable','Responsive day-to-day'] }
+      },
+      { t:'insight', text:'Never try to reconcile the numbers. Reconcile the story.' }
+    ]
+  },
+
+  /* 5 — COACHING SCENARIOS */
+  {
+    type:'sec', id:'s5', icon:'💬', ic:'i4',
+    eyebrow:'Section 5',
+    title:'Standard Coaching Scenarios and Scripts',
+    items:[
+      { t:'scenario-q', q:'Scenario A: "Why is my Garmin score low but Twin is high?"',
+        text:'"Garmin reflects cumulative stress and recovery load, so it often stays low during healing phases. Twin looks at whether you slept enough for your body\'s needs last night. That\'s why Twin can be high, and why feeling rested usually aligns with Twin more closely."' },
+      { t:'scenario-q', q:'Scenario B: "Which score should I trust?"',
+        text:'"They\'re both valid, but for different purposes. Use Garmin to observe trends. Use Twin to guide your health decisions. For this program, Twin is the score we follow."' },
+      { t:'scenario-q', q:'Scenario C: "My Twin score is high, but I still feel tired." (Most sensitive scenario)',
+        text:'"Thank you for saying that — fatigue is real. Your Twin sleep score tells us your sleep gave your body enough time to recover overnight. Feeling tired despite good sleep often means other parts of healing — like inflammation, hormones, or nutrients — are still catching up. The score isn\'t wrong; it\'s telling us sleep isn\'t the limiting factor right now." Then transition to a nutrition review, inflammation and glucose patterns, and stress, routine, and circadian timing.' },
+      { t:'scenario-q', q:'Scenario D: "Why can\'t Twin just use Garmin\'s score?"',
+        text:'"Garmin\'s score includes long-term stress accumulation, which makes it hard to act on daily. Twin\'s score is designed to guide daily decisions — sleep timing, activity pacing, nutrition. Syncing the scores would reduce clarity, not improve it."' }
+    ]
+  },
+
+  /* 6 — SLEEP REGULARITY */
+  {
+    type:'sec', id:'s6', icon:'🗓️', ic:'i5',
+    eyebrow:'Section 6',
+    title:'How to Talk About Sleep Regularity Without Undermining Twin',
+    items:[
+      { t:'script', text:'"Sleep regularity absolutely matters. Garmin reflects that well over time. Twin focuses on whether last night met recovery needs. As routines stabilise and metabolism heals, it\'s common for Garmin to improve more slowly and lag behind Twin."' }
+    ]
+  },
+
+  /* 7 — NEVER SAY */
+  {
+    type:'sec', id:'s7', icon:'⚠️', ic:'i6',
+    eyebrow:'Section 7',
+    title:'What Coaches Should NEVER Say',
+    items:[
+      { t:'warn', text:'Coaches must never say: "Garmin is wrong." Never say: "Ignore your watch." Never say: "If Twin is high, you shouldn\'t feel tired." Never say: "It\'s just stress." And never say: "The score will fix itself." These statements either dismiss lived experience or undermine member trust.' }
+    ]
+  },
+
+  /* 8 — ESCALATE */
+  {
+    type:'sec', id:'s8', icon:'🚨', ic:'i7',
+    eyebrow:'Section 8',
+    title:'When to Escalate — Clinical or Deeper Review',
+    items:[
+      { t:'sp', text:'Escalate not because of score discrepancy, but when fatigue persists for more than two to three weeks despite adequate sleep, stable nutrition, and reasonable activity — or when fatigue is worsening.' },
+      { t:'sp', text:'Also escalate when fatigue is accompanied by dizziness, palpitations, severe daytime sleepiness, or mood and cognitive changes.' },
+      { t:'insight', text:'Sleep score alone is never an escalation trigger. The score informs — it does not decide.' }
+    ]
+  },
+
+  /* 9 — DECISION TREE */
+  {
+    type:'sec', id:'s9', icon:'🌿', ic:'i8',
+    eyebrow:'Section 9',
+    title:'Internal Decision Tree — Quick Reference',
+    items:[
+      { t:'sp', text:'Use this quick reference for every member interaction involving sleep scores.' },
+      { t:'decisions', items:[
+        { color:'#087250', text:'Twin sleep high + feels fine → Reassure' },
+        { color:'#a84f08', text:'Twin sleep high + feels tired → Explore non-sleep factors' },
+        { color:'#3b4fc8', text:'Twin sleep low → Actionable sleep coaching' },
+        { color:'#727ca8', text:'Garmin low only → Contextualise, no action required' },
+        { color:'#b8324a', text:'Both low → Focus on recovery and routine' }
+      ]}
+    ]
+  },
+
+  /* 10 — ANCHOR SUMMARY */
+  {
+    type:'sec', id:'s10', icon:'⚓', ic:'i9',
+    eyebrow:'Section 10',
+    title:'Anchor Summary for All Care Teams',
+    items:[
+      { t:'sp', text:'Twin Sleep Score equals daily recovery sufficiency. Garmin Sleep Score equals cumulative physiological stress. Metabolic healing is tracked outside the sleep score.' },
+      { t:'insight', text:'Fatigue does not equal sleep score failure. Never reconcile numbers — align meaning.' }
+    ]
+  },
+
+  /* 11 — ADDENDUM: WEARABLE COMPAT */
+  {
+    type:'sec', id:'s11', icon:'📡', ic:'i10',
+    eyebrow:'Addendum — Section 11',
+    title:'Wearable Compatibility Overview',
+    items:[
+      { t:'sp', text:'Twin Health currently integrates with three wearables: Garmin, Apple Watch, and Fitbit. All three devices provide sleep duration and timing data reliably.' },
+      { t:'sp', text:'However, the depth and type of sleep-stage and physiology data differs by platform — which affects how Twin interprets sleep, not whether Twin works correctly.' },
+      { t:'insight', text:'Key principle for all wearables: Twin uses the best available data from each device, but applies the same recovery-based logic across platforms.' }
+    ]
+  },
+
+  /* 12 — APPLE WATCH */
+  {
+    type:'sec', id:'s12', icon:'🍎', ic:'i11',
+    eyebrow:'Addendum — Section 12',
+    title:'Apple Watch-Specific Guidance',
+    items:[
+      { t:'sp', text:'Apple Watch provides Twin with total sleep duration, sleep timing — bedtime and wake time — and sleep sessions. Apple Watch does not provide deep sleep percentage, REM sleep percentage, or consistent HRV during sleep, due to Apple API restrictions. This is an Apple data-sharing limitation, not a Twin limitation.' },
+      { t:'sp', text:'For Apple Watch users, Twin Sleep Score is driven primarily by Precision Sleep Duration, total hours slept, and sleep debt from the previous night only. Deep and REM sleep are not penalised when unavailable. Twin never downgrades a score due to missing data.' },
+      { t:'script', text:'"Apple Watch doesn\'t share detailed deep and REM sleep data with third-party apps like Twin. So Twin focuses on what Apple does share reliably — your sleep duration and recovery needs. This still allows Twin to accurately assess whether your sleep supported recovery."' },
+      { t:'warn', text:'Coaches should never say to Apple Watch users: "Apple Watch is less accurate," "Your score is incomplete," or "You need Garmin for better results."' }
+    ]
+  },
+
+  /* 13 — FITBIT */
+  {
+    type:'sec', id:'s13', icon:'📟', ic:'i12',
+    eyebrow:'Addendum — Section 13',
+    title:'Fitbit-Specific Guidance',
+    items:[
+      { t:'sp', text:'Fitbit provides Twin with total sleep duration, sleep timing, deep and REM sleep estimates, restlessness signals, and some heart-rate-based metrics. Fitbit tends to sit between Apple Watch and Garmin in data richness.' },
+      { t:'sp', text:'Fitbit users may see slightly more sleep-stage influence than Apple Watch users, and less stress sensitivity than Garmin users. This is expected and completely normal.' },
+      { t:'scenario-q', q:'"Why does my Fitbit sleep score still look different from Twin?"',
+        text:'"Fitbit and Twin are still answering different questions. Fitbit looks more at sleep quality patterns, while Twin looks at whether your sleep met your recovery needs. That\'s why the numbers don\'t match exactly."' }
+    ]
+  },
+
+  /* 14 — UNIFIED FRAMEWORK */
+  {
+    type:'sec', id:'s14', icon:'🔗', ic:'i13',
+    eyebrow:'Addendum — Section 14',
+    title:'Unified Coaching Framework — All Devices',
+    items:[
+      { t:'sp', text:'Regardless of device, the following is always consistent: Twin Sleep Score logic is the same, Precision Sleep Duration is always applied, sleep debt is always short-term, and recovery adequacy is always the goal.' },
+      { t:'sp', text:'What differs by device is stress sensitivity, deep and REM data availability, and score volatility. Garmin has high stress sensitivity, provides deep and REM data, and changes more slowly. Fitbit has medium stress sensitivity, provides deep and REM data, and has moderate volatility. Apple Watch has low stress sensitivity, no deep or REM data due to API limits, and is more stable.' },
+      { t:'insight', text:'Differences in scores reflect device data models — not errors. Every device is working correctly.' }
+    ]
+  },
+
+  /* 15 — CROSS-PLATFORM SCRIPTS */
+  {
+    type:'sec', id:'s15', icon:'📋', ic:'i14',
+    eyebrow:'Addendum — Section 15',
+    title:'Cross-Platform Coaching Scripts',
+    items:[
+      { t:'script', text:'"Your watch shows sleep through its own lens. Twin looks at whether your sleep met your body\'s recovery needs. That\'s why Twin may look different — and why it\'s the score we use for your care plan."' },
+      { t:'script', text:'"Different devices measure different signals. Twin is designed to work accurately with all of them by focusing on recovery, not raw device scores."' }
+    ]
+  },
+
+  /* 16 — FINAL ANCHOR */
+  {
+    type:'final', id:'s16', icon:'⚓', ic:'i15',
+    eyebrow:'Final Anchor Summary',
+    title:'Updated Anchor Summary for Care Teams',
+    items:[
+      { t:'final-big',     text:'Twin works with Garmin, Apple Watch, and Fitbit. Missing data — such as Apple deep or REM sleep — is never penalised. Twin Sleep Score logic is device-agnostic. Garmin is the cumulative stress lens. Fitbit is the intermediate quality lens. Apple Watch is the duration-focused lens. And Twin is always the recovery adequacy lens.' },
+      { t:'final-tagline', text:'Fatigue does not equal sleep score failure. Never reconcile the numbers — align the meaning. That is the Twin approach to sleep coaching.' }
+    ]
+  }
+
+];
+
+/* ════════════════════════════════════════════════════
+   BUILD DOM
+════════════════════════════════════════════════════ */
+const registry=[], secEls=[];
+const mainEl=document.getElementById('main');
+const tocEl =document.getElementById('toc');
+const chipEl=document.getElementById('chipBar');
+
+DOC.forEach((sec,si)=>{
+  /* TOC */
+  const tr=document.createElement('div');
+  tr.className='toc-row';
+  tr.innerHTML=`<div class="toc-num">${si+1}</div><div class="toc-txt">${sec.title}</div>`;
+  tr.onclick=()=>{stop();jumpTo(si);};
+  tocEl.appendChild(tr);
+
+  /* Chip */
+  const ch=document.createElement('div');
+  ch.className='chip';
+  const ws=sec.title.split(' ');
+  ch.textContent=ws.slice(0,4).join(' ')+(ws.length>4?'…':'');
+  ch.onclick=()=>{stop();jumpTo(si);};
+  chipEl.appendChild(ch);
+
+  let block;
+
+  /* ── HERO ── */
+  if(sec.type==='hero'){
+    block=document.createElement('div');
+    block.className='hero'; block.id='sec-'+si;
+    block.innerHTML=`<div class="hero-eyebrow">${sec.eyebrow}</div>`;
+    sec.items.forEach(it=>{
+      const el=document.createElement('div');
+      el.className=it.t;
+      el.dataset.si=si;
+      el.dataset.spk=it.text;
+      el.textContent=it.text;
+      block.appendChild(el);
+    });
+
+  /* ── SECTION ── */
+  } else if(sec.type==='sec'){
+    block=document.createElement('section');
+    block.className='sec'; block.id='sec-'+si;
+    let h=`<div class="sec-hd">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body">`;
+
+    let compareInserted=false, decisionInserted=false;
+    sec.items.forEach(it=>{
+      if(it.t==='sp'){
+        h+=`<p class="sp" data-si="${si}">${it.text}</p>`;
+      } else if(it.t==='insight'){
+        h+=`<div class="insight" data-si="${si}">${it.text}</div>`;
+      } else if(it.t==='script'){
+        h+=`<div class="script-block" data-si="${si}">${it.text}</div>`;
+      } else if(it.t==='warn'){
+        h+=`<div class="warn-block" data-si="${si}">${it.text}</div>`;
+      } else if(it.t==='scenario-q'){
+        h+=`<div class="scenario-card" data-si="${si}">
+          <div class="scenario-q">${it.q}</div>
+          <div class="scenario-txt">${it.text}</div>
+        </div>`;
+      } else if(it.t==='compare'&&!compareInserted){
+        compareInserted=true;
+        h+=`<div class="compare">
+          <div class="cmp-col cmp-a" data-si="${si}">
+            <div class="cmp-lbl">${it.a.label}</div>
+            <div class="cmp-items">${it.a.items.map(x=>`• ${x}`).join('<br>')}</div>
+          </div>
+          <div class="cmp-col cmp-b" data-si="${si}">
+            <div class="cmp-lbl">${it.b.label}</div>
+            <div class="cmp-items">${it.b.items.map(x=>`• ${x}`).join('<br>')}</div>
+          </div>
+        </div>`;
+      } else if(it.t==='decisions'&&!decisionInserted){
+        decisionInserted=true;
+        h+=`<div class="decision-grid">`;
+        it.items.forEach(d=>{
+          h+=`<div class="decision-row" data-si="${si}">
+            <div class="dec-dot" style="background:${d.color}"></div>
+            <div class="dec-txt">${d.text}</div>
+          </div>`;
+        });
+        h+=`</div>`;
+      }
+    });
+    h+=`</div>`;
+    block.innerHTML=h;
+
+  /* ── FINAL ── */
+  } else if(sec.type==='final'){
+    block=document.createElement('section');
+    block.className='sec'; block.id='sec-'+si;
+    let h=`<div class="sec-hd">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body"><div class="final-wrap">`;
+    sec.items.forEach(it=>{
+      h+=`<div class="${it.t}" data-si="${si}">${it.text}</div>`;
+      if(it.t==='final-big') h+=`<div class="divider"></div>`;
+    });
+    h+=`</div></div>`;
+    block.innerHTML=h;
+  }
+
+  if(si<DOC.length-1){
+    const d=document.createElement('div'); d.className='divider';
+    block.appendChild(d);
+  }
+  mainEl.appendChild(block);
+  secEls.push(block);
+});
+
+/* Collect all speakable elements in DOM order */
+document.querySelectorAll('[data-si]').forEach(el=>{
+  registry.push({el, si:+el.dataset.si});
+});
+
+/* ════════════════════════════════════════════════════
+   VOICE SYSTEM
+════════════════════════════════════════════════════ */
+const voiceSel=document.getElementById('voiceSel');
+let voiceList=[];
+
+function scoreVoice(v){
+  let s=0;
+  if(v.lang==='en-US')            s+=40;
+  else if(v.lang==='en-GB')       s+=30;
+  else if(v.lang==='en-AU')       s+=20;
+  else if(v.lang.startsWith('en')) s+=10;
+  else return -1;
+  const n=v.name.toLowerCase();
+  if(n.includes('neural'))   s+=30;
+  if(n.includes('enhanced')) s+=25;
+  if(n.includes('premium'))  s+=25;
+  if(n.includes('natural'))  s+=20;
+  if(n.includes('samantha')) s+=22;
+  if(n.includes('ava'))      s+=20;
+  if(n.includes('allison'))  s+=18;
+  if(n.includes('victoria')) s+=16;
+  if(n.includes('karen'))    s+=16;
+  if(n.includes('daniel'))   s+=16;
+  if(n.includes('moira'))    s+=16;
+  if(n.includes('zira'))     s+=14;
+  if(n.includes('susan'))    s+=14;
+  if(n.includes('alex'))     s+=14;
+  if(n.includes('compact'))  s-=20;
+  if(n.includes('espeak'))   s-=30;
+  if(n.includes('mbrola'))   s-=30;
+  return s;
+}
+
+function populateVoices(){
+  const raw=window.speechSynthesis.getVoices();
+  if(!raw.length) return;
+  const scored=raw.map(v=>({v,s:scoreVoice(v)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);
+  if(!scored.length) return;
+  voiceList=scored.map(x=>x.v);
+  voiceSel.innerHTML='';
+  voiceList.forEach((v,i)=>{
+    const o=document.createElement('option');
+    o.value=i; o.textContent=`${v.name} (${v.lang})`;
+    voiceSel.appendChild(o);
+  });
+  voiceSel.value='0';
+}
+populateVoices();
+if(window.speechSynthesis.onvoiceschanged!==undefined)
+  window.speechSynthesis.onvoiceschanged=populateVoices;
+
+function getVoice(){
+  const i=+voiceSel.value; return voiceList[i]||null;
+}
+
+/* ════════════════════════════════════════════════════
+   AUDIO ENGINE
+════════════════════════════════════════════════════ */
+let cur=0, playing=false, idx=0, active=null;
+const synth=window.speechSynthesis;
+const total=registry.length;
+
+function hl(el,on){ if(el) el.classList.toggle('hl',on); }
+function clearHl(){ if(active){hl(active,false);active=null;} }
+
+function activate(el,si){
+  clearHl(); hl(el,true); active=el;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  if(si!==cur) cur=si;
+  ui();
+}
+
+function ui(){
+  document.querySelectorAll('.toc-row').forEach((r,i)=>r.classList.toggle('active',i===cur));
+  document.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('active',i===cur));
+  secEls.forEach((s,i)=>s.classList.toggle('dim',i!==cur));
+  const pct=total>0?Math.round((idx/total)*100):0;
+  document.getElementById('fillBar').style.width=pct+'%';
+  document.getElementById('pctLbl').textContent=pct+'%';
+  document.getElementById('secLbl').textContent=DOC[cur].title;
+  document.getElementById('playBtn').innerHTML=playing?'&#9646;&#9646;':'&#9654;';
+  const pill=document.getElementById('livePill');
+  if(playing){ pill.classList.add('on'); document.getElementById('liveText').textContent=DOC[cur].title; }
+  else pill.classList.remove('on');
+}
+
+function jumpTo(si){
+  cur=si;
+  secEls[si].scrollIntoView({behavior:'smooth',block:'start'});
+  const i=registry.findIndex(r=>r.si===si);
+  if(i>=0) idx=i;
+  ui();
+}
+
+function getCleanText(el){
+  return (el.dataset.spk||el.innerText||'').replace(/•/g,'').trim();
+}
+
+function speakNext(){
+  if(!playing) return;
+  if(idx>=registry.length){ playing=false; clearHl(); ui(); return; }
+  const {el,si}=registry[idx++];
+  activate(el,si);
+  const text=getCleanText(el);
+  if(!text){ speakNext(); return; }
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate   = +document.getElementById('spdSel').value;
+  u.pitch  = 1.0;
+  u.volume = 1.0;
+  const v=getVoice(); if(v) u.voice=v;
+  u.onend  =()=>{ if(playing) speakNext(); };
+  u.onerror=()=>{ if(playing) speakNext(); };
+  synth.speak(u);
+}
+
+function start(){ synth.cancel(); playing=true; ui(); speakNext(); }
+function stop() { playing=false; synth.cancel(); clearHl(); ui(); }
+
+document.getElementById('playBtn').onclick=()=>playing?stop():start();
+document.getElementById('prevBtn').onclick=()=>{ stop(); jumpTo(Math.max(0,cur-1)); };
+document.getElementById('nextBtn').onclick=()=>{ stop(); jumpTo(Math.min(DOC.length-1,cur+1)); };
+document.getElementById('spdSel').onchange=()=>{
+  if(playing){ synth.cancel(); setTimeout(()=>{ if(playing) speakNext(); },80); }
+};
+document.getElementById('voiceSel').onchange=()=>{
+  if(playing){ synth.cancel(); setTimeout(()=>{ if(playing) speakNext(); },80); }
+};
+
+/* Init */
+secEls.forEach((s,i)=>s.classList.toggle('dim',i!==0));
+document.querySelectorAll('.toc-row')[0].classList.add('active');
+document.querySelectorAll('.chip')[0].classList.add('active');
+ui();
+if(window.speechSynthesis.onvoiceschanged!==undefined)
+  window.speechSynthesis.onvoiceschanged=populateVoices;
+
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting&&!playing){
+      cur=+e.target.id.replace('sec-',''); ui();
+    }
+  });
+},{threshold:0.3});
+secEls.forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

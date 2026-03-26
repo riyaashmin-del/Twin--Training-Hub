@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magnesium in Twin Precision Treatment</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #edf5ee;
+    --sidebar-bg: #ddeede;
+    --surface:    #ffffff;
+    --surface2:   #f3faf3;
+    --surface3:   #cce4cc;
+    --border:     rgba(30,100,50,0.10);
+    --border-hi:  rgba(30,100,50,0.20);
+
+    --forest:  #1a6632;
+    --green:   #2d8a46;
+    --sage:    #4aaa62;
+    --teal:    #0a7a6a;
+    --sky:     #1a7fa8;
+    --amber:   #a86008;
+    --rose:    #b03050;
+    --violet:  #5535a0;
+    --emerald: #0a6040;
+
+    --txt1: #0d1e10;
+    --txt2: #1e4028;
+    --txt3: #5a8060;
+
+    --hl-bg:   rgba(26,102,50,0.11);
+    --hl-bdr:  #1a6632;
+    --hl-txt:  #051008;
+    --hl-glow: 0 0 0 3px rgba(26,102,50,0.14), 0 6px 22px rgba(26,102,50,0.09);
+
+    --title-hl-bg:   rgba(45,138,70,0.10);
+    --title-hl-bdr:  #2d8a46;
+    --title-hl-txt:  #051008;
+    --title-hl-glow: 0 0 0 3px rgba(45,138,70,0.15), 0 6px 22px rgba(45,138,70,0.10);
+
+    --sub-hl-bg:   rgba(26,127,168,0.09);
+    --sub-hl-bdr:  #1a7fa8;
+    --sub-hl-txt:  #051008;
+    --sub-hl-glow: 0 0 0 3px rgba(26,127,168,0.13), 0 4px 18px rgba(26,127,168,0.08);
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--txt1);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* ══════════ HEADER ══════════ */
+  .hdr {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 64px;
+    display: flex; align-items: center; gap: 14px;
+    position: sticky; top: 0; z-index: 300;
+    box-shadow: 0 2px 14px rgba(20,80,30,0.07);
+  }
+  .logo {
+    width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--forest), var(--sky));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; color: #fff; font-weight: 700;
+  }
+  .hdr-info { flex: 1; min-width: 0; }
+  .hdr-title { font-size: 14px; font-weight: 600; color: var(--txt1); line-height: 1.2; }
+  .hdr-sub   { font-size: 11px; color: var(--txt3); font-style: italic; margin-top: 1px; }
+
+  .live-pill {
+    display: none; align-items: center; gap: 8px;
+    background: rgba(26,102,50,0.09);
+    border: 1px solid rgba(26,102,50,0.28);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 11px; font-weight: 600; color: var(--forest);
+    max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    flex-shrink: 0;
+  }
+  .live-pill.on { display: flex; }
+  .bars { display:flex; gap:2px; align-items:flex-end; height:12px; flex-shrink:0; }
+  .bars span {
+    display:block; width:3px; background:var(--green);
+    border-radius:2px; animation:bar 1.2s ease-in-out infinite;
+  }
+  .bars span:nth-child(2){animation-delay:.15s;}
+  .bars span:nth-child(3){animation-delay:.3s;}
+  @keyframes bar{0%,100%{height:4px}50%{height:12px}}
+
+  /* ══════════ PLAYER ══════════ */
+  .player {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 28px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    box-shadow: 0 1px 6px rgba(20,80,30,0.05);
+  }
+  .ctrls { display:flex; align-items:center; gap:8px; }
+  .btn {
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; transition: all .17s; font-family: inherit;
+  }
+  .btn-play {
+    width: 46px; height: 46px; font-size: 17px; color: #fff;
+    background: linear-gradient(135deg, var(--forest), var(--sky));
+    box-shadow: 0 4px 16px rgba(26,102,50,0.32);
+  }
+  .btn-play:hover { transform: scale(1.07); box-shadow: 0 6px 22px rgba(26,102,50,0.46); }
+  .btn-play:active { transform: scale(.94); }
+  .btn-nav {
+    width: 34px; height: 34px; font-size: 12px;
+    background: var(--surface2); color: var(--txt2);
+    border: 1px solid var(--border-hi);
+  }
+  .btn-nav:hover { background: var(--surface3); color: var(--txt1); }
+
+  .prog { flex: 1; min-width: 150px; }
+  .prog-top { display:flex; justify-content:space-between; font-size:11px; color:var(--txt3); margin-bottom:7px; }
+  .prog-top span:first-child { color:var(--txt2); font-weight:500; }
+  .track { height:5px; background:var(--surface3); border-radius:3px; overflow:hidden; }
+  .fill  { height:100%; width:0%; border-radius:3px;
+            background: linear-gradient(90deg, var(--forest), var(--sky));
+            transition: width .4s linear; }
+
+  .voice-wr { display:flex; align-items:center; gap:7px; }
+  .voice-wr label { font-size:11px; color:var(--txt3); white-space:nowrap; }
+  .voice-wr select {
+    background: var(--surface2); border: 1px solid var(--border-hi);
+    border-radius: 7px; padding: 5px 9px; font-size: 12px; color: var(--txt1);
+    font-family: 'Inter', sans-serif; cursor: pointer; outline: none; max-width: 170px;
+  }
+  .spd { display:flex; align-items:center; gap:7px; }
+  .spd label { font-size:11px; color:var(--txt3); }
+  .spd select {
+    background: var(--surface2); border: 1px solid var(--border-hi);
+    border-radius: 7px; padding: 5px 9px; font-size: 12px; color: var(--txt1);
+    font-family: 'Inter', sans-serif; cursor: pointer; outline: none;
+  }
+
+  /* ══════════ CHIPS ══════════ */
+  .chips {
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+    padding: 8px 28px; display:flex; gap:5px; overflow-x:auto;
+  }
+  .chips::-webkit-scrollbar{display:none;}
+  .chip {
+    padding: 5px 13px; border-radius:20px; font-size: 11px; font-weight:500; cursor:pointer;
+    border: 1px solid var(--border-hi); flex-shrink:0; white-space:nowrap; transition:all .2s;
+    color:var(--txt3); background:var(--surface);
+  }
+  .chip:hover { color:var(--txt1); border-color:var(--green); }
+  .chip.active { background:var(--forest); border-color:var(--forest); color:#fff; font-weight:600; }
+
+  /* ══════════ LAYOUT ══════════ */
+  .layout { display:flex; flex:1; }
+
+  .sidebar {
+    width: 252px; flex-shrink:0; background: var(--sidebar-bg);
+    border-right: 1px solid var(--border); padding: 20px 12px; overflow-y:auto;
+    position: sticky; top:64px; height:calc(100vh - 64px);
+  }
+  .sidebar::-webkit-scrollbar{width:3px;}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+  .toc-hd {
+    font-size:9px; font-weight:700; letter-spacing:1.6px;
+    text-transform:uppercase; color:var(--txt3); padding:0 8px; margin-bottom:10px;
+  }
+  .toc-row {
+    display:flex; align-items:center; gap:10px; padding:8px; border-radius:9px; cursor:pointer;
+    transition:all .17s; margin-bottom:2px; border:1px solid transparent;
+  }
+  .toc-row:hover{background:var(--surface3);}
+  .toc-row.active{ background:var(--surface); border-color:var(--border-hi); box-shadow:0 1px 6px rgba(20,80,30,0.08); }
+  .toc-num {
+    width:22px; height:22px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:9px; font-weight:700; background:var(--surface3); color:var(--txt3); transition:all .2s;
+  }
+  .toc-row.active .toc-num { background:var(--forest); color:#fff; }
+  .toc-txt { font-size:12px; color:var(--txt3); line-height:1.35; }
+  .toc-row.active .toc-txt { color:var(--txt1); font-weight:500; }
+
+  /* ══════════ CONTENT ══════════ */
+  .content { flex:1; padding:40px 56px; overflow-y:auto; max-width:860px; }
+  .content::-webkit-scrollbar{width:4px;}
+  .content::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+
+  /* ══════════ HERO ══════════ */
+  .hero {
+    background: linear-gradient(135deg, rgba(26,102,50,.08), rgba(26,127,168,.10));
+    border: 1px solid rgba(26,102,50,.20); border-radius: 20px;
+    padding: 38px 42px; margin-bottom: 44px; scroll-margin-top: 20px; transition: opacity .35s;
+  }
+  .hero.dim{opacity:.26;}
+  .hero-eyebrow {
+    font-size:10px; font-weight:700; letter-spacing:1.5px;
+    text-transform:uppercase; color:var(--forest); margin-bottom:14px;
+  }
+  .doc-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 700; color: var(--txt1); line-height: 1.22; margin-bottom: 8px;
+    padding: 8px 12px; margin-left: -12px; border-radius: 10px; border-left: 4px solid transparent;
+    transition: background .22s, color .22s, box-shadow .22s, border-color .15s;
+  }
+  .doc-title.hl { background: var(--title-hl-bg); color: var(--title-hl-txt); box-shadow: var(--title-hl-glow); border-left-color: var(--title-hl-bdr); padding-left: 16px; margin-left: -16px; }
+  .doc-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-style: italic; color: var(--green); margin-bottom: 24px;
+    padding: 6px 12px; margin-left: -12px; border-radius: 8px; border-left: 4px solid transparent;
+    transition: background .22s, color .22s, box-shadow .22s, border-color .15s;
+  }
+  .doc-subtitle.hl { background: var(--sub-hl-bg); color: var(--sub-hl-txt); box-shadow: var(--sub-hl-glow); border-left-color: var(--sub-hl-bdr); padding-left: 16px; margin-left: -16px; }
+
+  /* ══════════ SECTION ══════════ */
+  .sec { margin-bottom: 50px; scroll-margin-top:20px; transition:opacity .35s; }
+  .sec.dim{opacity:.26;}
+  .sec-hd{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px;}
+  .sec-icon{width:46px;height:46px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;}
+  .i0{background:rgba(26,102,50,.13);  box-shadow:inset 0 0 0 1.5px rgba(26,102,50,.30);}
+  .i1{background:rgba(26,127,168,.13); box-shadow:inset 0 0 0 1.5px rgba(26,127,168,.30);}
+  .i2{background:rgba(168,96,8,.13);   box-shadow:inset 0 0 0 1.5px rgba(168,96,8,.30);}
+  .i3{background:rgba(176,48,80,.13);  box-shadow:inset 0 0 0 1.5px rgba(176,48,80,.30);}
+  .i4{background:rgba(85,53,160,.13);  box-shadow:inset 0 0 0 1.5px rgba(85,53,160,.30);}
+  .i5{background:rgba(10,96,64,.13);   box-shadow:inset 0 0 0 1.5px rgba(10,96,64,.30);}
+  .i6{background:rgba(26,102,50,.13);  box-shadow:inset 0 0 0 1.5px rgba(26,102,50,.30);}
+  .i7{background:rgba(26,127,168,.13); box-shadow:inset 0 0 0 1.5px rgba(26,127,168,.30);}
+
+  .sec-ey{font-size:10px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--txt3);margin-bottom:4px;}
+  .sec-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--txt1);line-height:1.25;}
+  .sec-body{padding-left:60px;}
+
+  /* ══════════ SPEAKABLES ══════════ */
+  .sp {
+    font-size:15px; line-height:1.88; color:var(--txt2); margin-bottom:14px; border-radius:8px;
+    padding:6px 12px; margin-left:-12px; border-left:4px solid transparent;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .sp.hl { background:var(--hl-bg); color:var(--hl-txt); box-shadow:var(--hl-glow); border-left-color:var(--hl-bdr); padding-left:15px; margin-left:-15px; }
+
+  .insight {
+    background:var(--surface2); border-radius:10px; border-left:4px solid var(--green);
+    padding:13px 16px; margin:12px 0 16px; font-size:14px; color:var(--txt2); line-height:1.78;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .insight.hl { background:var(--hl-bg); color:var(--hl-txt); box-shadow:var(--hl-glow); border-left-color:var(--hl-bdr); }
+
+  /* Role cards — the 5 metabolic roles of magnesium */
+  .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:14px 0 18px;}
+  .role-card{
+    background:var(--surface);border-radius:12px;border:1px solid var(--border);padding:14px 16px;
+    box-shadow:0 1px 5px rgba(20,80,30,0.05);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .role-card.hl{background:var(--hl-bg);border-color:rgba(26,102,50,.42);box-shadow:var(--hl-glow);}
+  .role-icon{font-size:18px;margin-bottom:6px;}
+  .role-lbl{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;margin-bottom:3px;}
+  .rc0 .role-lbl{color:var(--forest);}
+  .rc1 .role-lbl{color:var(--sky);}
+  .rc2 .role-lbl{color:var(--teal);}
+  .rc3 .role-lbl{color:var(--amber);}
+  .rc4 .role-lbl{color:var(--violet);}
+  .role-txt{font-size:13px;color:var(--txt2);line-height:1.60;transition:color .22s;}
+  .role-card.hl .role-txt{color:var(--hl-txt);}
+
+  /* Depletion driver cards */
+  .depletion-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 18px;}
+  .dep-card{
+    background:var(--surface);border-radius:11px;border:1px solid var(--border);
+    padding:13px 14px;display:flex;gap:10px;align-items:flex-start;
+    box-shadow:0 1px 4px rgba(20,80,30,0.05);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .dep-card.hl{background:var(--hl-bg);border-color:rgba(26,102,50,.42);box-shadow:var(--hl-glow);}
+  .dep-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:5px;background:var(--rose);}
+  .dep-txt{font-size:13px;color:var(--txt2);line-height:1.60;transition:color .22s;}
+  .dep-card.hl .dep-txt{color:var(--hl-txt);}
+
+  /* Reason cards — 3 reasons deficiency is common */
+  .reason-card{
+    background:var(--surface);border-radius:14px;border:1px solid var(--border);
+    padding:18px 20px;margin-bottom:14px;
+    box-shadow:0 1px 6px rgba(20,80,30,0.06);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .reason-card.hl{background:var(--hl-bg);border-color:rgba(26,102,50,.42);box-shadow:var(--hl-glow);}
+  .re-num{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;}
+  .rn0 .re-num{color:var(--forest);}
+  .rn1 .re-num{color:var(--amber);}
+  .rn2 .re-num{color:var(--violet);}
+  .re-head{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--txt1);margin-bottom:8px;}
+  .re-body{font-size:14px;color:var(--txt2);line-height:1.78;transition:color .22s;}
+  .reason-card.hl .re-body{color:var(--hl-txt);}
+
+  /* Compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px;}
+  .cmp-col{border-radius:12px;padding:16px;border:1px solid var(--border);transition:border-color .22s,background .22s,box-shadow .22s;}
+  .cmp-col.hl{background:var(--hl-bg);border-color:rgba(26,102,50,.42);box-shadow:var(--hl-glow);}
+  .cmp-bad {background:rgba(176,48,80,.05);}
+  .cmp-good{background:rgba(26,102,50,.05);}
+  .cmp-lbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;}
+  .cmp-bad  .cmp-lbl{color:var(--rose);}
+  .cmp-good .cmp-lbl{color:var(--forest);}
+  .cmp-items{font-size:13px;color:var(--txt2);line-height:2.1;}
+  .cmp-col.hl .cmp-items{color:var(--hl-txt);}
+
+  /* Benefit cards — what Mg supplementation helps */
+  .benefit-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:14px 0 18px;}
+  .benefit-card{
+    background:var(--surface);border-radius:12px;border:1px solid var(--border);padding:14px 16px;
+    box-shadow:0 1px 5px rgba(20,80,30,0.05);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .benefit-card.hl{background:var(--hl-bg);border-color:rgba(26,102,50,.42);box-shadow:var(--hl-glow);}
+  .ben-icon{font-size:16px;margin-bottom:5px;}
+  .ben-lbl{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;margin-bottom:3px;}
+  .bc0 .ben-lbl{color:var(--forest);}
+  .bc1 .ben-lbl{color:var(--sky);}
+  .bc2 .ben-lbl{color:var(--teal);}
+  .bc3 .ben-lbl{color:var(--amber);}
+  .bc4 .ben-lbl{color:var(--violet);}
+  .ben-txt{font-size:12px;color:var(--txt2);line-height:1.55;transition:color .22s;}
+  .benefit-card.hl .ben-txt{color:var(--hl-txt);}
+
+  /* Final */
+  .final-wrap{
+    background:linear-gradient(135deg,rgba(26,102,50,.07),rgba(26,127,168,.08));
+    border:1px solid rgba(26,102,50,.20);border-radius:18px;
+    padding:30px 34px;box-shadow:0 2px 14px rgba(20,80,30,0.07);
+  }
+  .final-big{
+    font-family:'Playfair Display',serif;
+    font-size:19px;color:var(--txt1);line-height:1.72;margin-bottom:18px;
+    padding:8px 12px;border-radius:8px;border-left:4px solid transparent;
+    transition:background .22s,box-shadow .22s,color .22s,border-color .15s;
+  }
+  .final-big.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+  .final-tagline{
+    font-size:14px;font-weight:600;color:var(--forest);letter-spacing:.2px;
+    padding:8px 12px;border-radius:8px;border-left:4px solid transparent;
+    transition:background .22s,box-shadow .22s,color .22s,border-color .15s;
+  }
+  .final-tagline.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+
+  .divider{height:1px;background:var(--border);margin:38px 0;}
+
+  @media(max-width:860px){
+    .sidebar{display:none;}
+    .content{padding:24px 20px;}
+    .sec-body{padding-left:0;}
+    .role-grid{grid-template-columns:1fr;}
+    .depletion-grid{grid-template-columns:1fr;}
+    .benefit-grid{grid-template-columns:1fr;}
+    .compare{grid-template-columns:1fr;}
+    .hero{padding:24px 22px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="logo">tw</div>
+  <div class="hdr-info">
+    <div class="hdr-title">Magnesium in Twin Precision Treatment</div>
+    <div class="hdr-sub">A Foundational Mineral for Metabolic & Mitochondrial Healing</div>
+  </div>
+  <div class="live-pill" id="livePill">
+    <div class="bars"><span></span><span></span><span></span></div>
+    <span id="liveText">Reading…</span>
+  </div>
+</header>
+
+<div class="player">
+  <div class="ctrls">
+    <button class="btn btn-nav" id="prevBtn">&#9664;&#9664;</button>
+    <button class="btn btn-play" id="playBtn">&#9654;</button>
+    <button class="btn btn-nav" id="nextBtn">&#9654;&#9654;</button>
+  </div>
+  <div class="prog">
+    <div class="prog-top"><span id="secLbl">—</span><span id="pctLbl">0%</span></div>
+    <div class="track"><div class="fill" id="fillBar"></div></div>
+  </div>
+  <div class="voice-wr">
+    <label>Voice</label>
+    <select id="voiceSel"><option value="">Loading…</option></select>
+  </div>
+  <div class="spd">
+    <label>Speed</label>
+    <select id="spdSel">
+      <option value="0.78">0.78×</option>
+      <option value="0.88">0.88×</option>
+      <option value="0.95" selected>0.95×</option>
+      <option value="1.05">1.05×</option>
+      <option value="1.15">1.15×</option>
+    </select>
+  </div>
+</div>
+
+<div class="chips" id="chipBar"></div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="toc-hd">Contents</div>
+    <div id="toc"></div>
+  </aside>
+  <main class="content" id="main"></main>
+</div>
+
+<script>
+const DOC = [
+
+  /* 0 — HERO */
+  {
+    type:'hero', id:'s0',
+    eyebrow:'Twin Precision Treatment — Nutrition Science',
+    title:'Why Twin Precision Treatment Recommends Magnesium',
+    subtitle:'A Foundational Mineral for Metabolic & Mitochondrial Healing',
+    items:[
+      { t:'doc-title',    text:'Why Twin Precision Treatment Recommends Magnesium' },
+      { t:'doc-subtitle', text:'A Foundational Mineral for Metabolic and Mitochondrial Healing' },
+      { t:'sp', text:'Magnesium is not a "general wellness" supplement in Twin Precision Treatment. It is a core metabolic co-factor, essential for repairing dysfunctional metabolism at the cellular and mitochondrial level — which is Twin\'s primary therapeutic goal.' }
+    ]
+  },
+
+  /* 1 — FOUNDATIONAL MINERAL */
+  {
+    type:'sec', id:'s1', icon:'🧪', ic:'i0',
+    eyebrow:'Section 1',
+    title:'Magnesium: A Foundational Metabolic Mineral',
+    items:[
+      { t:'sp', text:'Magnesium participates in over 300 enzymatic reactions, many of which sit at the heart of metabolic healing.' },
+      { t:'roles', items:[
+        { cls:'rc0', icon:'⚡', lbl:'ATP Energy',         txt:'ATP is biologically active only when bound to magnesium — making it essential for all cellular energy production and utilisation.' },
+        { cls:'rc1', icon:'💉', lbl:'Insulin Signalling', txt:'Magnesium supports insulin signalling pathways and facilitates glucose transport into cells.' },
+        { cls:'rc2', icon:'💪', lbl:'Muscle & Nerve',    txt:'Essential for healthy muscle contraction, nerve transmission, and neuromuscular coordination.' },
+        { cls:'rc3', icon:'🔋', lbl:'Mitochondrial',     txt:'Drives mitochondrial energy efficiency — the foundation of Twin\'s metabolic healing approach.' },
+        { cls:'rc4', icon:'🌙', lbl:'Stress & Sleep',    txt:'Regulates the stress response and sleep architecture through its role in the autonomic nervous system.' }
+      ]},
+      { t:'insight', text:'Without adequate magnesium, metabolism cannot heal efficiently — even if calories, macros, or micronutrients appear "adequate" on paper.' }
+    ]
+  },
+
+  /* 2 — WHY DEFICIENCY IS COMMON */
+  {
+    type:'sec', id:'s2', icon:'❓', ic:'i1',
+    eyebrow:'Section 2',
+    title:'Why Magnesium Deficiency Is Common — Even in People Eating "Right"',
+    items:[
+      { t:'sp', text:'Many Twin members consume magnesium-rich foods, yet still show functional magnesium insufficiency. This paradox exists because intake does not equal absorption, and absorption does not equal cellular availability.' },
+      { t:'reasons', items:[
+        { cls:'rn0', num:'Reason 1', head:'Present in Foods, but Often Poorly Absorbed',
+          body:'Magnesium is abundant in whole grains, legumes, nuts and seeds, leafy greens, and dark chocolate. However, many of these foods also contain phytates — which bind magnesium in the gut and reduce absorption. Even a clean, plant-rich diet may deliver far less usable magnesium than expected.' },
+        { cls:'rn1', num:'Reason 2', head:'Metabolic Dysfunction Increases Magnesium Losses',
+          body:'Twin members often enter the programme with conditions that actively deplete magnesium: chronic stress increases urinary magnesium loss, insulin resistance impairs cellular magnesium uptake, poor sleep raises magnesium demand, alcohol causes renal magnesium wasting, medications like PPIs and diuretics reduce magnesium status, and low stomach acid reduces mineral solubility. Dysfunctional metabolism both needs more magnesium and loses more magnesium.' },
+        { cls:'rn2', num:'Reason 3', head:'Healing Metabolism Raises Magnesium Demand',
+          body:'As Twin Precision Treatment restores mitochondrial activity, glycaemic stability, physical activity tolerance, and autonomic balance — the body\'s magnesium requirement increases, especially during early phases of repair. This is why magnesium deficiency may surface during healing, not just before it.' }
+      ]}
+    ]
+  },
+
+  /* 3 — WHY FOOD ALONE ISN'T ENOUGH */
+  {
+    type:'sec', id:'s3', icon:'🥦', ic:'i2',
+    eyebrow:'Section 3',
+    title:'Why Food Alone Is Often Not Enough — Initially',
+    items:[
+      { t:'sp', text:'Traditional advice assumes that eating well provides enough magnesium. Twin\'s clinical reality shows otherwise.' },
+      { t:'compare',
+        bad:  { label:'Traditional assumption', items:['"Eat well → get enough magnesium"','Diverse plant intake','Soaking or sprouting','Reduced ultra-processed foods'] },
+        good: { label:'Twin\'s clinical reality', items:['Many members still cannot meet intracellular magnesium needs during active metabolic repair','Absorption barriers persist despite good diet','Healing actively increases demand','Supplementation bridges this temporary biological gap'] }
+      },
+      { t:'insight', text:'Supplementation bridges this temporary biological gap. As gut function, absorption, and mitochondrial efficiency improve, diet alone often becomes sufficient again.' }
+    ]
+  },
+
+  /* 4 — STRATEGIC USE */
+  {
+    type:'sec', id:'s4', icon:'🎯', ic:'i3',
+    eyebrow:'Section 4',
+    title:'Why Twin Uses Magnesium Strategically — Not Routinely or Forever',
+    items:[
+      { t:'sp', text:'Magnesium is recommended when Twin\'s Digital Twin detects specific signals — not given as a blanket supplement to every member.' },
+      { t:'depletion', items:[
+        { txt:'High stress load detected' },
+        { txt:'Poor sleep quality signals' },
+        { txt:'Muscle cramps or fatigue' },
+        { txt:'Glycaemic volatility patterns' },
+        { txt:'Low recovery capacity' },
+        { txt:'High mitochondrial demand phase' }
+      ]},
+      { t:'insight', text:'It is supportive, not symptomatic. It is targeted, not blanket. And it is reassessed as metabolism heals.' }
+    ]
+  },
+
+  /* 5 — WHAT IT HELPS */
+  {
+    type:'sec', id:'s5', icon:'✅', ic:'i4',
+    eyebrow:'Section 5',
+    title:'What Magnesium Supplementation Helps in Twin Precision Treatment',
+    items:[
+      { t:'sp', text:'Magnesium supplementation in Twin Precision Treatment addresses specific biological bottlenecks that block metabolic healing.' },
+      { t:'benefits', items:[
+        { cls:'bc0', icon:'😴', lbl:'Sleep & Recovery',     txt:'Improves sleep quality, recovery depth, and overnight mitochondrial repair.' },
+        { cls:'bc1', icon:'💉', lbl:'Insulin Sensitivity',  txt:'Supports insulin receptor function, improving glucose uptake and reducing insulin load.' },
+        { cls:'bc2', icon:'💪', lbl:'Neuromuscular Health', txt:'Reduces neuromuscular strain, cramps, and fatigue during active metabolic repair.' },
+        { cls:'bc3', icon:'⚡', lbl:'ATP Production',       txt:'Enables efficient ATP generation at the mitochondrial level — the foundation of cellular energy.' },
+        { cls:'bc4', icon:'🧘', lbl:'Stress Physiology',    txt:'Stabilises the stress response and autonomic nervous system, reducing cortisol-driven magnesium depletion.' }
+      ]},
+      { t:'insight', text:'This is not about fixing a lab number. It is about restoring the biochemical conditions required for durable metabolic healing.' }
+    ]
+  },
+
+  /* 6 — FINAL */
+  {
+    type:'final', id:'s6', icon:'🌿', ic:'i5',
+    eyebrow:'Closing',
+    title:'Food Is the Foundation. Precision Supplementation Is the Bridge.',
+    items:[
+      { t:'final-big',     text:'Magnesium deficiency is rarely about poor food choices. It is often a consequence of modern metabolic stress and impaired absorption. Twin Precision Treatment recommends magnesium because you cannot heal dysfunctional metabolism — especially at the mitochondrial level — without adequate magnesium availability.' },
+      { t:'final-tagline', text:'Food is the foundation. Precision supplementation is the bridge.' }
+    ]
+  }
+
+];
+
+/* ══════════════════════════════════════════════
+   BUILD DOM
+══════════════════════════════════════════════ */
+const registry=[], secEls=[];
+const mainEl=document.getElementById('main');
+const tocEl =document.getElementById('toc');
+const chipEl=document.getElementById('chipBar');
+
+DOC.forEach((sec,si)=>{
+  const tr=document.createElement('div');
+  tr.className='toc-row';
+  tr.innerHTML=`<div class="toc-num">${si+1}</div><div class="toc-txt">${sec.title}</div>`;
+  tr.onclick=()=>{stop();jumpTo(si);};
+  tocEl.appendChild(tr);
+
+  const ch=document.createElement('div');
+  ch.className='chip';
+  const ws=sec.title.split(' ');
+  ch.textContent=ws.slice(0,4).join(' ')+(ws.length>4?'…':'');
+  ch.onclick=()=>{stop();jumpTo(si);};
+  chipEl.appendChild(ch);
+
+  let block;
+
+  if(sec.type==='hero'){
+    block=document.createElement('div');
+    block.className='hero'; block.id='sec-'+si;
+    block.innerHTML=`<div class="hero-eyebrow">${sec.eyebrow}</div>`;
+    sec.items.forEach(it=>{
+      const el=document.createElement(it.t==='sp'?'p':'div');
+      el.className=it.t; el.dataset.si=si; el.dataset.spk=it.text;
+      el.textContent=it.text;
+      block.appendChild(el);
+    });
+
+  } else if(sec.type==='sec'){
+    block=document.createElement('section');
+    block.className='sec'; block.id='sec-'+si;
+    let h=`<div class="sec-hd">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body">`;
+
+    let cmpDone=false, rolesDone=false, reasonsDone=false, depDone=false, benDone=false;
+    sec.items.forEach(it=>{
+      if(it.t==='sp'){
+        h+=`<p class="sp" data-si="${si}">${it.text}</p>`;
+      } else if(it.t==='insight'){
+        h+=`<div class="insight" data-si="${si}">${it.text}</div>`;
+      } else if(it.t==='roles'&&!rolesDone){
+        rolesDone=true;
+        h+=`<div class="role-grid">`;
+        it.items.forEach(r=>{
+          h+=`<div class="role-card ${r.cls}" data-si="${si}">
+            <div class="role-icon">${r.icon}</div>
+            <div class="role-lbl">${r.lbl}</div>
+            <div class="role-txt">${r.txt}</div>
+          </div>`;
+        });
+        h+=`</div>`;
+      } else if(it.t==='reasons'&&!reasonsDone){
+        reasonsDone=true;
+        it.items.forEach(r=>{
+          h+=`<div class="reason-card ${r.cls}" data-si="${si}">
+            <div class="re-num">${r.num}</div>
+            <div class="re-head">${r.head}</div>
+            <div class="re-body">${r.body}</div>
+          </div>`;
+        });
+      } else if(it.t==='compare'&&!cmpDone){
+        cmpDone=true;
+        h+=`<div class="compare">
+          <div class="cmp-col cmp-bad" data-si="${si}">
+            <div class="cmp-lbl">${it.bad.label}</div>
+            <div class="cmp-items">${it.bad.items.map(x=>`• ${x}`).join('<br>')}</div>
+          </div>
+          <div class="cmp-col cmp-good" data-si="${si}">
+            <div class="cmp-lbl">${it.good.label}</div>
+            <div class="cmp-items">${it.good.items.map(x=>`• ${x}`).join('<br>')}</div>
+          </div>
+        </div>`;
+      } else if(it.t==='depletion'&&!depDone){
+        depDone=true;
+        h+=`<div class="depletion-grid">`;
+        it.items.forEach(d=>{
+          h+=`<div class="dep-card" data-si="${si}">
+            <div class="dep-dot"></div>
+            <div class="dep-txt">${d.txt}</div>
+          </div>`;
+        });
+        h+=`</div>`;
+      } else if(it.t==='benefits'&&!benDone){
+        benDone=true;
+        h+=`<div class="benefit-grid">`;
+        it.items.forEach(b=>{
+          h+=`<div class="benefit-card ${b.cls}" data-si="${si}">
+            <div class="ben-icon">${b.icon}</div>
+            <div class="ben-lbl">${b.lbl}</div>
+            <div class="ben-txt">${b.txt}</div>
+          </div>`;
+        });
+        h+=`</div>`;
+      }
+    });
+    h+=`</div>`;
+    block.innerHTML=h;
+
+  } else if(sec.type==='final'){
+    block=document.createElement('section');
+    block.className='sec'; block.id='sec-'+si;
+    let h=`<div class="sec-hd">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body"><div class="final-wrap">`;
+    sec.items.forEach(it=>{
+      h+=`<div class="${it.t}" data-si="${si}">${it.text}</div>`;
+      if(it.t==='final-big') h+=`<div class="divider"></div>`;
+    });
+    h+=`</div></div>`;
+    block.innerHTML=h;
+  }
+
+  if(si<DOC.length-1){ const d=document.createElement('div'); d.className='divider'; block.appendChild(d); }
+  mainEl.appendChild(block);
+  secEls.push(block);
+});
+
+document.querySelectorAll('[data-si]').forEach(el=>{ registry.push({el, si:+el.dataset.si}); });
+
+/* ══════════════════════════════════════════════
+   VOICE SYSTEM
+══════════════════════════════════════════════ */
+const voiceSel=document.getElementById('voiceSel');
+let voiceList=[];
+function scoreVoice(v){
+  let s=0;
+  if(v.lang==='en-US') s+=40; else if(v.lang==='en-GB') s+=30;
+  else if(v.lang==='en-AU') s+=20; else if(v.lang.startsWith('en')) s+=10; else return -1;
+  const n=v.name.toLowerCase();
+  if(n.includes('neural')) s+=30; if(n.includes('enhanced')) s+=25;
+  if(n.includes('premium')) s+=25; if(n.includes('natural')) s+=20;
+  if(n.includes('samantha')) s+=22; if(n.includes('ava')) s+=20;
+  if(n.includes('allison')) s+=18; if(n.includes('victoria')) s+=16;
+  if(n.includes('karen')) s+=16; if(n.includes('daniel')) s+=16;
+  if(n.includes('moira')) s+=16; if(n.includes('zira')) s+=14;
+  if(n.includes('susan')) s+=14; if(n.includes('alex')) s+=14;
+  if(n.includes('compact')) s-=20; if(n.includes('espeak')) s-=30; if(n.includes('mbrola')) s-=30;
+  return s;
+}
+function populateVoices(){
+  const raw=window.speechSynthesis.getVoices(); if(!raw.length) return;
+  const scored=raw.map(v=>({v,s:scoreVoice(v)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);
+  if(!scored.length) return;
+  voiceList=scored.map(x=>x.v);
+  voiceSel.innerHTML='';
+  voiceList.forEach((v,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=`${v.name} (${v.lang})`; voiceSel.appendChild(o); });
+  voiceSel.value='0';
+}
+populateVoices();
+if(window.speechSynthesis.onvoiceschanged!==undefined) window.speechSynthesis.onvoiceschanged=populateVoices;
+function getVoice(){ return voiceList[+voiceSel.value]||null; }
+
+/* ══════════════════════════════════════════════
+   AUDIO ENGINE
+══════════════════════════════════════════════ */
+let cur=0, playing=false, idx=0, active=null;
+const synth=window.speechSynthesis, total=registry.length;
+function hl(el,on){ if(el) el.classList.toggle('hl',on); }
+function clearHl(){ if(active){hl(active,false);active=null;} }
+function activate(el,si){ clearHl(); hl(el,true); active=el; el.scrollIntoView({behavior:'smooth',block:'center'}); if(si!==cur) cur=si; ui(); }
+
+function ui(){
+  document.querySelectorAll('.toc-row').forEach((r,i)=>r.classList.toggle('active',i===cur));
+  document.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('active',i===cur));
+  secEls.forEach((s,i)=>s.classList.toggle('dim',i!==cur));
+  const pct=total>0?Math.round((idx/total)*100):0;
+  document.getElementById('fillBar').style.width=pct+'%';
+  document.getElementById('pctLbl').textContent=pct+'%';
+  document.getElementById('secLbl').textContent=DOC[cur].title;
+  document.getElementById('playBtn').innerHTML=playing?'&#9646;&#9646;':'&#9654;';
+  const pill=document.getElementById('livePill');
+  if(playing){ pill.classList.add('on'); document.getElementById('liveText').textContent=DOC[cur].title; }
+  else pill.classList.remove('on');
+}
+
+function jumpTo(si){ cur=si; secEls[si].scrollIntoView({behavior:'smooth',block:'start'}); const i=registry.findIndex(r=>r.si===si); if(i>=0) idx=i; ui(); }
+function getCleanText(el){ return (el.dataset.spk||el.innerText||'').replace(/•/g,'').trim(); }
+
+function speakNext(){
+  if(!playing) return;
+  if(idx>=registry.length){ playing=false; clearHl(); ui(); return; }
+  const {el,si}=registry[idx++]; activate(el,si);
+  const text=getCleanText(el); if(!text){ speakNext(); return; }
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=+document.getElementById('spdSel').value; u.pitch=1.0; u.volume=1.0;
+  const v=getVoice(); if(v) u.voice=v;
+  u.onend=()=>{ if(playing) speakNext(); }; u.onerror=()=>{ if(playing) speakNext(); };
+  synth.speak(u);
+}
+
+function start(){ synth.cancel(); playing=true; ui(); speakNext(); }
+function stop() { playing=false; synth.cancel(); clearHl(); ui(); }
+
+document.getElementById('playBtn').onclick=()=>playing?stop():start();
+document.getElementById('prevBtn').onclick=()=>{ stop(); jumpTo(Math.max(0,cur-1)); };
+document.getElementById('nextBtn').onclick=()=>{ stop(); jumpTo(Math.min(DOC.length-1,cur+1)); };
+document.getElementById('spdSel').onchange=()=>{ if(playing){ synth.cancel(); setTimeout(()=>{ if(playing) speakNext(); },80); } };
+document.getElementById('voiceSel').onchange=()=>{ if(playing){ synth.cancel(); setTimeout(()=>{ if(playing) speakNext(); },80); } };
+
+secEls.forEach((s,i)=>s.classList.toggle('dim',i!==0));
+document.querySelectorAll('.toc-row')[0].classList.add('active');
+document.querySelectorAll('.chip')[0].classList.add('active');
+ui();
+
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting&&!playing){ cur=+e.target.id.replace('sec-',''); ui(); } });
+},{threshold:0.3});
+secEls.forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twin Digital Twin — How It Works</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:          #f0f2f7;
+    --sidebar-bg:  #e4e8f2;
+    --surface:     #ffffff;
+    --surface2:    #eaecf5;
+    --surface3:    #dde1ef;
+    --border:      rgba(80,90,140,0.12);
+    --border-bright: rgba(80,90,140,0.22);
+
+    --pink:   #e0436e;
+    --blue:   #2e86c8;
+    --teal:   #0fa89c;
+    --amber:  #d97706;
+    --purple: #7c3aed;
+    --green:  #059669;
+
+    --text-primary:   #1a1e2e;
+    --text-secondary: #3d4460;
+    --text-muted:     #7880a0;
+
+    --hl-bg:     rgba(217, 119, 6, 0.13);
+    --hl-border: #d97706;
+    --hl-text:   #3d2000;
+    --hl-glow:   0 0 0 3px rgba(217,119,6,0.18), 0 4px 20px rgba(217,119,6,0.12);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 62px;
+    display: flex; align-items: center; gap: 14px;
+    position: sticky; top: 0; z-index: 200;
+    box-shadow: 0 2px 10px rgba(30,40,100,0.07);
+  }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--pink), var(--blue));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; color: #fff; font-weight: 600;
+  }
+  .logo-text { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .logo-sub  { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .hdr-spacer { flex: 1; }
+
+  .now-badge {
+    display: none; align-items: center; gap: 8px;
+    background: rgba(217,119,6,0.1);
+    border: 1px solid rgba(217,119,6,0.35);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 11px; font-weight: 600; color: var(--amber);
+    max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  }
+  .now-badge.on { display: flex; }
+  .waves { display: flex; gap: 2px; align-items: flex-end; height: 12px; flex-shrink: 0; }
+  .waves span {
+    display: block; width: 3px; background: var(--amber);
+    border-radius: 2px; animation: wav 1.2s ease-in-out infinite;
+  }
+  .waves span:nth-child(2){animation-delay:.15s;}
+  .waves span:nth-child(3){animation-delay:.3s;}
+  @keyframes wav{0%,100%{height:4px}50%{height:12px}}
+
+  /* ── PLAYER ── */
+  .player {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 11px 28px;
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    box-shadow: 0 1px 4px rgba(30,40,100,0.05);
+  }
+  .controls { display: flex; align-items: center; gap: 8px; }
+  .btn {
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; transition: all .18s;
+  }
+  .btn-play {
+    width: 44px; height: 44px; font-size: 16px; color: #fff;
+    background: linear-gradient(135deg, var(--pink), var(--blue));
+    box-shadow: 0 4px 16px rgba(46,134,200,0.3);
+  }
+  .btn-play:hover { transform: scale(1.07); box-shadow: 0 6px 22px rgba(46,134,200,0.45); }
+  .btn-play:active { transform: scale(.95); }
+  .btn-nav {
+    width: 34px; height: 34px; font-size: 12px;
+    background: var(--surface2); color: var(--text-secondary);
+    border: 1px solid var(--border-bright);
+  }
+  .btn-nav:hover { background: var(--surface3); color: var(--text-primary); }
+
+  .progress { flex: 1; min-width: 160px; }
+  .prog-meta {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--text-muted); margin-bottom: 7px;
+  }
+  .prog-meta span:first-child { color: var(--text-secondary); font-weight: 500; }
+  .track { height: 5px; background: var(--surface3); border-radius: 3px; overflow: hidden; }
+  .fill  { height: 100%; width: 0%; border-radius: 3px;
+            background: linear-gradient(90deg, var(--pink), var(--blue));
+            transition: width .4s linear; }
+
+  .speed-wr { display: flex; align-items: center; gap: 7px; }
+  .speed-wr label { font-size: 11px; color: var(--text-muted); }
+  .speed-sel {
+    background: var(--surface2); border: 1px solid var(--border-bright);
+    border-radius: 6px; padding: 4px 8px;
+    font-size: 12px; color: var(--text-primary);
+    font-family: 'Inter', sans-serif; cursor: pointer;
+  }
+
+  /* ── CHIPS ── */
+  .chip-bar {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 28px; display: flex; gap: 5px; overflow-x: auto;
+  }
+  .chip-bar::-webkit-scrollbar { display: none; }
+  .chip {
+    padding: 5px 13px; border-radius: 20px;
+    font-size: 11px; font-weight: 500; cursor: pointer;
+    border: 1px solid var(--border-bright); flex-shrink: 0;
+    white-space: nowrap; transition: all .2s;
+    color: var(--text-muted); background: var(--surface);
+  }
+  .chip:hover { color: var(--text-primary); border-color: var(--blue); }
+  .chip.active {
+    background: var(--blue); border-color: var(--blue);
+    color: #fff; font-weight: 600;
+  }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; flex: 1; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 248px; flex-shrink: 0;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    padding: 20px 12px; overflow-y: auto;
+    position: sticky; top: 62px; height: calc(100vh - 62px);
+  }
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+  .toc-head {
+    font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text-muted);
+    padding: 0 8px; margin-bottom: 10px;
+  }
+  .toc-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px; border-radius: 8px; cursor: pointer;
+    transition: all .18s; margin-bottom: 2px;
+    border: 1px solid transparent;
+  }
+  .toc-row:hover { background: var(--surface3); }
+  .toc-row.active {
+    background: var(--surface);
+    border-color: var(--border-bright);
+    box-shadow: 0 1px 6px rgba(30,40,100,0.08);
+  }
+  .toc-dot {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700;
+    background: var(--surface3); color: var(--text-muted); transition: all .2s;
+  }
+  .toc-row.active .toc-dot { background: var(--blue); color: #fff; }
+  .toc-lbl { font-size: 12px; color: var(--text-muted); line-height: 1.35; }
+  .toc-row.active .toc-lbl { color: var(--text-primary); font-weight: 500; }
+
+  /* ── CONTENT ── */
+  .content {
+    flex: 1; padding: 40px 56px; overflow-y: auto; max-width: 840px;
+  }
+  .content::-webkit-scrollbar { width: 4px; }
+  .content::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+
+  /* ── HERO BLOCK (title section) ── */
+  .hero-block {
+    background: linear-gradient(135deg, rgba(224,67,110,0.08) 0%, rgba(46,134,200,0.10) 100%);
+    border: 1px solid rgba(46,134,200,0.2);
+    border-radius: 18px; padding: 36px 40px; margin-bottom: 48px;
+    scroll-margin-top: 20px; transition: opacity .35s;
+  }
+  .hero-block.dim { opacity: 0.3; }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px; font-weight: 600; color: var(--text-primary);
+    line-height: 1.2; margin-bottom: 8px;
+  }
+  .hero-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; font-style: italic; color: var(--blue);
+    margin-bottom: 20px;
+  }
+  .hero-desc {
+    font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 8px;
+    border-radius: 8px; padding: 6px 10px; margin-left: -10px;
+    border-left: 3px solid transparent;
+    transition: background .25s, color .25s, box-shadow .25s;
+  }
+  .hero-desc.speaking {
+    background: var(--hl-bg); color: var(--hl-text);
+    box-shadow: var(--hl-glow); border-left: 3px solid var(--hl-border);
+    padding-left: 13px; margin-left: -13px;
+  }
+  .use-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
+  .use-tag {
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    background: var(--surface); border: 1px solid var(--border-bright); color: var(--text-secondary);
+  }
+
+  /* ── SECTION BLOCKS ── */
+  .sec-block {
+    margin-bottom: 48px; scroll-margin-top: 20px; transition: opacity .35s;
+  }
+  .sec-block.dim { opacity: 0.3; }
+
+  .sec-head {
+    display: flex; align-items: flex-start; gap: 14px; margin-bottom: 22px;
+  }
+  .sec-icon {
+    width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .ic0 { background:rgba(224,67,110,.12); box-shadow:inset 0 0 0 1.5px rgba(224,67,110,.3); }
+  .ic1 { background:rgba(46,134,200,.12); box-shadow:inset 0 0 0 1.5px rgba(46,134,200,.3); }
+  .ic2 { background:rgba(15,168,156,.12); box-shadow:inset 0 0 0 1.5px rgba(15,168,156,.3); }
+  .ic3 { background:rgba(217,119,6,.12);  box-shadow:inset 0 0 0 1.5px rgba(217,119,6,.3); }
+  .ic4 { background:rgba(124,58,237,.12); box-shadow:inset 0 0 0 1.5px rgba(124,58,237,.3); }
+  .ic5 { background:rgba(5,150,105,.12);  box-shadow:inset 0 0 0 1.5px rgba(5,150,105,.3); }
+  .ic6 { background:rgba(224,67,110,.12); box-shadow:inset 0 0 0 1.5px rgba(224,67,110,.3); }
+  .ic7 { background:rgba(46,134,200,.12); box-shadow:inset 0 0 0 1.5px rgba(46,134,200,.3); }
+  .ic8 { background:rgba(15,168,156,.12); box-shadow:inset 0 0 0 1.5px rgba(15,168,156,.3); }
+  .ic9 { background:rgba(217,119,6,.12);  box-shadow:inset 0 0 0 1.5px rgba(217,119,6,.3); }
+
+  .sec-eyebrow {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.3px;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;
+  }
+  .sec-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 600; color: var(--text-primary); line-height: 1.2;
+  }
+  .sec-body { padding-left: 58px; }
+
+  /* ── SPEAKABLE ELEMENTS ── */
+  .para {
+    font-size: 15px; line-height: 1.85; color: var(--text-secondary);
+    margin-bottom: 14px; border-radius: 8px;
+    padding: 6px 10px; margin-left: -10px;
+    border-left: 3px solid transparent;
+    transition: background .25s, color .25s, box-shadow .25s;
+  }
+  .para.speaking {
+    background: var(--hl-bg); color: var(--hl-text);
+    box-shadow: var(--hl-glow); border-left: 3px solid var(--hl-border);
+    padding-left: 13px; margin-left: -13px;
+  }
+
+  /* ── CARDS ── */
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0 18px; }
+  .card {
+    background: var(--surface); border-radius: 10px;
+    padding: 14px 15px; border: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(30,40,100,0.06);
+    transition: border-color .25s, background .25s, box-shadow .25s;
+  }
+  .card.speaking {
+    background: rgba(217,119,6,0.08);
+    border-color: rgba(217,119,6,0.5);
+    box-shadow: 0 0 0 2px rgba(217,119,6,0.14), 0 4px 16px rgba(217,119,6,0.08);
+  }
+  .card-lbl {
+    font-size: 10px; font-weight: 700; letter-spacing: .8px;
+    text-transform: uppercase; margin-bottom: 5px;
+  }
+  .card:nth-child(6n+1) .card-lbl { color: var(--pink); }
+  .card:nth-child(6n+2) .card-lbl { color: var(--blue); }
+  .card:nth-child(6n+3) .card-lbl { color: var(--teal); }
+  .card:nth-child(6n+4) .card-lbl { color: var(--amber); }
+  .card:nth-child(6n+5) .card-lbl { color: var(--purple); }
+  .card:nth-child(6n+0) .card-lbl { color: var(--green); }
+  .card-txt { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+  .card.speaking .card-txt { color: var(--hl-text); }
+
+  /* ── STEPS ── */
+  .step-row { display: flex; gap: 14px; margin-bottom: 18px; align-items: flex-start; }
+  .step-num {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; margin-top: 2px;
+  }
+  .sn0{background:var(--pink);color:#fff;}
+  .sn1{background:var(--blue);color:#fff;}
+  .sn2{background:var(--teal);color:#fff;}
+  .sn3{background:var(--amber);color:#fff;}
+  .sn4{background:var(--purple);color:#fff;}
+  .sn5{background:var(--green);color:#fff;}
+  .step-body { flex: 1; }
+  .step-lbl {
+    font-size: 10px; font-weight: 700; letter-spacing: .5px;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px;
+  }
+  .step-txt {
+    font-size: 14px; color: var(--text-secondary); line-height: 1.75;
+    padding: 5px 9px; border-radius: 7px; margin-left: -9px;
+    border-left: 3px solid transparent;
+    transition: background .25s, color .25s, box-shadow .25s;
+  }
+  .step-txt.speaking {
+    background: var(--hl-bg); color: var(--hl-text);
+    box-shadow: var(--hl-glow); border-left: 3px solid var(--hl-border);
+    padding-left: 12px; margin-left: -12px;
+  }
+
+  /* ── PILLS ── */
+  .pill-list { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 16px; }
+  .pill {
+    padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    background: var(--surface2); border: 1px solid var(--border-bright);
+    color: var(--text-secondary);
+  }
+
+  /* ── NOTICE BOX (intro uses) ── */
+  .notice {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; margin: 14px 0;
+    font-size: 13px; color: var(--text-secondary); line-height: 1.7;
+    border-left: 3px solid var(--blue);
+    border-radius: 8px;
+    transition: background .25s, color .25s, box-shadow .25s;
+  }
+  .notice.speaking {
+    background: var(--hl-bg); color: var(--hl-text);
+    box-shadow: var(--hl-glow); border-left: 3px solid var(--hl-border);
+  }
+
+  /* ── FINAL CARD ── */
+  .final-wrap {
+    background: linear-gradient(135deg, rgba(224,67,110,.07), rgba(46,134,200,.07));
+    border: 1px solid rgba(46,134,200,.22); border-radius: 16px;
+    padding: 28px 32px; text-align: center;
+    box-shadow: 0 2px 12px rgba(30,40,100,0.07);
+  }
+  .final-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; color: var(--text-primary); line-height: 1.7;
+    margin-bottom: 16px; padding: 8px; border-radius: 8px;
+    border-left: 3px solid transparent;
+    transition: background .25s, box-shadow .25s, color .25s;
+  }
+  .final-big.speaking {
+    background: var(--hl-bg); box-shadow: var(--hl-glow); color: var(--hl-text);
+    border-left: 3px solid var(--hl-border);
+  }
+  .final-sub {
+    font-size: 13px; color: var(--text-muted); font-style: italic; line-height: 1.75;
+    padding: 8px; border-radius: 8px; border-left: 3px solid transparent;
+    transition: background .25s, box-shadow .25s, color .25s;
+  }
+  .final-sub.speaking {
+    background: var(--hl-bg); box-shadow: var(--hl-glow); color: var(--hl-text);
+    border-left: 3px solid var(--hl-border);
+  }
+  .final-tagline {
+    font-size: 13px; font-weight: 600; letter-spacing: .3px;
+    color: var(--blue); margin-top: 20px; padding: 8px; border-radius: 8px;
+    border-left: 3px solid transparent;
+    transition: background .25s, box-shadow .25s, color .25s;
+  }
+  .final-tagline.speaking {
+    background: var(--hl-bg); box-shadow: var(--hl-glow); color: var(--hl-text);
+    border-left: 3px solid var(--hl-border);
+  }
+
+  .hr { height: 1px; background: var(--border); margin: 36px 0; }
+
+  @media (max-width: 800px) {
+    .sidebar { display: none; }
+    .content { padding: 24px 20px; }
+    .card-grid { grid-template-columns: 1fr; }
+    .sec-body { padding-left: 0; }
+    .hero-block { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-mark">tw</div>
+  <div>
+    <div class="logo-text">Twin Digital Twin</div>
+    <div class="logo-sub">The science behind your personalized healing</div>
+  </div>
+  <div class="hdr-spacer"></div>
+  <div class="now-badge" id="nowBadge">
+    <div class="waves"><span></span><span></span><span></span></div>
+    <span id="nowText">Reading…</span>
+  </div>
+</header>
+
+<div class="player">
+  <div class="controls">
+    <button class="btn btn-nav" id="prevBtn">&#9664;&#9664;</button>
+    <button class="btn btn-play" id="playBtn">&#9654;</button>
+    <button class="btn btn-nav" id="nextBtn">&#9654;&#9654;</button>
+  </div>
+  <div class="progress">
+    <div class="prog-meta">
+      <span id="secLabel">—</span>
+      <span id="pctLabel">0%</span>
+    </div>
+    <div class="track"><div class="fill" id="fillBar"></div></div>
+  </div>
+  <div class="speed-wr">
+    <label>Speed</label>
+    <select class="speed-sel" id="speedSel">
+      <option value="0.7">0.7×</option>
+      <option value="0.85">0.85×</option>
+      <option value="1" selected>1×</option>
+      <option value="1.15">1.15×</option>
+      <option value="1.3">1.3×</option>
+    </select>
+  </div>
+</div>
+
+<div class="chip-bar" id="chipBar"></div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="toc-head">Contents</div>
+    <div id="tocList"></div>
+  </aside>
+  <main class="content" id="contentArea"></main>
+</div>
+
+<script>
+// ─── ALL CONTENT FROM PDF ─────────────────────────────────────────────────────
+const sections = [
+  {
+    id: 'intro',
+    type: 'hero',
+    eyebrow: 'Document Overview',
+    title: 'Twin Digital Twin — How It Works',
+    subtitle: 'The science behind your personalized healing',
+    speakables: [
+      { type: 'hero-desc', text: 'A simple explanation of how your Digital Twin works, without the technical complexity.' },
+      { type: 'hero-desc', text: 'This document is designed for onboarding, Twin App education, WhatsApp learning nudges, and member motivation.' },
+      { type: 'notice',    text: 'Everything is written without medical jargon, while staying scientifically accurate and emotionally reassuring.' }
+    ]
+  },
+  {
+    id: 'sec1', type: 'section', icon: '✨', ic: 'ic0',
+    eyebrow: 'Section 1', title: 'First, A Simple Truth',
+    speakables: [
+      { type: 'para', text: 'Your metabolism is unique. Your food response is unique. Your hormones are unique. Your sleep pattern is unique. Your stress response is unique. Your organ health is unique.' },
+      { type: 'para', text: 'This is why generic diets, generic plans, and generic workouts never worked for you. Your body needs something built for you, not for the "average human."' },
+      { type: 'para', text: 'That is exactly what your Digital Twin does.' }
+    ]
+  },
+  {
+    id: 'sec2', type: 'section', icon: '🧬', ic: 'ic1',
+    eyebrow: 'Section 2', title: 'What Is Your Digital Twin?',
+    speakables: [
+      { type: 'para', text: 'Your Digital Twin is a living, learning, 24/7 scientific model of your metabolism.' },
+      { type: 'para', text: 'It is built just for you, updated every day, based on your own body\'s signals, always learning, always watching your metabolic patterns, and always guiding you.' },
+      { type: 'para', text: 'It is like having a nutrition scientist, an exercise physiologist, a sleep specialist, a metabolic doctor, and a health coach — all combined into one personalized intelligence inside your app.' }
+    ]
+  },
+  {
+    id: 'sec3', type: 'section', icon: '👁️', ic: 'ic2',
+    eyebrow: 'Section 3', title: 'What Your Digital Twin Sees About You',
+    speakables: [
+      { type: 'para', text: 'Your Digital Twin watches how your body responds to everything in your daily life.' },
+      { type: 'card', label: 'Foods',         text: 'Through your logs and your glucose patterns' },
+      { type: 'card', label: 'Movement',      text: 'Steps, walks, heart rate changes' },
+      { type: 'card', label: 'Sleep',         text: 'Timing, duration, night glucose behavior' },
+      { type: 'card', label: 'Stress',        text: 'Your heart rate and recovery patterns' },
+      { type: 'card', label: 'Medications',   text: 'How they affect your glucose and organs' },
+      { type: 'card', label: 'Daily Routine', text: 'When you eat, move, sleep, and wake' },
+      { type: 'para', text: 'It uses this information to understand what is helping you, what is harming you, how quickly you are healing, when your body needs support, and when it can reduce medications.' }
+    ]
+  },
+  {
+    id: 'sec4', type: 'section', icon: '🎯', ic: 'ic3',
+    eyebrow: 'Section 4', title: 'What Your Digital Twin Does With This Information',
+    speakables: [
+      { type: 'para', text: 'Your Digital Twin uses all your signals to create a fully personalized guidance system.' },
+      { type: 'card', label: 'Your Food Colours',      text: 'Which foods are "Green For You" — meaning best for your metabolism' },
+      { type: 'card', label: 'Your Meal Guidance',     text: 'What helps you reduce insulin load and reduce inflammation' },
+      { type: 'card', label: 'Your Movement Suggestions', text: 'How long to walk, when to move, how to keep insulin load stable' },
+      { type: 'card', label: 'Your Sleep Support',     text: 'How to improve nightly healing and morning glucose' },
+      { type: 'card', label: 'Your Medication Pathway',text: 'When it\'s safe for your doctors to reduce medications as your metabolism heals' },
+      { type: 'para', text: 'Everything becomes personalized. No two members have the same Twin.' }
+    ]
+  },
+  {
+    id: 'sec5', type: 'section', icon: '⚡', ic: 'ic4',
+    eyebrow: 'Section 5', title: 'Why Your Digital Twin Works Better Than Diets or Generic Advice',
+    speakables: [
+      { type: 'para', text: 'Most diets fail because they assume everyone responds the same way, everyone can follow the same rules, and everyone\'s metabolism behaves predictably.' },
+      { type: 'para', text: 'But your body is not generic.' },
+      { type: 'para', text: 'Your Digital Twin learns how you personally respond: glucose after different meals, energy at different times of day, stress triggers, sleep impact on sugars, how quickly you burn or store energy, and how your organs heal.' },
+      { type: 'para', text: 'This is what makes Twin Precise.' }
+    ]
+  },
+  {
+    id: 'sec6', type: 'section', icon: '🚀', ic: 'ic5',
+    eyebrow: 'Section 6', title: 'What Makes Your Digital Twin Truly Revolutionary',
+    speakables: [
+      { type: 'para', text: 'Your Digital Twin is the first system in the world that can understand your metabolic signals in real time, learn your food response and personal triggers, detect liver-fat stress and inflammation patterns, support safe deprescribing of medications, predict how your body will respond before it happens, and guide your journey across all chronic conditions — including diabetes, PCOS, obesity, fatty liver, BP, cholesterol, and thyroid.' },
+      { type: 'para', text: 'This is why Twin works even when diets have failed, gyms have failed, medication-only approaches have failed, and generic advice has failed.' },
+      { type: 'para', text: 'We finally have a technology that can understand your metabolism deeply.' }
+    ]
+  },
+  {
+    id: 'sec7', type: 'section', icon: '🌿', ic: 'ic6',
+    eyebrow: 'Section 7', title: 'How Your Digital Twin Helps You Heal',
+    speakables: [
+      { type: 'para', text: 'Your Digital Twin works through six powerful steps that build on each other over time.' },
+      { type: 'step', sn: 'sn0', num: 1, label: 'It Listens',   text: 'It observes your daily signals through your CGM, smartwatch, sleep, and food logs.' },
+      { type: 'step', sn: 'sn1', num: 2, label: 'It Learns',    text: 'It notices patterns that even doctors can\'t see — like how a small sleep change affects your next-day sugar.' },
+      { type: 'step', sn: 'sn2', num: 3, label: 'It Predicts',  text: 'It can estimate your future glucose response, inflammation risk, and metabolic stress before it happens.' },
+      { type: 'step', sn: 'sn3', num: 4, label: 'It Guides',    text: 'It gives you daily personalized recommendations you can follow easily.' },
+      { type: 'step', sn: 'sn4', num: 5, label: 'It Heals',     text: 'Your metabolism becomes more stable, predictable, and healthy.' },
+      { type: 'step', sn: 'sn5', num: 6, label: 'It Liberates', text: 'As your body heals, medications are safely reduced under clinical supervision. This is the true meaning of reversal.' }
+    ]
+  },
+  {
+    id: 'sec8', type: 'section', icon: '📈', ic: 'ic7',
+    eyebrow: 'Section 8', title: 'What You Will Notice Over Time',
+    speakables: [
+      { type: 'para', text: 'As your Digital Twin learns you better, you will notice your sugars become more stable, your weight responds better, your sleep becomes deeper, your cravings reduce, and your energy becomes steady.' },
+      { type: 'para', text: 'You will also notice your blood pressure and cholesterol improve, your inflammation reduces, your hormones balance better, your stress response calms down, and your medications start reducing.' },
+      { type: 'para', text: 'Your metabolism slowly returns to a healthy, predictable rhythm.' }
+    ]
+  },
+  {
+    id: 'sec9', type: 'section', icon: '💫', ic: 'ic8',
+    eyebrow: 'Section 9', title: 'Your Digital Twin Gets Better Every Day',
+    speakables: [
+      { type: 'para', text: 'The more data you give it — food logs, sleep data, daily steps, CGM readings, medication logs — the smarter it becomes.' },
+      { type: 'para', text: 'It becomes more accurate, more personalized, more predictive, more supportive, and more powerful.' },
+      { type: 'para', text: 'This is how Twin gives you long-term results.' }
+    ]
+  },
+  {
+    id: 'sec10', type: 'final', icon: '❤️', ic: 'ic9',
+    eyebrow: 'Final Message', title: 'A Message for Members',
+    speakables: [
+      { type: 'final-big', text: 'Your Digital Twin is not just technology. It is your personal metabolic guide. It is learning you. It is supporting you. It is leading you toward metabolic reversal. It is working 24 hours a day, 7 days a week, for your health.' },
+      { type: 'final-sub', text: 'With every meal you log, every step you take, every night of sleep, your Digital Twin becomes a more perfect guide for you. Together — your body, your Digital Twin, and your care team — are healing your metabolism from the inside out.' },
+      { type: 'final-tagline', text: 'This is not management. This is not temporary. This is your path to a healthier future.' }
+    ]
+  }
+];
+
+// ─── REGISTRY ─────────────────────────────────────────────────────────────────
+const registry = [];   // {el, si}
+const secEls   = [];
+const snColors = ['sn0','sn1','sn2','sn3','sn4','sn5'];
+const ca       = document.getElementById('contentArea');
+const tocList  = document.getElementById('tocList');
+const chipBar  = document.getElementById('chipBar');
+
+// ─── BUILD DOM ────────────────────────────────────────────────────────────────
+sections.forEach((sec, si) => {
+  // TOC
+  const tr = document.createElement('div');
+  tr.className = 'toc-row';
+  tr.innerHTML = `<div class="toc-dot">${si+1}</div><div class="toc-lbl">${sec.title}</div>`;
+  tr.onclick = () => { stop(); jumpTo(si); };
+  tocList.appendChild(tr);
+
+  // Chip
+  const ch = document.createElement('div');
+  ch.className = 'chip';
+  const ws = sec.title.split(' ');
+  ch.textContent = ws.slice(0,3).join(' ') + (ws.length > 3 ? '…' : '');
+  ch.onclick = () => { stop(); jumpTo(si); };
+  chipBar.appendChild(ch);
+
+  // Block
+  let block;
+
+  if (sec.type === 'hero') {
+    block = document.createElement('div');
+    block.className = 'hero-block';
+    block.id = 'sec-' + si;
+    let h = `<div class="hero-title">${sec.title}</div>
+             <div class="hero-subtitle">${sec.subtitle}</div>`;
+    sec.speakables.forEach(s => {
+      if (s.type === 'hero-desc') h += `<p class="hero-desc" data-type="hero-desc" data-si="${si}">${s.text}</p>`;
+      else if (s.type === 'notice') h += `<div class="notice" data-type="notice" data-si="${si}">${s.text}</div>`;
+    });
+    h += `<div class="use-tags">
+      <span class="use-tag">📱 Onboarding</span>
+      <span class="use-tag">🎓 App Education</span>
+      <span class="use-tag">💬 WhatsApp Nudges</span>
+      <span class="use-tag">🌟 Member Motivation</span>
+    </div>`;
+    block.innerHTML = h;
+
+  } else if (sec.type === 'section') {
+    block = document.createElement('section');
+    block.className = 'sec-block';
+    block.id = 'sec-' + si;
+
+    let h = `<div class="sec-head">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-eyebrow">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body">`;
+
+    // Collect cards to render in a grid
+    const cards = sec.speakables.filter(s => s.type === 'card');
+    const nonCards = sec.speakables.filter(s => s.type !== 'card');
+    let cardGridInserted = false;
+
+    sec.speakables.forEach(s => {
+      if (s.type === 'para') {
+        h += `<p class="para" data-type="para" data-si="${si}">${s.text}</p>`;
+      } else if (s.type === 'card' && !cardGridInserted) {
+        cardGridInserted = true;
+        h += `<div class="card-grid">`;
+        cards.forEach(c => {
+          h += `<div class="card" data-type="card" data-si="${si}"><div class="card-lbl">${c.label}</div><div class="card-txt">${c.text}</div></div>`;
+        });
+        h += `</div>`;
+      } else if (s.type === 'card') {
+        // already rendered
+      } else if (s.type === 'step') {
+        h += `<div class="step-row">
+          <div class="step-num ${s.sn}">${s.num}</div>
+          <div class="step-body">
+            <div class="step-lbl">${s.label}</div>
+            <div class="step-txt" data-type="step" data-si="${si}">${s.text}</div>
+          </div>
+        </div>`;
+      }
+    });
+    h += `</div>`;
+    block.innerHTML = h;
+
+  } else if (sec.type === 'final') {
+    block = document.createElement('section');
+    block.className = 'sec-block';
+    block.id = 'sec-' + si;
+    let h = `<div class="sec-head">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-eyebrow">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body">
+    <div class="final-wrap">`;
+    sec.speakables.forEach(s => {
+      h += `<div class="${s.type}" data-type="${s.type}" data-si="${si}">${s.text}</div>`;
+      if (s.type === 'final-big') h += `<div class="hr"></div>`;
+    });
+    h += `</div></div>`;
+    block.innerHTML = h;
+  }
+
+  if (si < sections.length - 1) {
+    const hr = document.createElement('div');
+    hr.className = 'hr';
+    block.appendChild(hr);
+  }
+
+  ca.appendChild(block);
+  secEls.push(block);
+});
+
+// Gather all speakable elements — in DOM order
+document.querySelectorAll('[data-type]').forEach(el => {
+  registry.push({ el, si: +el.dataset.si });
+});
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let cur = 0, playing = false, regIdx = 0, activeEl = null;
+const synth = window.speechSynthesis;
+const total = registry.length;
+
+function hl(el, on)  { if (el) el.classList.toggle('speaking', on); }
+function clearHl()   { if (activeEl) { hl(activeEl, false); activeEl = null; } }
+
+function activate(el, si) {
+  clearHl(); hl(el, true); activeEl = el;
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (si !== cur) cur = si;
+  ui();
+}
+
+function ui() {
+  document.querySelectorAll('.toc-row').forEach((r,i) => r.classList.toggle('active', i===cur));
+  document.querySelectorAll('.chip').forEach((c,i) => c.classList.toggle('active', i===cur));
+  secEls.forEach((s,i) => s.classList.toggle('dim', i!==cur));
+  const pct = total > 0 ? Math.round((regIdx / total) * 100) : 0;
+  document.getElementById('fillBar').style.width = pct + '%';
+  document.getElementById('pctLabel').textContent = pct + '%';
+  document.getElementById('secLabel').textContent = sections[cur].title;
+  document.getElementById('playBtn').innerHTML = playing ? '&#9646;&#9646;' : '&#9654;';
+  const b = document.getElementById('nowBadge');
+  if (playing) { b.classList.add('on'); document.getElementById('nowText').textContent = sections[cur].title; }
+  else b.classList.remove('on');
+}
+
+function jumpTo(si) {
+  cur = si;
+  secEls[si].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const idx = registry.findIndex(r => r.si === si);
+  if (idx >= 0) regIdx = idx;
+  ui();
+}
+
+function getVoice() {
+  const vs = synth.getVoices();
+  return vs.find(v => v.lang === 'en-GB')
+      || vs.find(v => v.lang === 'en-AU')
+      || vs.find(v => v.lang.startsWith('en') && v.name.includes('Female'))
+      || vs.find(v => v.lang.startsWith('en'))
+      || null;
+}
+
+function speakNext() {
+  if (!playing) return;
+  if (regIdx >= registry.length) { playing = false; clearHl(); ui(); return; }
+  const { el, si } = registry[regIdx++];
+  activate(el, si);
+  const text = el.innerText.trim();
+  if (!text) { speakNext(); return; }
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = +document.getElementById('speedSel').value;
+  u.pitch = 1.0;
+  const v = getVoice(); if (v) u.voice = v;
+  u.onend  = () => { if (playing) speakNext(); };
+  u.onerror= () => { if (playing) speakNext(); };
+  synth.speak(u);
+}
+
+function start() { synth.cancel(); playing = true; ui(); speakNext(); }
+function stop()  { playing = false; synth.cancel(); clearHl(); ui(); }
+
+document.getElementById('playBtn').onclick = () => playing ? stop() : start();
+document.getElementById('prevBtn').onclick = () => { stop(); jumpTo(Math.max(0, cur-1)); };
+document.getElementById('nextBtn').onclick = () => { stop(); jumpTo(Math.min(sections.length-1, cur+1)); };
+document.getElementById('speedSel').onchange = () => {
+  if (playing) { synth.cancel(); setTimeout(() => { if (playing) speakNext(); }, 80); }
+};
+
+// Init
+secEls.forEach((s,i) => s.classList.toggle('dim', i !== 0));
+document.querySelectorAll('.toc-row')[0].classList.add('active');
+document.querySelectorAll('.chip')[0].classList.add('active');
+ui();
+if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = () => {};
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !playing) {
+      cur = +e.target.id.replace('sec-',''); ui();
+    }
+  });
+}, { threshold: 0.3 });
+secEls.forEach(el => io.observe(el));
+</script>
+</body>
+</html>

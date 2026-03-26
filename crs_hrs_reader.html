@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRS & HRS — Twin Precision Treatment</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#faeef0;--sidebar-bg:#f2e0e3;--surface:#ffffff;--surface2:#fdf5f6;--surface3:#e8cdd1;
+    --border:rgba(160,40,70,0.10);--border-hi:rgba(160,40,70,0.20);
+    --crimson:#b02040;--rose:#c8364a;--pink:#e05070;
+    --blue:#1a60a8;--teal:#0a7a6a;--amber:#a86008;--violet:#5535a0;--emerald:#087250;
+    --txt1:#200810;--txt2:#4a1828;--txt3:#907080;
+    --hl-bg:rgba(176,32,64,0.10);--hl-bdr:#b02040;--hl-txt:#1a0008;
+    --hl-glow:0 0 0 3px rgba(176,32,64,0.13),0 6px 22px rgba(176,32,64,0.09);
+    --title-hl-bg:rgba(200,54,74,0.10);--title-hl-bdr:#c8364a;--title-hl-txt:#1a0008;
+    --title-hl-glow:0 0 0 3px rgba(200,54,74,0.15),0 6px 22px rgba(200,54,74,0.10);
+    --sub-hl-bg:rgba(26,96,168,0.09);--sub-hl-bdr:#1a60a8;--sub-hl-txt:#000c1a;
+    --sub-hl-glow:0 0 0 3px rgba(26,96,168,0.12),0 4px 18px rgba(26,96,168,0.08);
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt1);min-height:100vh;display:flex;flex-direction:column;}
+
+  /* ── HEADER ── */
+  .hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:64px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:300;box-shadow:0 2px 14px rgba(120,20,40,0.07);}
+  .logo{width:38px;height:38px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,var(--crimson),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:15px;color:#fff;font-weight:700;}
+  .hdr-info{flex:1;min-width:0;}.hdr-title{font-size:14px;font-weight:600;color:var(--txt1);line-height:1.2;}.hdr-sub{font-size:11px;color:var(--txt3);font-style:italic;margin-top:1px;}
+  .live-pill{display:none;align-items:center;gap:8px;background:rgba(176,32,64,0.09);border:1px solid rgba(176,32,64,0.28);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:var(--crimson);max-width:230px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex-shrink:0;}
+  .live-pill.on{display:flex;}
+  .bars{display:flex;gap:2px;align-items:flex-end;height:12px;flex-shrink:0;}
+  .bars span{display:block;width:3px;background:var(--rose);border-radius:2px;animation:bar 1.2s ease-in-out infinite;}
+  .bars span:nth-child(2){animation-delay:.15s;}.bars span:nth-child(3){animation-delay:.3s;}
+  @keyframes bar{0%,100%{height:4px}50%{height:12px}}
+
+  /* ── PLAYER ── */
+  .player{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 1px 6px rgba(120,20,40,0.05);}
+  .ctrls{display:flex;align-items:center;gap:8px;}
+  .btn{border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .17s;font-family:inherit;}
+  .btn-play{width:46px;height:46px;font-size:17px;color:#fff;background:linear-gradient(135deg,var(--crimson),var(--blue));box-shadow:0 4px 16px rgba(176,32,64,0.30);}
+  .btn-play:hover{transform:scale(1.07);box-shadow:0 6px 22px rgba(176,32,64,0.44);}.btn-play:active{transform:scale(.94);}
+  .btn-nav{width:34px;height:34px;font-size:12px;background:var(--surface2);color:var(--txt2);border:1px solid var(--border-hi);}.btn-nav:hover{background:var(--surface3);color:var(--txt1);}
+  .prog{flex:1;min-width:150px;}.prog-top{display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:7px;}.prog-top span:first-child{color:var(--txt2);font-weight:500;}
+  .track{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;}.fill{height:100%;width:0%;border-radius:3px;background:linear-gradient(90deg,var(--crimson),var(--blue));transition:width .4s linear;}
+  .voice-wr{display:flex;align-items:center;gap:7px;}.voice-wr label,.spd label{font-size:11px;color:var(--txt3);white-space:nowrap;}
+  .voice-wr select,.spd select{background:var(--surface2);border:1px solid var(--border-hi);border-radius:7px;padding:5px 9px;font-size:12px;color:var(--txt1);font-family:'Inter',sans-serif;cursor:pointer;outline:none;max-width:170px;}
+  .spd{display:flex;align-items:center;gap:7px;}
+
+  /* ── CHIPS ── */
+  .chips{background:var(--surface2);border-bottom:1px solid var(--border);padding:8px 28px;display:flex;gap:5px;overflow-x:auto;}.chips::-webkit-scrollbar{display:none;}
+  .chip{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border-hi);flex-shrink:0;white-space:nowrap;transition:all .2s;color:var(--txt3);background:var(--surface);}
+  .chip:hover{color:var(--txt1);border-color:var(--rose);}.chip.active{background:var(--crimson);border-color:var(--crimson);color:#fff;font-weight:600;}
+
+  /* ── LAYOUT ── */
+  .layout{display:flex;flex:1;}
+  .sidebar{width:252px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);padding:20px 12px;overflow-y:auto;position:sticky;top:64px;height:calc(100vh - 64px);}
+  .sidebar::-webkit-scrollbar{width:3px;}.sidebar::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+  .toc-hd{font-size:9px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--txt3);padding:0 8px;margin-bottom:10px;}
+  .toc-row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:9px;cursor:pointer;transition:all .17s;margin-bottom:2px;border:1px solid transparent;}
+  .toc-row:hover{background:var(--surface3);}.toc-row.active{background:var(--surface);border-color:var(--border-hi);box-shadow:0 1px 6px rgba(120,20,40,0.08);}
+  .toc-num{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;background:var(--surface3);color:var(--txt3);transition:all .2s;}
+  .toc-row.active .toc-num{background:var(--crimson);color:#fff;}
+  .toc-txt{font-size:12px;color:var(--txt3);line-height:1.35;}.toc-row.active .toc-txt{color:var(--txt1);font-weight:500;}
+
+  /* ── CONTENT ── */
+  .content{flex:1;padding:40px 56px;overflow-y:auto;max-width:860px;}.content::-webkit-scrollbar{width:4px;}.content::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+
+  /* ── HERO ── */
+  .hero{background:linear-gradient(135deg,rgba(176,32,64,.08),rgba(26,96,168,.10));border:1px solid rgba(176,32,64,.20);border-radius:20px;padding:38px 42px;margin-bottom:44px;scroll-margin-top:20px;transition:opacity .35s;}
+  .hero.dim{opacity:.26;}
+  .hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--crimson);margin-bottom:14px;}
+  .doc-title{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--txt1);line-height:1.22;margin-bottom:8px;padding:8px 12px;margin-left:-12px;border-radius:10px;border-left:4px solid transparent;transition:background .22s,color .22s,box-shadow .22s,border-color .15s;}
+  .doc-title.hl{background:var(--title-hl-bg);color:var(--title-hl-txt);box-shadow:var(--title-hl-glow);border-left-color:var(--title-hl-bdr);padding-left:16px;margin-left:-16px;}
+  .doc-subtitle{font-family:'Playfair Display',serif;font-size:16px;font-style:italic;color:var(--blue);margin-bottom:24px;padding:6px 12px;margin-left:-12px;border-radius:8px;border-left:4px solid transparent;transition:background .22s,color .22s,box-shadow .22s,border-color .15s;}
+  .doc-subtitle.hl{background:var(--sub-hl-bg);color:var(--sub-hl-txt);box-shadow:var(--sub-hl-glow);border-left-color:var(--sub-hl-bdr);padding-left:16px;margin-left:-16px;}
+
+  /* ── SECTION ── */
+  .sec{margin-bottom:50px;scroll-margin-top:20px;transition:opacity .35s;}.sec.dim{opacity:.26;}
+  .sec-hd{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px;}
+  .sec-icon{width:46px;height:46px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;}
+  .i0{background:rgba(176,32,64,.13);box-shadow:inset 0 0 0 1.5px rgba(176,32,64,.30);}
+  .i1{background:rgba(26,96,168,.13);box-shadow:inset 0 0 0 1.5px rgba(26,96,168,.30);}
+  .i2{background:rgba(10,122,106,.13);box-shadow:inset 0 0 0 1.5px rgba(10,122,106,.30);}
+  .i3{background:rgba(168,96,8,.13);box-shadow:inset 0 0 0 1.5px rgba(168,96,8,.30);}
+  .i4{background:rgba(85,53,160,.13);box-shadow:inset 0 0 0 1.5px rgba(85,53,160,.30);}
+  .i5{background:rgba(176,32,64,.13);box-shadow:inset 0 0 0 1.5px rgba(176,32,64,.30);}
+  .i6{background:rgba(26,96,168,.13);box-shadow:inset 0 0 0 1.5px rgba(26,96,168,.30);}
+  .i7{background:rgba(10,122,106,.13);box-shadow:inset 0 0 0 1.5px rgba(10,122,106,.30);}
+  .sec-ey{font-size:10px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--txt3);margin-bottom:4px;}
+  .sec-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--txt1);line-height:1.25;}
+  .sec-body{padding-left:60px;}
+
+  /* ── SPEAKABLES ── */
+  .sp{font-size:15px;line-height:1.88;color:var(--txt2);margin-bottom:14px;border-radius:8px;padding:6px 12px;margin-left:-12px;border-left:4px solid transparent;transition:background .22s,color .22s,box-shadow .22s,border-color .15s;}
+  .sp.hl{background:var(--hl-bg);color:var(--hl-txt);box-shadow:var(--hl-glow);border-left-color:var(--hl-bdr);padding-left:15px;margin-left:-15px;}
+  .insight{background:var(--surface2);border-radius:10px;border-left:4px solid var(--rose);padding:13px 16px;margin:12px 0 16px;font-size:14px;color:var(--txt2);line-height:1.78;transition:background .22s,color .22s,box-shadow .22s,border-color .15s;}
+  .insight.hl{background:var(--hl-bg);color:var(--hl-txt);box-shadow:var(--hl-glow);border-left-color:var(--hl-bdr);}
+
+  /* ── 8 DOMAIN CARDS ── */
+  .domain-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 20px;}
+  .domain-card{background:var(--surface);border-radius:13px;border:1px solid var(--border);padding:16px 18px;box-shadow:0 1px 6px rgba(120,20,40,0.05);transition:border-color .22s,background .22s,box-shadow .22s;}
+  .domain-card.hl{background:var(--hl-bg);border-color:rgba(176,32,64,.42);box-shadow:var(--hl-glow);}
+  .dom-num{font-size:9px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;}
+  .dc0 .dom-num{color:var(--crimson);}.dc1 .dom-num{color:var(--blue);}.dc2 .dom-num{color:var(--teal);}
+  .dc3 .dom-num{color:var(--amber);}.dc4 .dom-num{color:var(--violet);}.dc5 .dom-num{color:var(--emerald);}
+  .dc6 .dom-num{color:var(--rose);}.dc7 .dom-num{color:var(--blue);}
+  .dom-head{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--txt1);margin-bottom:6px;}
+  .dom-body{font-size:13px;color:var(--txt2);line-height:1.65;transition:color .22s;}
+  .domain-card.hl .dom-body{color:var(--hl-txt);}
+
+  /* ── SCORE RANGE TABLE ── */
+  .score-table{width:100%;border-collapse:collapse;margin:16px 0 20px;border-radius:14px;overflow:hidden;box-shadow:0 1px 8px rgba(120,20,40,0.07);}
+  .score-table thead tr{background:var(--surface3);}
+  .score-table th{font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--txt3);padding:11px 14px;text-align:left;}
+  .score-table td{font-size:13px;color:var(--txt2);padding:11px 14px;border-top:1px solid var(--border);background:var(--surface);transition:background .22s,color .22s,box-shadow .22s;}
+  .score-table tr.hl td{background:var(--hl-bg);color:var(--hl-txt);box-shadow:var(--hl-glow);}
+  .score-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px;}
+  .badge-excellent{background:rgba(8,114,80,.12);color:var(--emerald);}
+  .badge-good{background:rgba(26,96,168,.12);color:var(--blue);}
+  .badge-moderate{background:rgba(168,96,8,.12);color:var(--amber);}
+  .badge-low{background:rgba(176,32,64,.12);color:var(--crimson);}
+
+  /* ── HRS SIGNAL CARDS ── */
+  .signal-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:14px 0 18px;}
+  .signal-card{background:var(--surface);border-radius:12px;border:1px solid var(--border);padding:14px 16px;box-shadow:0 1px 5px rgba(120,20,40,0.05);transition:border-color .22s,background .22s,box-shadow .22s;}
+  .signal-card.hl{background:var(--hl-bg);border-color:rgba(176,32,64,.42);box-shadow:var(--hl-glow);}
+  .sig-icon{font-size:18px;margin-bottom:6px;}
+  .sig-lbl{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;margin-bottom:3px;}
+  .sc0 .sig-lbl{color:var(--crimson);}.sc1 .sig-lbl{color:var(--blue);}.sc2 .sig-lbl{color:var(--teal);}
+  .sc3 .sig-lbl{color:var(--amber);}.sc4 .sig-lbl{color:var(--violet);}
+  .sig-txt{font-size:13px;color:var(--txt2);line-height:1.60;transition:color .22s;}
+  .signal-card.hl .sig-txt{color:var(--hl-txt);}
+
+  /* ── FINAL ── */
+  .final-wrap{background:linear-gradient(135deg,rgba(176,32,64,.07),rgba(26,96,168,.08));border:1px solid rgba(176,32,64,.20);border-radius:18px;padding:30px 34px;box-shadow:0 2px 14px rgba(120,20,40,0.07);}
+  .final-big{font-family:'Playfair Display',serif;font-size:19px;color:var(--txt1);line-height:1.72;margin-bottom:18px;padding:8px 12px;border-radius:8px;border-left:4px solid transparent;transition:background .22s,box-shadow .22s,color .22s,border-color .15s;}
+  .final-big.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+  .final-tagline{font-size:14px;font-weight:600;color:var(--crimson);letter-spacing:.2px;padding:8px 12px;border-radius:8px;border-left:4px solid transparent;transition:background .22s,box-shadow .22s,color .22s,border-color .15s;}
+  .final-tagline.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+  .divider{height:1px;background:var(--border);margin:38px 0;}
+
+  @media(max-width:860px){.sidebar{display:none;}.content{padding:24px 20px;}.sec-body{padding-left:0;}.domain-grid,.signal-grid{grid-template-columns:1fr;}.hero{padding:24px 22px;}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="logo">tw</div>
+  <div class="hdr-info">
+    <div class="hdr-title">Cellular & Heart Resilience Scores</div>
+    <div class="hdr-sub">CRS & HRS — Twin Precision Treatment</div>
+  </div>
+  <div class="live-pill" id="livePill"><div class="bars"><span></span><span></span><span></span></div><span id="liveText">Reading…</span></div>
+</header>
+
+<div class="player">
+  <div class="ctrls">
+    <button class="btn btn-nav" id="prevBtn">&#9664;&#9664;</button>
+    <button class="btn btn-play" id="playBtn">&#9654;</button>
+    <button class="btn btn-nav" id="nextBtn">&#9654;&#9654;</button>
+  </div>
+  <div class="prog">
+    <div class="prog-top"><span id="secLbl">—</span><span id="pctLbl">0%</span></div>
+    <div class="track"><div class="fill" id="fillBar"></div></div>
+  </div>
+  <div class="voice-wr"><label>Voice</label><select id="voiceSel"><option value="">Loading…</option></select></div>
+  <div class="spd"><label>Speed</label>
+    <select id="spdSel"><option value="0.78">0.78×</option><option value="0.88">0.88×</option><option value="0.95" selected>0.95×</option><option value="1.05">1.05×</option><option value="1.15">1.15×</option></select>
+  </div>
+</div>
+
+<div class="chips" id="chipBar"></div>
+
+<div class="layout">
+  <aside class="sidebar"><div class="toc-hd">Contents</div><div id="toc"></div></aside>
+  <main class="content" id="main"></main>
+</div>
+
+<script>
+const DOC = [
+
+  /* 0 — HERO */
+  { type:'hero', id:'s0',
+    eyebrow:'Twin Precision Treatment — Score Explainer',
+    title:'Cellular Resilience Score & Heart Resilience Score',
+    subtitle:'Understanding the two AI-calculated scores that reflect your overall systemic health and cardiovascular resilience',
+    items:[
+      { t:'doc-title',    text:'Cellular Resilience Score and Heart Resilience Score' },
+      { t:'doc-subtitle', text:'Understanding the two AI-calculated scores that reflect your overall systemic health and cardiovascular resilience' },
+      { t:'sp', text:'Twin Precision Treatment uses two powerful AI-calculated scores to give you and your care team a holistic, real-time picture of how your body is healing. The Cellular Resilience Score measures your overall biological resilience across eight key health domains. The Heart Resilience Score reflects how strong and adaptable your heart is across five cardiovascular signals.' }
+    ]
+  },
+
+  /* 1 — CRS OVERVIEW */
+  { type:'sec', id:'s1', icon:'🧬', ic:'i0',
+    eyebrow:'Part 1 — CRS',
+    title:'Cellular Resilience Score (CRS)',
+    items:[
+      { t:'sp', text:'The CRS is a comprehensive health assessment score that integrates several biological and physiological markers to evaluate a patient\'s overall resilience and health status.' },
+      { t:'sp', text:'The score weighs eight key health domains, each comprising specific markers, to produce a final value that represents the patient\'s systemic health resilience — calculated by AI.' },
+      { t:'insight', text:'This score provides a holistic measure of patient resilience and can help in risk stratification, personalised interventions, and monitoring health trends over time.' }
+    ]
+  },
+
+  /* 2 — 8 DOMAINS */
+  { type:'sec', id:'s2', icon:'🔬', ic:'i1',
+    eyebrow:'CRS — The 8 Domains',
+    title:'Eight Key Health Domains Assessed',
+    items:[
+      { t:'sp', text:'The Cellular Resilience Score evaluates eight distinct domains of your biology, each telling a different part of your metabolic story.' },
+      { t:'domains', items:[
+        { cls:'dc0', num:'Domain 1', head:'Oxidative Stress & Inflammation',   body:'Reflects how much systemic inflammation and oxidative stress are present in the body. Higher inflammation indicates metabolic strain and reduced recovery capacity.' },
+        { cls:'dc1', num:'Domain 2', head:'Metabolic & Mitochondrial Function', body:'Assesses how efficiently the body produces and uses energy at the cellular level. Indicates the balance between insulin response, fuel utilisation, and mitochondrial health.' },
+        { cls:'dc2', num:'Domain 3', head:'Lipid-Based Resilience',             body:'Evaluates the stability and health of cholesterol and triglyceride patterns. Shows how resilient the cardiovascular and metabolic systems are to long-term risk.' },
+        { cls:'dc3', num:'Domain 4', head:'Nutritional & Protein Status',       body:'Measures core protein and albumin-globulin balance to understand nutritional adequacy. Indicates how well the body maintains tissue repair, immune support, and metabolic function.' },
+        { cls:'dc4', num:'Domain 5', head:'Immune & Haematological Markers',    body:'Reflects overall immune balance and blood health through key cell ratios and counts. Helps identify stress, infection risk, or recovery challenges.' },
+        { cls:'dc5', num:'Domain 6', head:'Hormonal Regulation',                body:'Indicates stability of key hormones that influence metabolism, energy, and overall endocrine balance. Helps detect metabolic slowdown or excessive physiological stress.' },
+        { cls:'dc6', num:'Domain 7', head:'Body Composition',                   body:'Assesses the distribution of fat, visceral fat, and muscle mass. Provides insight into metabolic efficiency, fitness status, and disease risk.' },
+        { cls:'dc7', num:'Domain 8', head:'Activity & Recovery Markers',        body:'Tracks how well the body balances daily effort with rest through sleep, resting heart rate, and recovery metrics. Shows your capacity to repair, adapt, and maintain metabolic stability.' }
+      ]}
+    ]
+  },
+
+  /* 3 — CRS SCORE TABLE */
+  { type:'sec', id:'s3', icon:'📊', ic:'i2',
+    eyebrow:'CRS — Score Interpretation',
+    title:'What Your Cellular Resilience Score Means',
+    items:[
+      { t:'sp', text:'Your CRS score falls into one of four ranges, each with a specific meaning and a personalised message to guide your next steps.' },
+      { t:'score-table', id:'crs-table', rows:[
+        { range:'80–100', badge:'badge-excellent', label:'Excellent', msg:'"Your cellular resilience is strong and responsive. Keep reinforcing these healthy habits!"' },
+        { range:'70–80',  badge:'badge-good',      label:'Good',      msg:'"You\'re on track. Small daily wins like better sleep or more steps will boost you further."' },
+        { range:'50–69',  badge:'badge-moderate',  label:'Moderate',  msg:'"Some areas like visceral fat or low steps or low sleep need attention. Let\'s focus on consistency."' },
+        { range:'< 50',   badge:'badge-low',       label:'Low',       msg:'"Your Digital Twin will guide a personalised path to recovery."' }
+      ]},
+      { t:'insight', text:'Remember: the CRS is not a verdict — it is a starting point. Every domain that improves moves your score upward, and your Digital Twin tracks those changes in real time.' }
+    ]
+  },
+
+  /* 4 — HRS OVERVIEW */
+  { type:'sec', id:'s4', icon:'🫀', ic:'i3',
+    eyebrow:'Part 2 — HRS',
+    title:'Heart Resilience Score (HRS)',
+    items:[
+      { t:'sp', text:'Your Heart Resilience Score reflects how strong and adaptable your heart is. It brings together key signals from your body to show how well your heart is coping with physical, emotional, and metabolic demands.' },
+      { t:'sp', text:'With support from your Digital Twin, this score evolves over time — showing measurable improvements across five key areas.' },
+      { t:'insight', text:'Your Heart Resilience Score is a snapshot of how your heart is improving day by day — powered by real-time insights, continuous monitoring, and personalised care from your Digital Twin.' }
+    ]
+  },
+
+  /* 5 — HRS 5 SIGNALS */
+  { type:'sec', id:'s5', icon:'📡', ic:'i4',
+    eyebrow:'HRS — The 5 Signals',
+    title:'Five Key Signals That Shape Your Heart Resilience',
+    items:[
+      { t:'sp', text:'The Heart Resilience Score is built from five cardiovascular and metabolic signals — each one tracked continuously and guided by your Digital Twin.' },
+      { t:'signals', items:[
+        { cls:'sc0', icon:'💓', lbl:'Resting Heart Rate (RHR)',  txt:'A lower resting heart rate over time reflects improved cardiovascular efficiency and better recovery — guided by personalised recommendations from your Digital Twin.' },
+        { cls:'sc1', icon:'👟', lbl:'Daily Step Count',          txt:'As your movement and activity levels increase, your heart becomes more conditioned. The Digital Twin nudges consistent progress in daily steps to strengthen heart performance.' },
+        { cls:'sc2', icon:'🫁', lbl:'Visceral Fat %',            txt:'Visceral fat is the deeper fat surrounding your internal organs. A downward trend in this value indicates improved metabolic health, supported by tailored changes in nutrition, sleep, and activity.' },
+        { cls:'sc3', icon:'💪', lbl:'Muscle Mass %',             txt:'Maintaining or increasing lean muscle mass contributes to stronger overall health. Your Digital Twin helps you optimise nutrition and recovery to support healthy muscle retention.' },
+        { cls:'sc4', icon:'⚖️', lbl:'Body Fat %',                txt:'A gradual reduction in total body fat reflects better energy balance and metabolic function — often a result of sustained improvements in food quality, movement, and sleep.' }
+      ]}
+    ]
+  },
+
+  /* 6 — HRS SCORE TABLE */
+  { type:'sec', id:'s6', icon:'📈', ic:'i5',
+    eyebrow:'HRS — Score Interpretation',
+    title:'What Your Heart Resilience Score Means',
+    items:[
+      { t:'sp', text:'As each parameter moves in the right direction, your heart becomes stronger, more efficient, and better protected for long-term health.' },
+      { t:'score-table', id:'hrs-table', rows:[
+        { range:'80–100', badge:'badge-excellent', label:'Excellent', msg:'"Your heart is strong and responsive. Keep reinforcing these healthy habits!"' },
+        { range:'70–80',  badge:'badge-good',      label:'Good',      msg:'"You\'re on track. Small daily wins like better sleep or more steps will boost you further."' },
+        { range:'50–69',  badge:'badge-moderate',  label:'Moderate',  msg:'"Some areas like visceral fat or low steps or low sleep need attention. Let\'s focus on consistency."' },
+        { range:'< 50',   badge:'badge-low',       label:'Low',       msg:'"Your Digital Twin will guide a personalised path to recovery."' }
+      ]},
+      { t:'insight', text:'Neither score is fixed. Both the CRS and HRS are designed to improve as your metabolism heals — and your Digital Twin tracks every step of that progress in real time.' }
+    ]
+  },
+
+  /* 7 — FINAL */
+  { type:'final', id:'s7', icon:'❤️', ic:'i6',
+    eyebrow:'Closing',
+    title:'Two Scores, One Goal — Lasting Metabolic Health',
+    items:[
+      { t:'final-big',     text:'The Cellular Resilience Score and the Heart Resilience Score are not numbers to chase — they are mirrors of how your body is healing from the inside out. Together, they cover eight biological domains and five cardiovascular signals, giving you and your care team the most complete picture of your health trajectory available anywhere.' },
+      { t:'final-tagline', text:'As your Digital Twin learns you better, both scores improve — because true healing is always systemic, never isolated.' }
+    ]
+  }
+
+];
+
+/* ══════════ BUILD DOM ══════════ */
+const registry=[], secEls=[];
+const mainEl=document.getElementById('main'), tocEl=document.getElementById('toc'), chipEl=document.getElementById('chipBar');
+
+DOC.forEach((sec,si)=>{
+  const tr=document.createElement('div');tr.className='toc-row';tr.innerHTML=`<div class="toc-num">${si+1}</div><div class="toc-txt">${sec.title}</div>`;tr.onclick=()=>{stop();jumpTo(si);};tocEl.appendChild(tr);
+  const ch=document.createElement('div');ch.className='chip';const ws=sec.title.split(' ');ch.textContent=ws.slice(0,4).join(' ')+(ws.length>4?'…':'');ch.onclick=()=>{stop();jumpTo(si);};chipEl.appendChild(ch);
+  let block;
+
+  if(sec.type==='hero'){
+    block=document.createElement('div');block.className='hero';block.id='sec-'+si;block.innerHTML=`<div class="hero-eyebrow">${sec.eyebrow}</div>`;
+    sec.items.forEach(it=>{const el=document.createElement(it.t==='sp'?'p':'div');el.className=it.t;el.dataset.si=si;el.dataset.spk=it.text;el.textContent=it.text;block.appendChild(el);});
+
+  } else if(sec.type==='sec'){
+    block=document.createElement('section');block.className='sec';block.id='sec-'+si;
+    let h=`<div class="sec-hd"><div class="sec-icon ${sec.ic}">${sec.icon}</div><div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div></div><div class="sec-body">`;
+    let domDone=false,sigDone=false,tblDone=false;
+    sec.items.forEach(it=>{
+      if(it.t==='sp') h+=`<p class="sp" data-si="${si}">${it.text}</p>`;
+      else if(it.t==='insight') h+=`<div class="insight" data-si="${si}">${it.text}</div>`;
+      else if(it.t==='domains'&&!domDone){
+        domDone=true;
+        h+=`<div class="domain-grid">`;
+        it.items.forEach(d=>{h+=`<div class="domain-card ${d.cls}" data-si="${si}"><div class="dom-num">${d.num}</div><div class="dom-head">${d.head}</div><div class="dom-body">${d.body}</div></div>`;});
+        h+=`</div>`;
+      } else if(it.t==='signals'&&!sigDone){
+        sigDone=true;
+        h+=`<div class="signal-grid">`;
+        it.items.forEach(s=>{h+=`<div class="signal-card ${s.cls}" data-si="${si}"><div class="sig-icon">${s.icon}</div><div class="sig-lbl">${s.lbl}</div><div class="sig-txt">${s.txt}</div></div>`;});
+        h+=`</div>`;
+      } else if(it.t==='score-table'&&!tblDone){
+        tblDone=true;
+        h+=`<table class="score-table"><thead><tr><th>Score Range</th><th>Meaning</th><th>Member Message</th></tr></thead><tbody>`;
+        it.rows.forEach(r=>{
+          h+=`<tr data-si="${si}"><td><strong>${r.range}</strong></td><td><span class="score-badge ${r.badge}">${r.label}</span></td><td style="font-style:italic;color:var(--txt2)">${r.msg}</td></tr>`;
+        });
+        h+=`</tbody></table>`;
+      }
+    });
+    h+=`</div>`;block.innerHTML=h;
+
+  } else if(sec.type==='final'){
+    block=document.createElement('section');block.className='sec';block.id='sec-'+si;
+    let h=`<div class="sec-hd"><div class="sec-icon ${sec.ic}">${sec.icon}</div><div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div></div><div class="sec-body"><div class="final-wrap">`;
+    sec.items.forEach(it=>{h+=`<div class="${it.t}" data-si="${si}">${it.text}</div>`;if(it.t==='final-big')h+=`<div class="divider"></div>`;});
+    h+=`</div></div>`;block.innerHTML=h;
+  }
+
+  if(si<DOC.length-1){const d=document.createElement('div');d.className='divider';block.appendChild(d);}
+  mainEl.appendChild(block);secEls.push(block);
+});
+
+/* Gather all speakable elements — paragraphs, insights, domain cards, signal cards, table rows */
+document.querySelectorAll('[data-si]').forEach(el=>{registry.push({el,si:+el.dataset.si});});
+
+/* ══════════ VOICE SYSTEM ══════════ */
+const voiceSel=document.getElementById('voiceSel');let voiceList=[];
+function scoreVoice(v){let s=0;if(v.lang==='en-US')s+=40;else if(v.lang==='en-GB')s+=30;else if(v.lang==='en-AU')s+=20;else if(v.lang.startsWith('en'))s+=10;else return -1;const n=v.name.toLowerCase();if(n.includes('neural'))s+=30;if(n.includes('enhanced'))s+=25;if(n.includes('premium'))s+=25;if(n.includes('natural'))s+=20;if(n.includes('samantha'))s+=22;if(n.includes('ava'))s+=20;if(n.includes('allison'))s+=18;if(n.includes('victoria'))s+=16;if(n.includes('karen'))s+=16;if(n.includes('daniel'))s+=16;if(n.includes('moira'))s+=16;if(n.includes('zira'))s+=14;if(n.includes('susan'))s+=14;if(n.includes('alex'))s+=14;if(n.includes('compact'))s-=20;if(n.includes('espeak'))s-=30;if(n.includes('mbrola'))s-=30;return s;}
+function populateVoices(){const raw=window.speechSynthesis.getVoices();if(!raw.length)return;const sc=raw.map(v=>({v,s:scoreVoice(v)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);if(!sc.length)return;voiceList=sc.map(x=>x.v);voiceSel.innerHTML='';voiceList.forEach((v,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${v.name} (${v.lang})`;voiceSel.appendChild(o);});voiceSel.value='0';}
+populateVoices();if(window.speechSynthesis.onvoiceschanged!==undefined)window.speechSynthesis.onvoiceschanged=populateVoices;
+function getVoice(){return voiceList[+voiceSel.value]||null;}
+
+/* ══════════ AUDIO ENGINE ══════════ */
+let cur=0,playing=false,idx=0,active=null;const synth=window.speechSynthesis,total=registry.length;
+function hl(el,on){if(el)el.classList.toggle('hl',on);}function clearHl(){if(active){hl(active,false);active=null;}}
+function activate(el,si){clearHl();hl(el,true);active=el;el.scrollIntoView({behavior:'smooth',block:'center'});if(si!==cur)cur=si;ui();}
+function ui(){
+  document.querySelectorAll('.toc-row').forEach((r,i)=>r.classList.toggle('active',i===cur));
+  document.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('active',i===cur));
+  secEls.forEach((s,i)=>s.classList.toggle('dim',i!==cur));
+  const pct=total>0?Math.round((idx/total)*100):0;
+  document.getElementById('fillBar').style.width=pct+'%';document.getElementById('pctLbl').textContent=pct+'%';
+  document.getElementById('secLbl').textContent=DOC[cur].title;
+  document.getElementById('playBtn').innerHTML=playing?'&#9646;&#9646;':'&#9654;';
+  const pill=document.getElementById('livePill');
+  if(playing){pill.classList.add('on');document.getElementById('liveText').textContent=DOC[cur].title;}else pill.classList.remove('on');
+}
+function jumpTo(si){cur=si;secEls[si].scrollIntoView({behavior:'smooth',block:'start'});const i=registry.findIndex(r=>r.si===si);if(i>=0)idx=i;ui();}
+function getCleanText(el){return(el.dataset.spk||el.innerText||'').replace(/•/g,'').trim();}
+function speakNext(){
+  if(!playing)return;if(idx>=registry.length){playing=false;clearHl();ui();return;}
+  const{el,si}=registry[idx++];activate(el,si);
+  const text=getCleanText(el);if(!text){speakNext();return;}
+  const u=new SpeechSynthesisUtterance(text);u.rate=+document.getElementById('spdSel').value;u.pitch=1.0;u.volume=1.0;
+  const v=getVoice();if(v)u.voice=v;u.onend=()=>{if(playing)speakNext();};u.onerror=()=>{if(playing)speakNext();};synth.speak(u);
+}
+function start(){synth.cancel();playing=true;ui();speakNext();}function stop(){playing=false;synth.cancel();clearHl();ui();}
+document.getElementById('playBtn').onclick=()=>playing?stop():start();
+document.getElementById('prevBtn').onclick=()=>{stop();jumpTo(Math.max(0,cur-1));};
+document.getElementById('nextBtn').onclick=()=>{stop();jumpTo(Math.min(DOC.length-1,cur+1));};
+document.getElementById('spdSel').onchange=()=>{if(playing){synth.cancel();setTimeout(()=>{if(playing)speakNext();},80);}};
+document.getElementById('voiceSel').onchange=()=>{if(playing){synth.cancel();setTimeout(()=>{if(playing)speakNext();},80);}};
+secEls.forEach((s,i)=>s.classList.toggle('dim',i!==0));
+document.querySelectorAll('.toc-row')[0].classList.add('active');document.querySelectorAll('.chip')[0].classList.add('active');ui();
+const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting&&!playing){cur=+e.target.id.replace('sec-','');ui();}});},{threshold:0.3});
+secEls.forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Precision Cholesterol Remission — Twin Precision Treatment</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #edf0f9;
+    --sidebar-bg: #e2e7f5;
+    --surface:    #ffffff;
+    --surface2:   #f2f4fc;
+    --surface3:   #dce2f2;
+    --border:     rgba(50,70,160,0.09);
+    --border-hi:  rgba(50,70,160,0.18);
+
+    --rose:    #b8324a;
+    --blue:    #2058a0;
+    --teal:    #0a897e;
+    --amber:   #a84f08;
+    --violet:  #5535a0;
+    --emerald: #087250;
+    --crimson: #8b1a2e;
+
+    --txt1: #171b2d;
+    --txt2: #384060;
+    --txt3: #727ca8;
+
+    --hl-bg:   rgba(168,79,8,0.10);
+    --hl-bdr:  #a84f08;
+    --hl-txt:  #2a1000;
+    --hl-glow: 0 0 0 3px rgba(168,79,8,0.13), 0 6px 22px rgba(168,79,8,0.09);
+
+    --title-hl-bg:   rgba(32,88,160,0.10);
+    --title-hl-bdr:  #2058a0;
+    --title-hl-txt:  #0a1830;
+    --title-hl-glow: 0 0 0 3px rgba(32,88,160,0.14), 0 6px 22px rgba(32,88,160,0.09);
+
+    --sub-hl-bg:   rgba(184,50,74,0.09);
+    --sub-hl-bdr:  #b8324a;
+    --sub-hl-txt:  #3a0010;
+    --sub-hl-glow: 0 0 0 3px rgba(184,50,74,0.12), 0 4px 18px rgba(184,50,74,0.08);
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--txt1);
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* ══════════ HEADER ══════════ */
+  .hdr {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 64px;
+    display: flex; align-items: center; gap: 14px;
+    position: sticky; top: 0; z-index: 300;
+    box-shadow: 0 2px 14px rgba(20,40,130,0.07);
+  }
+  .logo {
+    width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--rose), var(--blue));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px; color: #fff; font-weight: 700;
+  }
+  .hdr-info { flex: 1; min-width: 0; }
+  .hdr-title { font-size: 14px; font-weight: 600; color: var(--txt1); line-height: 1.2; }
+  .hdr-sub   { font-size: 11px; color: var(--txt3); font-style: italic; margin-top: 1px; }
+
+  .live-pill {
+    display: none; align-items: center; gap: 8px;
+    background: rgba(168,79,8,0.08);
+    border: 1px solid rgba(168,79,8,0.28);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 11px; font-weight: 600; color: var(--amber);
+    max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    flex-shrink: 0;
+  }
+  .live-pill.on { display: flex; }
+  .bars { display:flex; gap:2px; align-items:flex-end; height:12px; flex-shrink:0; }
+  .bars span {
+    display:block; width:3px; background:var(--amber);
+    border-radius:2px; animation:bar 1.2s ease-in-out infinite;
+  }
+  .bars span:nth-child(2){animation-delay:.15s;}
+  .bars span:nth-child(3){animation-delay:.3s;}
+  @keyframes bar{0%,100%{height:4px}50%{height:12px}}
+
+  /* ══════════ PLAYER ══════════ */
+  .player {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 28px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    box-shadow: 0 1px 6px rgba(20,40,130,0.05);
+  }
+  .ctrls { display:flex; align-items:center; gap:8px; }
+  .btn {
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; transition: all .17s; font-family: inherit;
+  }
+  .btn-play {
+    width: 46px; height: 46px; font-size: 17px; color: #fff;
+    background: linear-gradient(135deg, var(--rose), var(--blue));
+    box-shadow: 0 4px 16px rgba(32,88,160,0.28);
+  }
+  .btn-play:hover { transform: scale(1.07); box-shadow: 0 6px 22px rgba(32,88,160,0.40); }
+  .btn-play:active { transform: scale(.94); }
+  .btn-nav {
+    width: 34px; height: 34px; font-size: 12px;
+    background: var(--surface2); color: var(--txt2);
+    border: 1px solid var(--border-hi);
+  }
+  .btn-nav:hover { background: var(--surface3); color: var(--txt1); }
+
+  .prog { flex: 1; min-width: 150px; }
+  .prog-top {
+    display:flex; justify-content:space-between;
+    font-size:11px; color:var(--txt3); margin-bottom:7px;
+  }
+  .prog-top span:first-child { color:var(--txt2); font-weight:500; }
+  .track { height:5px; background:var(--surface3); border-radius:3px; overflow:hidden; }
+  .fill  { height:100%; width:0%; border-radius:3px;
+            background: linear-gradient(90deg, var(--rose), var(--blue));
+            transition: width .4s linear; }
+
+  .voice-wr { display:flex; align-items:center; gap:7px; }
+  .voice-wr label { font-size:11px; color:var(--txt3); white-space:nowrap; }
+  .voice-wr select {
+    background: var(--surface2); border: 1px solid var(--border-hi);
+    border-radius: 7px; padding: 5px 9px;
+    font-size: 12px; color: var(--txt1);
+    font-family: 'Inter', sans-serif; cursor: pointer; outline: none;
+    max-width: 170px;
+  }
+  .spd { display:flex; align-items:center; gap:7px; }
+  .spd label { font-size:11px; color:var(--txt3); }
+  .spd select {
+    background: var(--surface2); border: 1px solid var(--border-hi);
+    border-radius: 7px; padding: 5px 9px;
+    font-size: 12px; color: var(--txt1);
+    font-family: 'Inter', sans-serif; cursor: pointer; outline: none;
+  }
+
+  /* ══════════ CHIPS ══════════ */
+  .chips {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 28px; display:flex; gap:5px; overflow-x:auto;
+  }
+  .chips::-webkit-scrollbar{display:none;}
+  .chip {
+    padding: 5px 13px; border-radius:20px;
+    font-size: 11px; font-weight:500; cursor:pointer;
+    border: 1px solid var(--border-hi); flex-shrink:0;
+    white-space:nowrap; transition:all .2s;
+    color:var(--txt3); background:var(--surface);
+  }
+  .chip:hover { color:var(--txt1); border-color:var(--blue); }
+  .chip.active { background:var(--blue); border-color:var(--blue); color:#fff; font-weight:600; }
+
+  /* ══════════ LAYOUT ══════════ */
+  .layout { display:flex; flex:1; }
+
+  .sidebar {
+    width: 252px; flex-shrink:0;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    padding: 20px 12px; overflow-y:auto;
+    position: sticky; top:64px; height:calc(100vh - 64px);
+  }
+  .sidebar::-webkit-scrollbar{width:3px;}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+  .toc-hd {
+    font-size:9px; font-weight:700; letter-spacing:1.6px;
+    text-transform:uppercase; color:var(--txt3);
+    padding:0 8px; margin-bottom:10px;
+  }
+  .toc-row {
+    display:flex; align-items:center; gap:10px;
+    padding:8px; border-radius:9px; cursor:pointer;
+    transition:all .17s; margin-bottom:2px;
+    border:1px solid transparent;
+  }
+  .toc-row:hover{background:var(--surface3);}
+  .toc-row.active{
+    background:var(--surface);
+    border-color:var(--border-hi);
+    box-shadow:0 1px 6px rgba(20,40,130,0.08);
+  }
+  .toc-num {
+    width:22px; height:22px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:9px; font-weight:700;
+    background:var(--surface3); color:var(--txt3); transition:all .2s;
+  }
+  .toc-row.active .toc-num{background:var(--blue);color:#fff;}
+  .toc-txt{font-size:12px;color:var(--txt3);line-height:1.35;}
+  .toc-row.active .toc-txt{color:var(--txt1);font-weight:500;}
+
+  /* ══════════ CONTENT ══════════ */
+  .content {
+    flex:1; padding:40px 56px; overflow-y:auto; max-width:860px;
+  }
+  .content::-webkit-scrollbar{width:4px;}
+  .content::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+
+  /* ══════════ HERO ══════════ */
+  .hero {
+    background: linear-gradient(135deg,rgba(184,50,74,.07),rgba(32,88,160,.09));
+    border: 1px solid rgba(32,88,160,.18);
+    border-radius: 20px; padding: 38px 42px; margin-bottom: 44px;
+    scroll-margin-top: 20px; transition: opacity .35s;
+  }
+  .hero.dim{opacity:.26;}
+  .hero-eyebrow {
+    font-size:10px; font-weight:700; letter-spacing:1.5px;
+    text-transform:uppercase; color:var(--blue); margin-bottom:14px;
+  }
+
+  /* Title — first thing read */
+  .doc-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px; font-weight: 700; color: var(--txt1);
+    line-height: 1.22; margin-bottom: 8px;
+    padding: 8px 12px; margin-left: -12px; border-radius: 10px;
+    border-left: 4px solid transparent;
+    transition: background .22s, color .22s, box-shadow .22s, border-color .15s;
+  }
+  .doc-title.hl {
+    background: var(--title-hl-bg); color: var(--title-hl-txt);
+    box-shadow: var(--title-hl-glow); border-left-color: var(--title-hl-bdr);
+    padding-left: 16px; margin-left: -16px;
+  }
+
+  /* Subtitle — second thing read */
+  .doc-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; font-style: italic; color: var(--rose);
+    margin-bottom: 24px;
+    padding: 6px 12px; margin-left: -12px; border-radius: 8px;
+    border-left: 4px solid transparent;
+    transition: background .22s, color .22s, box-shadow .22s, border-color .15s;
+  }
+  .doc-subtitle.hl {
+    background: var(--sub-hl-bg); color: var(--sub-hl-txt);
+    box-shadow: var(--sub-hl-glow); border-left-color: var(--sub-hl-bdr);
+    padding-left: 16px; margin-left: -16px;
+  }
+
+  /* ══════════ SECTION ══════════ */
+  .sec {
+    margin-bottom: 50px; scroll-margin-top:20px; transition:opacity .35s;
+  }
+  .sec.dim{opacity:.26;}
+  .sec-hd{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px;}
+  .sec-icon{
+    width:46px;height:46px;border-radius:13px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:20px;
+  }
+  .i0{background:rgba(184,50,74,.12); box-shadow:inset 0 0 0 1.5px rgba(184,50,74,.28);}
+  .i1{background:rgba(32,88,160,.12); box-shadow:inset 0 0 0 1.5px rgba(32,88,160,.28);}
+  .i2{background:rgba(10,137,126,.12);box-shadow:inset 0 0 0 1.5px rgba(10,137,126,.28);}
+  .i3{background:rgba(168,79,8,.12);  box-shadow:inset 0 0 0 1.5px rgba(168,79,8,.28);}
+  .i4{background:rgba(85,53,160,.12); box-shadow:inset 0 0 0 1.5px rgba(85,53,160,.28);}
+  .i5{background:rgba(8,114,80,.12);  box-shadow:inset 0 0 0 1.5px rgba(8,114,80,.28);}
+  .i6{background:rgba(139,26,46,.12); box-shadow:inset 0 0 0 1.5px rgba(139,26,46,.28);}
+  .i7{background:rgba(32,88,160,.12); box-shadow:inset 0 0 0 1.5px rgba(32,88,160,.28);}
+
+  .sec-ey{font-size:10px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--txt3);margin-bottom:4px;}
+  .sec-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--txt1);line-height:1.25;}
+  .sec-body{padding-left:60px;}
+
+  /* ══════════ SPEAKABLE ELEMENTS ══════════ */
+
+  /* Paragraph */
+  .sp {
+    font-size:15px; line-height:1.88; color:var(--txt2);
+    margin-bottom:14px; border-radius:8px;
+    padding:6px 12px; margin-left:-12px;
+    border-left:4px solid transparent;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .sp.hl {
+    background:var(--hl-bg); color:var(--hl-txt);
+    box-shadow:var(--hl-glow); border-left-color:var(--hl-bdr);
+    padding-left:15px; margin-left:-15px;
+  }
+
+  /* Insight / callout */
+  .insight {
+    background:var(--surface2);
+    border-radius:10px; border-left:4px solid var(--blue);
+    padding:13px 16px; margin:12px 0 16px;
+    font-size:14px; color:var(--txt2); line-height:1.78;
+    transition:background .22s,color .22s,box-shadow .22s,border-color .15s;
+  }
+  .insight.hl {
+    background:var(--hl-bg); color:var(--hl-txt);
+    box-shadow:var(--hl-glow); border-left-color:var(--hl-bdr);
+  }
+
+  /* Key stat box */
+  .stat-box {
+    background: var(--surface);
+    border-radius: 12px; border: 1px solid var(--border);
+    padding: 16px 18px; margin: 12px 0 16px;
+    display: flex; align-items: flex-start; gap: 14px;
+    box-shadow: 0 1px 6px rgba(20,40,130,0.06);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .stat-box.hl {
+    background:rgba(168,79,8,0.07);
+    border-color:rgba(168,79,8,.42);
+    box-shadow:var(--hl-glow);
+  }
+  .stat-icon {
+    width:36px;height:36px;border-radius:9px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:16px;
+  }
+  .stat-body { flex:1; }
+  .stat-lbl { font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--txt3);margin-bottom:3px; }
+  .stat-txt  { font-size:14px;color:var(--txt2);line-height:1.7; transition:color .22s; }
+  .stat-box.hl .stat-txt { color:var(--hl-txt); }
+
+  /* Three-domain cards */
+  .domain-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin:14px 0 18px; }
+  .domain-card {
+    background:var(--surface); border-radius:12px;
+    border:1px solid var(--border); padding:16px;
+    box-shadow:0 1px 6px rgba(20,40,130,0.06);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .domain-card.hl {
+    background:rgba(168,79,8,0.07);
+    border-color:rgba(168,79,8,.42);
+    box-shadow:var(--hl-glow);
+  }
+  .domain-lbl {
+    font-size:10px;font-weight:700;letter-spacing:.8px;
+    text-transform:uppercase;margin-bottom:6px;
+  }
+  .dc0 .domain-lbl{color:var(--rose);}
+  .dc1 .domain-lbl{color:var(--blue);}
+  .dc2 .domain-lbl{color:var(--teal);}
+  .domain-head { font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--txt1);margin-bottom:6px; }
+  .domain-txt  { font-size:13px;color:var(--txt2);line-height:1.65; transition:color .22s; }
+  .domain-card.hl .domain-txt { color:var(--hl-txt); }
+
+  /* Compare / two-col */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px;}
+  .cmp-col{
+    border-radius:12px;padding:16px;border:1px solid var(--border);
+    transition:border-color .22s,background .22s,box-shadow .22s;
+  }
+  .cmp-col.hl{background:var(--hl-bg);border-color:rgba(168,79,8,.45);box-shadow:var(--hl-glow);}
+  .cmp-bad {background:rgba(184,50,74,.05);}
+  .cmp-good{background:rgba(8,114,80,.05);}
+  .cmp-lbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;}
+  .cmp-bad  .cmp-lbl{color:var(--rose);}
+  .cmp-good .cmp-lbl{color:var(--emerald);}
+  .cmp-items{font-size:13px;color:var(--txt2);line-height:2.1;}
+  .cmp-col.hl .cmp-items{color:var(--hl-txt);}
+
+  /* Final */
+  .final-wrap{
+    background:linear-gradient(135deg,rgba(184,50,74,.06),rgba(32,88,160,.07));
+    border:1px solid rgba(32,88,160,.18);border-radius:18px;
+    padding:30px 34px;box-shadow:0 2px 14px rgba(20,40,130,0.07);
+  }
+  .final-big{
+    font-family:'Playfair Display',serif;
+    font-size:19px;color:var(--txt1);line-height:1.72;margin-bottom:18px;
+    padding:8px 12px;border-radius:8px;border-left:4px solid transparent;
+    transition:background .22s,box-shadow .22s,color .22s,border-color .15s;
+  }
+  .final-big.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+  .final-tagline{
+    font-size:14px;font-weight:600;color:var(--blue);letter-spacing:.2px;
+    padding:8px 12px;border-radius:8px;border-left:4px solid transparent;
+    transition:background .22s,box-shadow .22s,color .22s,border-color .15s;
+  }
+  .final-tagline.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+
+  .divider{height:1px;background:var(--border);margin:38px 0;}
+
+  @media(max-width:860px){
+    .sidebar{display:none;}
+    .content{padding:24px 20px;}
+    .sec-body{padding-left:0;}
+    .domain-grid{grid-template-columns:1fr;}
+    .compare{grid-template-columns:1fr;}
+    .hero{padding:24px 22px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="logo">tw</div>
+  <div class="hdr-info">
+    <div class="hdr-title">Precision Cholesterol Remission — Twin Precision Treatment</div>
+    <div class="hdr-sub">Addressing the Metabolic Root Cause of Triglycerides</div>
+  </div>
+  <div class="live-pill" id="livePill">
+    <div class="bars"><span></span><span></span><span></span></div>
+    <span id="liveText">Reading…</span>
+  </div>
+</header>
+
+<!-- PLAYER -->
+<div class="player">
+  <div class="ctrls">
+    <button class="btn btn-nav" id="prevBtn" title="Previous section">&#9664;&#9664;</button>
+    <button class="btn btn-play" id="playBtn" title="Play / Pause">&#9654;</button>
+    <button class="btn btn-nav" id="nextBtn" title="Next section">&#9654;&#9654;</button>
+  </div>
+  <div class="prog">
+    <div class="prog-top">
+      <span id="secLbl">—</span>
+      <span id="pctLbl">0%</span>
+    </div>
+    <div class="track"><div class="fill" id="fillBar"></div></div>
+  </div>
+  <div class="voice-wr">
+    <label>Voice</label>
+    <select id="voiceSel"><option value="">Loading…</option></select>
+  </div>
+  <div class="spd">
+    <label>Speed</label>
+    <select id="spdSel">
+      <option value="0.78">0.78×</option>
+      <option value="0.88">0.88×</option>
+      <option value="0.95" selected>0.95×</option>
+      <option value="1.05">1.05×</option>
+      <option value="1.15">1.15×</option>
+    </select>
+  </div>
+</div>
+
+<!-- CHIPS -->
+<div class="chips" id="chipBar"></div>
+
+<!-- LAYOUT -->
+<div class="layout">
+  <aside class="sidebar">
+    <div class="toc-hd">Contents</div>
+    <div id="toc"></div>
+  </aside>
+  <main class="content" id="main"></main>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   FULL PDF CONTENT — every paragraph, in exact order
+═══════════════════════════════════════════════════ */
+const DOC = [
+
+  /* 0 ── HERO / TITLE */
+  {
+    type:'hero', id:'s0',
+    eyebrow:'Twin Precision Treatment — Clinical Education',
+    title:'Precision Cholesterol Remission through Twin Precision Treatment',
+    subtitle:'Addressing the Metabolic Root Cause',
+    items:[
+      { t:'doc-title',    text:'Precision Cholesterol Remission through Twin Precision Treatment' },
+      { t:'doc-subtitle', text:'Addressing the Metabolic Root Cause' },
+      { t:'sp', text:'Cardiovascular disease remains one of the leading causes of mortality worldwide. While low-density lipoprotein cholesterol — known as LDL-C — has traditionally been emphasised as the main marker of cardiovascular risk, emerging evidence highlights triglycerides as a critical yet underappreciated driver of metabolic dysfunction and cardiovascular disease risk.' }
+    ]
+  },
+
+  /* 1 ── METABOLIC ORIGIN */
+  {
+    type:'sec', id:'s1', icon:'🔬', ic:'i0',
+    eyebrow:'Section 1',
+    title:'Metabolic Origin of Elevated Triglycerides',
+    items:[
+      { t:'sp', text:'Triglycerides are not simply dietary fats. They represent the metabolic overflow of excess energy. When glycogen stores in the liver and skeletal muscle are full, surplus glucose is converted into triglycerides through a process called de novo lipogenesis — tightly regulated by insulin.' },
+      { t:'sp', text:'Elevated triglyceride levels therefore signal underlying insulin resistance, hepatic dysfunction, and impaired mitochondrial oxidation.' },
+      { t:'insight', text:'These are not isolated lab abnormalities. They are core hallmarks of dysfunctional metabolism — and treating them requires addressing the root cause, not just the number.' }
+    ]
+  },
+
+  /* 2 ── LIPOPROTEIN DYSFUNCTION */
+  {
+    type:'sec', id:'s2', icon:'🫀', ic:'i1',
+    eyebrow:'Section 2',
+    title:'Triglycerides and Lipoprotein Dysfunction',
+    items:[
+      { t:'sp', text:'High triglycerides alter the structure and function of multiple lipoproteins. They promote small, dense LDL particles, which are highly atherogenic. They create triglyceride-enriched HDL, which is dysfunctional and pro-atherogenic. And they disrupt the balance between apoB-containing particles and apoA-I particles, amplifying cardiovascular risk.' },
+      { t:'sp', text:'Despite this, triglycerides are under-recognised in traditional risk assessments. Clinical practice often overemphasises LDL-C while neglecting the triglyceride-to-HDL-C ratio — one of the most reliable surrogates of insulin resistance.' },
+      { t:'insight', text:'A triglyceride-to-HDL ratio above 2 significantly elevates atherosclerosis risk. Yet this marker is rarely discussed in standard lipid panels.' }
+    ]
+  },
+
+  /* 3 ── WHY NORMAL ISN'T OPTIMAL */
+  {
+    type:'sec', id:'s3', icon:'📊', ic:'i2',
+    eyebrow:'Section 3',
+    title:'Why "Normal" Is Not Optimal',
+    items:[
+      { t:'sp', text:'Conventional lipid panels define triglycerides below 150 milligrams per decilitre as "normal." However, this threshold overlooks subclinical risk.' },
+      { t:'compare',
+        bad:  { label:'Conventional threshold', items:['TG < 150 mg/dL called "normal"','Focuses primarily on LDL-C','Misses early cardiovascular risk','2020 Duke study: risk rises above 50 mg/dL'] },
+        good: { label:'Twin optimal target', items:['TG < 100 mg/dL for true metabolic health','TG/HDL-C ratio tracked as insulin resistance marker','Early risk detection through continuous monitoring','Root-cause correction, not just threshold management'] }
+      },
+      { t:'insight', text:'A 2020 Duke University study showed that cardiovascular risk rises at triglyceride levels above 50 milligrams per decilitre — even within the so-called normal range. For true metabolic health, the optimal triglyceride level should be below 100 milligrams per decilitre.' }
+    ]
+  },
+
+  /* 4 ── TWIN PRECISION TREATMENT */
+  {
+    type:'sec', id:'s4', icon:'⚙️', ic:'i3',
+    eyebrow:'Section 4',
+    title:'Twin Precision Treatment: Correcting Lipid Abnormalities at the Source',
+    items:[
+      { t:'sp', text:'Unlike traditional lipid management — which often focuses on statins or triglyceride-lowering drugs — Twin Precision Treatment addresses the metabolic root cause by healing glucotoxicity, lipotoxicity, and inflammation.' },
+      { t:'sp', text:'Through the Whole Body Digital Twin, Twin Precision Treatment continuously learns from each member\'s unique physiology and delivers precision, adaptive interventions across three domains.' },
+      { t:'domain', items:[
+          { cls:'dc0', icon:'🥗', lbl:'Domain 1', head:'Precision Nutrition',
+            text:'Prevents glucose and insulin spikes with personalised carbohydrate thresholds. Optimises lipid oxidation by correcting micronutrient deficiencies such as magnesium and B-vitamins. Modulates gut microbiota, reducing inflammation that worsens dyslipidaemia.' },
+          { cls:'dc1', icon:'🏃', lbl:'Domain 2', head:'Precision Activity',
+            text:'Recommends timed, individualised exercise that increases glucose uptake and fatty acid oxidation. Adapts daily based on metabolic variability to reduce lipogenesis and circulating triglycerides.' },
+          { cls:'dc2', icon:'😴', lbl:'Domain 3', head:'Precision Sleep and Recovery',
+            text:'Restores circadian rhythm and melatonin regulation, essential for lipid metabolism. Detects early physiological stress and provides tailored recovery strategies to reduce cortisol-driven triglyceride synthesis.' }
+      ]}
+    ]
+  },
+
+  /* 5 ── HOW TPT SUSTAINS OPTIMAL TG */
+  {
+    type:'sec', id:'s5', icon:'📈', ic:'i4',
+    eyebrow:'Section 5',
+    title:'How Twin Precision Treatment Sustains Optimal Triglyceride Levels',
+    items:[
+      { t:'sp', text:'The foundation of lowering triglycerides is improving insulin sensitivity. But rather than generic rules, Twin Precision Treatment ensures each member receives precision guidance.' },
+      { t:'stat', icon:'🍽️', lbl:'Nutrition',       text:'Unique to the individual — preventing metabolic overflow and personalising carbohydrate intake based on real-time glucose response.' },
+      { t:'stat', icon:'🏃', lbl:'Activity',         text:'Tailored to daily metabolic readiness — increasing fatty acid oxidation and reducing circulating triglycerides through timed, personalised movement.' },
+      { t:'stat', icon:'😴', lbl:'Sleep and Stress', text:'Continuously monitored, aligned, and corrected in real-time — reducing cortisol-driven triglyceride synthesis and restoring overnight lipid metabolism.' },
+      { t:'insight', text:'This creates sustainable triglyceride reduction, improves overall lipid balance, and reduces cardiovascular risk — without over-reliance on long-term pharmacotherapy, where clinically appropriate.' }
+    ]
+  },
+
+  /* 6 ── PARADIGM SHIFT */
+  {
+    type:'sec', id:'s6', icon:'🌍', ic:'i5',
+    eyebrow:'Section 6',
+    title:'A Paradigm Shift for India and Beyond',
+    items:[
+      { t:'sp', text:'In populations like India, where metabolic syndrome and lean insulin resistance are highly prevalent, focusing only on LDL-C is dangerously narrow.' },
+      { t:'sp', text:'Twin Precision Treatment redefines lipid care by using the triglyceride-to-HDL-C ratio as a marker of lipid efficiency, leveraging AI-driven Digital Twin technology to dynamically track lipid responses to food, activity, and recovery, and enabling remission of dyslipidaemia by healing the dysfunctional metabolism at its core.' },
+      { t:'insight', text:'By addressing the metabolic origin of triglycerides, Twin Precision Treatment delivers precision, personalisation, and permanency in cardiovascular and metabolic care.' }
+    ]
+  },
+
+  /* 7 ── FINAL */
+  {
+    type:'final', id:'s7', icon:'❤️', ic:'i6',
+    eyebrow:'Closing',
+    title:'Healing the Metabolism — Not Just a Number',
+    items:[
+      { t:'final-big',     text:'This is not just about lowering a number on a lipid panel. It is about healing the metabolism, restoring balance, and protecting long-term heart health.' },
+      { t:'final-tagline', text:'Twin Precision Treatment delivers precision, personalisation, and permanency — because true cardiovascular health begins at the metabolic root.' }
+    ]
+  }
+];
+
+/* ═══════════════════════════════════════════════════
+   BUILD DOM
+═══════════════════════════════════════════════════ */
+const registry=[], secEls=[];
+const mainEl=document.getElementById('main');
+const tocEl =document.getElementById('toc');
+const chipEl=document.getElementById('chipBar');
+
+DOC.forEach((sec,si)=>{
+  /* TOC */
+  const tr=document.createElement('div');
+  tr.className='toc-row';
+  tr.innerHTML=`<div class="toc-num">${si+1}</div><div class="toc-txt">${sec.title}</div>`;
+  tr.onclick=()=>{stop();jumpTo(si);};
+  tocEl.appendChild(tr);
+
+  /* Chip */
+  const ch=document.createElement('div');
+  ch.className='chip';
+  const ws=sec.title.split(' ');
+  ch.textContent=ws.slice(0,4).join(' ')+(ws.length>4?'…':'');
+  ch.onclick=()=>{stop();jumpTo(si);};
+  chipEl.appendChild(ch);
+
+  let block;
+
+  /* ── HERO ── */
+  if(sec.type==='hero'){
+    block=document.createElement('div');
+    block.className='hero'; block.id='sec-'+si;
+    block.innerHTML=`<div class="hero-eyebrow">${sec.eyebrow}</div>`;
+    sec.items.forEach(it=>{
+      const el=document.createElement(it.t==='sp'?'p':'div');
+      el.className=it.t;
+      el.dataset.si=si;
+      el.dataset.spk=it.text;
+      el.textContent=it.text;
+      block.appendChild(el);
+    });
+
+  /* ── SECTION ── */
+  } else if(sec.type==='sec'){
+    block=document.createElement('section');
+    block.className='sec'; block.id='sec-'+si;
+    let h=`<div class="sec-hd">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body">`;
+
+    let compareInserted=false;
+    sec.items.forEach(it=>{
+      if(it.t==='sp'){
+        h+=`<p class="sp" data-si="${si}">${it.text}</p>`;
+      } else if(it.t==='insight'){
+        h+=`<div class="insight" data-si="${si}">${it.text}</div>`;
+      } else if(it.t==='stat'){
+        const icMap={'🍽️':'rgba(184,50,74,.12)','🏃':'rgba(32,88,160,.12)','😴':'rgba(10,137,126,.12)'};
+        h+=`<div class="stat-box" data-si="${si}">
+          <div class="stat-icon" style="background:${icMap[it.icon]||'rgba(168,79,8,.12)'}">${it.icon}</div>
+          <div class="stat-body">
+            <div class="stat-lbl">${it.lbl}</div>
+            <div class="stat-txt">${it.text}</div>
+          </div>
+        </div>`;
+      } else if(it.t==='compare'&&!compareInserted){
+        compareInserted=true;
+        h+=`<div class="compare">
+          <div class="cmp-col cmp-bad" data-si="${si}">
+            <div class="cmp-lbl">${it.bad.label}</div>
+            <div class="cmp-items">${it.bad.items.map(x=>`• ${x}`).join('<br>')}</div>
+          </div>
+          <div class="cmp-col cmp-good" data-si="${si}">
+            <div class="cmp-lbl">${it.good.label}</div>
+            <div class="cmp-items">${it.good.items.map(x=>`• ${x}`).join('<br>')}</div>
+          </div>
+        </div>`;
+      } else if(it.t==='domain'){
+        h+=`<div class="domain-grid">`;
+        it.items.forEach(d=>{
+          h+=`<div class="domain-card ${d.cls}" data-si="${si}">
+            <div class="domain-lbl">${d.lbl}</div>
+            <div class="domain-head">${d.icon} ${d.head}</div>
+            <div class="domain-txt">${d.text}</div>
+          </div>`;
+        });
+        h+=`</div>`;
+      }
+    });
+    h+=`</div>`;
+    block.innerHTML=h;
+
+  /* ── FINAL ── */
+  } else if(sec.type==='final'){
+    block=document.createElement('section');
+    block.className='sec'; block.id='sec-'+si;
+    let h=`<div class="sec-hd">
+      <div class="sec-icon ${sec.ic}">${sec.icon}</div>
+      <div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div>
+    </div><div class="sec-body"><div class="final-wrap">`;
+    sec.items.forEach(it=>{
+      h+=`<div class="${it.t}" data-si="${si}">${it.text}</div>`;
+      if(it.t==='final-big') h+=`<div class="divider"></div>`;
+    });
+    h+=`</div></div>`;
+    block.innerHTML=h;
+  }
+
+  if(si<DOC.length-1){
+    const d=document.createElement('div'); d.className='divider';
+    block.appendChild(d);
+  }
+  mainEl.appendChild(block);
+  secEls.push(block);
+});
+
+/* Collect all speakable elements in DOM order */
+document.querySelectorAll('[data-si]').forEach(el=>{
+  registry.push({el, si:+el.dataset.si});
+});
+
+/* ═══════════════════════════════════════════════════
+   VOICE SYSTEM — score & rank all available voices
+═══════════════════════════════════════════════════ */
+const voiceSel=document.getElementById('voiceSel');
+let voiceList=[];
+
+function scoreVoice(v){
+  let s=0;
+  if(v.lang==='en-US')           s+=40;
+  else if(v.lang==='en-GB')      s+=30;
+  else if(v.lang==='en-AU')      s+=20;
+  else if(v.lang.startsWith('en')) s+=10;
+  else return -1;
+
+  const n=v.name.toLowerCase();
+  if(n.includes('neural'))    s+=30;
+  if(n.includes('enhanced'))  s+=25;
+  if(n.includes('premium'))   s+=25;
+  if(n.includes('natural'))   s+=20;
+  if(n.includes('samantha'))  s+=22;
+  if(n.includes('ava'))       s+=20;
+  if(n.includes('allison'))   s+=18;
+  if(n.includes('victoria'))  s+=16;
+  if(n.includes('karen'))     s+=16;
+  if(n.includes('daniel'))    s+=16;
+  if(n.includes('moira'))     s+=16;
+  if(n.includes('zira'))      s+=14;
+  if(n.includes('susan'))     s+=14;
+  if(n.includes('alex'))      s+=14;
+  if(n.includes('david'))     s+=10;
+  if(n.includes('mark'))      s+=10;
+  if(n.includes('compact'))   s-=20;
+  if(n.includes('espeak'))    s-=30;
+  if(n.includes('mbrola'))    s-=30;
+  return s;
+}
+
+function populateVoices(){
+  const raw=window.speechSynthesis.getVoices();
+  if(!raw.length) return;
+  const scored=raw.map(v=>({v,s:scoreVoice(v)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);
+  if(!scored.length) return;
+  voiceList=scored.map(x=>x.v);
+  voiceSel.innerHTML='';
+  voiceList.forEach((v,i)=>{
+    const opt=document.createElement('option');
+    opt.value=i;
+    opt.textContent=`${v.name} (${v.lang})`;
+    voiceSel.appendChild(opt);
+  });
+  voiceSel.value='0';
+}
+
+populateVoices();
+if(window.speechSynthesis.onvoiceschanged!==undefined)
+  window.speechSynthesis.onvoiceschanged=populateVoices;
+
+function getVoice(){
+  const i=+voiceSel.value;
+  return voiceList[i]||null;
+}
+
+/* ═══════════════════════════════════════════════════
+   AUDIO ENGINE
+═══════════════════════════════════════════════════ */
+let cur=0, playing=false, idx=0, active=null;
+const synth=window.speechSynthesis;
+const total=registry.length;
+
+function hl(el,on){ if(el) el.classList.toggle('hl',on); }
+function clearHl(){ if(active){hl(active,false);active=null;} }
+
+function activate(el,si){
+  clearHl(); hl(el,true); active=el;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  if(si!==cur) cur=si;
+  ui();
+}
+
+function ui(){
+  document.querySelectorAll('.toc-row').forEach((r,i)=>r.classList.toggle('active',i===cur));
+  document.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('active',i===cur));
+  secEls.forEach((s,i)=>s.classList.toggle('dim',i!==cur));
+  const pct=total>0?Math.round((idx/total)*100):0;
+  document.getElementById('fillBar').style.width=pct+'%';
+  document.getElementById('pctLbl').textContent=pct+'%';
+  document.getElementById('secLbl').textContent=DOC[cur].title;
+  document.getElementById('playBtn').innerHTML=playing?'&#9646;&#9646;':'&#9654;';
+  const pill=document.getElementById('livePill');
+  if(playing){ pill.classList.add('on'); document.getElementById('liveText').textContent=DOC[cur].title; }
+  else pill.classList.remove('on');
+}
+
+function jumpTo(si){
+  cur=si;
+  secEls[si].scrollIntoView({behavior:'smooth',block:'start'});
+  const i=registry.findIndex(r=>r.si===si);
+  if(i>=0) idx=i;
+  ui();
+}
+
+function getCleanText(el){
+  return (el.dataset.spk||el.innerText||'').trim();
+}
+
+function speakNext(){
+  if(!playing) return;
+  if(idx>=registry.length){ playing=false; clearHl(); ui(); return; }
+  const {el,si}=registry[idx++];
+  activate(el,si);
+  const text=getCleanText(el);
+  if(!text){ speakNext(); return; }
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate   = +document.getElementById('spdSel').value;
+  u.pitch  = 1.0;
+  u.volume = 1.0;
+  const v=getVoice(); if(v) u.voice=v;
+  u.onend  =()=>{ if(playing) speakNext(); };
+  u.onerror=()=>{ if(playing) speakNext(); };
+  synth.speak(u);
+}
+
+function start(){ synth.cancel(); playing=true; ui(); speakNext(); }
+function stop() { playing=false; synth.cancel(); clearHl(); ui(); }
+
+document.getElementById('playBtn').onclick=()=>playing?stop():start();
+document.getElementById('prevBtn').onclick=()=>{ stop(); jumpTo(Math.max(0,cur-1)); };
+document.getElementById('nextBtn').onclick=()=>{ stop(); jumpTo(Math.min(DOC.length-1,cur+1)); };
+document.getElementById('spdSel').onchange=()=>{
+  if(playing){ synth.cancel(); setTimeout(()=>{ if(playing) speakNext(); },80); }
+};
+document.getElementById('voiceSel').onchange=()=>{
+  if(playing){ synth.cancel(); setTimeout(()=>{ if(playing) speakNext(); },80); }
+};
+
+/* Init */
+secEls.forEach((s,i)=>s.classList.toggle('dim',i!==0));
+document.querySelectorAll('.toc-row')[0].classList.add('active');
+document.querySelectorAll('.chip')[0].classList.add('active');
+ui();
+
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting&&!playing){
+      cur=+e.target.id.replace('sec-',''); ui();
+    }
+  });
+},{threshold:0.3});
+secEls.forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

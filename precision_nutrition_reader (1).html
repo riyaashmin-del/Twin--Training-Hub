@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why Precision Nutrition Works When Diets Fail — Twin</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#edf4f4;--sidebar-bg:#ddeaea;--surface:#ffffff;--surface2:#f3fafa;--surface3:#cce0e0;
+    --border:rgba(20,90,90,0.10);--border-hi:rgba(20,90,90,0.20);
+    --teal:#0d7070;--cyan:#0a9090;--sky:#1a7fa8;--green:#1a7a40;--rose:#b03050;
+    --amber:#a86008;--violet:#5535a0;--emerald:#087250;
+    --txt1:#051818;--txt2:#1a3838;--txt3:#5a8080;
+    --hl-bg:rgba(13,112,112,0.11);--hl-bdr:#0d7070;--hl-txt:#021010;
+    --hl-glow:0 0 0 3px rgba(13,112,112,0.14),0 6px 22px rgba(13,112,112,0.09);
+    --title-hl-bg:rgba(10,144,144,0.10);--title-hl-bdr:#0a9090;--title-hl-txt:#021010;
+    --title-hl-glow:0 0 0 3px rgba(10,144,144,0.15),0 6px 22px rgba(10,144,144,0.10);
+    --sub-hl-bg:rgba(26,127,168,0.09);--sub-hl-bdr:#1a7fa8;--sub-hl-txt:#021010;
+    --sub-hl-glow:0 0 0 3px rgba(26,127,168,0.12),0 4px 18px rgba(26,127,168,0.08);
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt1);min-height:100vh;display:flex;flex-direction:column;}
+  .hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:64px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:300;box-shadow:0 2px 14px rgba(10,70,70,0.07);}
+  .logo{width:38px;height:38px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,var(--teal),var(--sky));display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:15px;color:#fff;font-weight:700;}
+  .hdr-info{flex:1;min-width:0;}.hdr-title{font-size:14px;font-weight:600;color:var(--txt1);line-height:1.2;}.hdr-sub{font-size:11px;color:var(--txt3);font-style:italic;margin-top:1px;}
+  .live-pill{display:none;align-items:center;gap:8px;background:rgba(13,112,112,0.09);border:1px solid rgba(13,112,112,0.28);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:var(--teal);max-width:230px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex-shrink:0;}
+  .live-pill.on{display:flex;}
+  .bars{display:flex;gap:2px;align-items:flex-end;height:12px;flex-shrink:0;}
+  .bars span{display:block;width:3px;background:var(--cyan);border-radius:2px;animation:bar 1.2s ease-in-out infinite;}
+  .bars span:nth-child(2){animation-delay:.15s;}.bars span:nth-child(3){animation-delay:.3s;}
+  @keyframes bar{0%,100%{height:4px}50%{height:12px}}
+  .player{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 1px 6px rgba(10,70,70,0.05);}
+  .ctrls{display:flex;align-items:center;gap:8px;}
+  .btn{border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .17s;font-family:inherit;}
+  .btn-play{width:46px;height:46px;font-size:17px;color:#fff;background:linear-gradient(135deg,var(--teal),var(--sky));box-shadow:0 4px 16px rgba(13,112,112,0.30);}
+  .btn-play:hover{transform:scale(1.07);box-shadow:0 6px 22px rgba(13,112,112,0.44);}.btn-play:active{transform:scale(.94);}
+  .btn-nav{width:34px;height:34px;font-size:12px;background:var(--surface2);color:var(--txt2);border:1px solid var(--border-hi);}.btn-nav:hover{background:var(--surface3);color:var(--txt1);}
+  .prog{flex:1;min-width:150px;}.prog-top{display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:7px;}.prog-top span:first-child{color:var(--txt2);font-weight:500;}
+  .track{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;}.fill{height:100%;width:0%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--sky));transition:width .4s linear;}
+  .voice-wr{display:flex;align-items:center;gap:7px;}.voice-wr label,.spd label{font-size:11px;color:var(--txt3);white-space:nowrap;}
+  .voice-wr select,.spd select{background:var(--surface2);border:1px solid var(--border-hi);border-radius:7px;padding:5px 9px;font-size:12px;color:var(--txt1);font-family:'Inter',sans-serif;cursor:pointer;outline:none;max-width:170px;}
+  .spd{display:flex;align-items:center;gap:7px;}
+  .chips{background:var(--surface2);border-bottom:1px solid var(--border);padding:8px 28px;display:flex;gap:5px;overflow-x:auto;}.chips::-webkit-scrollbar{display:none;}
+  .chip{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border-hi);flex-shrink:0;white-space:nowrap;transition:all .2s;color:var(--txt3);background:var(--surface);}
+  .chip:hover{color:var(--txt1);border-color:var(--teal);}.chip.active{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600;}
+  .layout{display:flex;flex:1;}
+  .sidebar{width:252px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);padding:20px 12px;overflow-y:auto;position:sticky;top:64px;height:calc(100vh - 64px);}
+  .sidebar::-webkit-scrollbar{width:3px;}.sidebar::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+  .toc-hd{font-size:9px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--txt3);padding:0 8px;margin-bottom:10px;}
+  .toc-row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:9px;cursor:pointer;transition:all .17s;margin-bottom:2px;border:1px solid transparent;}
+  .toc-row:hover{background:var(--surface3);}.toc-row.active{background:var(--surface);border-color:var(--border-hi);box-shadow:0 1px 6px rgba(10,70,70,0.08);}
+  .toc-num{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;background:var(--surface3);color:var(--txt3);transition:all .2s;}
+  .toc-row.active .toc-num{background:var(--teal);color:#fff;}.toc-txt{font-size:12px;color:var(--txt3);line-height:1.35;}.toc-row.active .toc-txt{color:var(--txt1);font-weight:500;}
+  .content{flex:1;padding:40px 56px;overflow-y:auto;max-width:860px;}.content::-webkit-scrollbar{width:4px;}.content::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+  .hero{background:linear-gradient(135deg,rgba(13,112,112,.08),rgba(26,127,168,.10));border:1px solid rgba(13,112,112,.20);border-radius:20px;padding:38px 42px;margin-bottom:44px;scroll-margin-top:20px;transition:opacity .35s;}
+  .hero.dim{opacity:.26;}.hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);margin-bottom:14px;}
+  .doc-title{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--txt1);line-height:1.22;margin-bottom:8px;padding:8px 12px;margin-left:-12px;border-radius:10px;border-left:4px solid transparent;transition:background .22s,color .22s,box-shadow .22s,border-color .15s;}
+  .doc-title.hl{background:var(--title-hl-bg);color:var(--title-hl-txt);box-shadow:var(--title-hl-glow);border-left-color:var(--title-hl-bdr);padding-left:16px;margin-left:-16px;}
+  .doc-subtitle{font-family:'Playfair Display',serif;font-size:16px;font-style:italic;color:var(--sky);margin-bottom:24px;padding:6px 12px;margin-left:-12px;border-radius:8px;border-left:4px solid transparent;transition:background .22s,color .22s,box-shadow .22s,border-color .15s;}
+  .doc-subtitle.hl{background:var(--sub-hl-bg);color:var(--sub-hl-txt);box-shadow:var(--sub-hl-glow);border-left-color:var(--sub-hl-bdr);padding-left:16px;margin-left:-16px;}
+  .sec{margin-bottom:50px;scroll-margin-top:20px;transition:opacity .35s;}.sec.dim{opacity:.26;}
+  .sec-hd{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px;}
+  .sec-icon{width:46px;height:46px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;}
+  .i0{background:rgba(13,112,112,.13);box-shadow:inset 0 0 0 1.5px rgba(13,112,112,.30);}
+  .i1{background:rgba(26,127,168,.13);box-shadow:inset 0 0 0 1.5px rgba(26,127,168,.30);}
+  .i2{background:rgba(168,96,8,.13);box-shadow:inset 0 0 0 1.5px rgba(168,96,8,.30);}
+  .i3{background:rgba(26,122,64,.13);box-shadow:inset 0 0 0 1.5px rgba(26,122,64,.30);}
+  .i4{background:rgba(85,53,160,.13);box-shadow:inset 0 0 0 1.5px rgba(85,53,160,.30);}
+  .i5{background:rgba(176,48,80,.13);box-shadow:inset 0 0 0 1.5px rgba(176,48,80,.30);}
+  .i6{background:rgba(13,112,112,.13);box-shadow:inset 0 0 0 1.5px rgba(13,112,112,.30);}
+  .i7{background:rgba(26,127,168,.13);box-shadow:inset 0 0 0 1.5px rgba(26,127,168,.30);}
+  .sec-ey{font-size:10px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:var(--txt3);margin-bottom:4px;}
+  .sec-title{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--txt1);line-height:1.25;}
+  .sec-body{padding-left:60px;}
+  .sp{font-size:15px;line-height:1.88;color:var(--txt2);margin-bottom:14px;border-radius:8px;padding:6px 12px;margin-left:-12px;border-left:4px solid transparent;transition:background .22s,color .22s,box-shadow .22s,border-color .15s;}
+  .sp.hl{background:var(--hl-bg);color:var(--hl-txt);box-shadow:var(--hl-glow);border-left-color:var(--hl-bdr);padding-left:15px;margin-left:-15px;}
+  .insight{background:var(--surface2);border-radius:10px;border-left:4px solid var(--teal);padding:13px 16px;margin:12px 0 16px;font-size:14px;color:var(--txt2);line-height:1.78;transition:background .22s,color .22s,box-shadow .22s,border-color .15s;}
+  .insight.hl{background:var(--hl-bg);color:var(--hl-txt);box-shadow:var(--hl-glow);border-left-color:var(--hl-bdr);}
+  /* Compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px;}
+  .cmp-col{border-radius:12px;padding:16px;border:1px solid var(--border);transition:border-color .22s,background .22s,box-shadow .22s;}
+  .cmp-col.hl{background:var(--hl-bg);border-color:rgba(13,112,112,.42);box-shadow:var(--hl-glow);}
+  .cmp-bad{background:rgba(176,48,80,.05);}.cmp-good{background:rgba(13,112,112,.05);}
+  .cmp-lbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;}
+  .cmp-bad .cmp-lbl{color:var(--rose);}.cmp-good .cmp-lbl{color:var(--teal);}
+  .cmp-items{font-size:13px;color:var(--txt2);line-height:2.1;}.cmp-col.hl .cmp-items{color:var(--hl-txt);}
+  /* 3-layer nutrient cards */
+  .layer-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;margin:14px 0 18px;}
+  .layer-card{border-radius:13px;border:1px solid var(--border);padding:16px;box-shadow:0 1px 6px rgba(10,70,70,0.05);transition:border-color .22s,background .22s,box-shadow .22s;}
+  .layer-card.hl{background:var(--hl-bg);border-color:rgba(13,112,112,.42);box-shadow:var(--hl-glow);}
+  .lay-0{background:rgba(13,112,112,.06);}.lay-1{background:rgba(26,127,168,.06);}.lay-2{background:rgba(8,114,80,.06);}
+  .lay-num{font-size:9px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;}
+  .lay-0 .lay-num{color:var(--teal);}.lay-1 .lay-num{color:var(--sky);}.lay-2 .lay-num{color:var(--green);}
+  .lay-head{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--txt1);margin-bottom:5px;}
+  .lay-body{font-size:13px;color:var(--txt2);line-height:1.65;transition:color .22s;}
+  .layer-card.hl .lay-body{color:var(--hl-txt);}
+  /* Food colour system */
+  .colour-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:14px 0 18px;}
+  .colour-card{border-radius:12px;padding:14px 16px;border:1px solid var(--border);transition:border-color .22s,background .22s,box-shadow .22s;}
+  .colour-card.hl{background:var(--hl-bg);border-color:rgba(13,112,112,.42);box-shadow:var(--hl-glow);}
+  .gfy{background:rgba(8,114,80,.07);}.orange{background:rgba(168,96,8,.07);}.red-card{background:rgba(176,48,80,.07);}
+  .clbl{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px;}
+  .gfy .clbl{color:var(--emerald);}.orange .clbl{color:var(--amber);}.red-card .clbl{color:var(--rose);}
+  .ctxt{font-size:13px;color:var(--txt2);line-height:1.60;transition:color .22s;}
+  .colour-card.hl .ctxt{color:var(--hl-txt);}
+  /* Dieting vs healing compare rows */
+  .diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 18px;}
+  .diff-row{border-radius:11px;border:1px solid var(--border);padding:13px 15px;transition:border-color .22s,background .22s,box-shadow .22s;}
+  .diff-row.hl{background:var(--hl-bg);border-color:rgba(13,112,112,.42);box-shadow:var(--hl-glow);}
+  .diff-bad{background:rgba(176,48,80,.05);}.diff-good{background:rgba(13,112,112,.05);}
+  .diff-hd{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;}
+  .diff-bad .diff-hd{color:var(--rose);}.diff-good .diff-hd{color:var(--teal);}
+  .diff-list{font-size:13px;color:var(--txt2);line-height:2.0;transition:color .22s;}
+  .diff-row.hl .diff-list{color:var(--hl-txt);}
+  .final-wrap{background:linear-gradient(135deg,rgba(13,112,112,.07),rgba(26,127,168,.08));border:1px solid rgba(13,112,112,.20);border-radius:18px;padding:30px 34px;box-shadow:0 2px 14px rgba(10,70,70,0.07);}
+  .final-big{font-family:'Playfair Display',serif;font-size:19px;color:var(--txt1);line-height:1.72;margin-bottom:18px;padding:8px 12px;border-radius:8px;border-left:4px solid transparent;transition:background .22s,box-shadow .22s,color .22s,border-color .15s;}
+  .final-big.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+  .final-tagline{font-size:14px;font-weight:600;color:var(--teal);letter-spacing:.2px;padding:8px 12px;border-radius:8px;border-left:4px solid transparent;transition:background .22s,box-shadow .22s,color .22s,border-color .15s;}
+  .final-tagline.hl{background:var(--hl-bg);box-shadow:var(--hl-glow);color:var(--hl-txt);border-left-color:var(--hl-bdr);}
+  .divider{height:1px;background:var(--border);margin:38px 0;}
+  @media(max-width:860px){.sidebar{display:none;}.content{padding:24px 20px;}.sec-body{padding-left:0;}.compare,.layer-grid,.colour-grid,.diff-grid{grid-template-columns:1fr;}.hero{padding:24px 22px;}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="logo">tw</div>
+  <div class="hdr-info">
+    <div class="hdr-title">Why Precision Nutrition Works When Diets Fail</div>
+    <div class="hdr-sub">How AI Digital Twin–Based Food Guidance Heals the Body from the Inside Out</div>
+  </div>
+  <div class="live-pill" id="livePill"><div class="bars"><span></span><span></span><span></span></div><span id="liveText">Reading…</span></div>
+</header>
+<div class="player">
+  <div class="ctrls">
+    <button class="btn btn-nav" id="prevBtn">&#9664;&#9664;</button>
+    <button class="btn btn-play" id="playBtn">&#9654;</button>
+    <button class="btn btn-nav" id="nextBtn">&#9654;&#9654;</button>
+  </div>
+  <div class="prog">
+    <div class="prog-top"><span id="secLbl">—</span><span id="pctLbl">0%</span></div>
+    <div class="track"><div class="fill" id="fillBar"></div></div>
+  </div>
+  <div class="voice-wr"><label>Voice</label><select id="voiceSel"><option value="">Loading…</option></select></div>
+  <div class="spd"><label>Speed</label>
+    <select id="spdSel"><option value="0.78">0.78×</option><option value="0.88">0.88×</option><option value="0.95" selected>0.95×</option><option value="1.05">1.05×</option><option value="1.15">1.15×</option></select>
+  </div>
+</div>
+<div class="chips" id="chipBar"></div>
+<div class="layout">
+  <aside class="sidebar"><div class="toc-hd">Contents</div><div id="toc"></div></aside>
+  <main class="content" id="main"></main>
+</div>
+<script>
+const DOC=[
+  {type:'hero',id:'s0',eyebrow:'Twin Precision Treatment — Nutrition Science',title:'Why Precision Nutrition Works When Diets Fail',subtitle:'How AI Digital Twin–Based Food Guidance Heals the Body from the Inside Out',
+   items:[{t:'doc-title',text:'Why Precision Nutrition Works When Diets Fail'},{t:'doc-subtitle',text:'How AI Digital Twin–Based Food Guidance Heals the Body from the Inside Out'},{t:'sp',text:'Most people approach food with a simple goal: "Which diet will fix my numbers?" Lower sugar. Raise HDL. Lose weight. Control cholesterol. But the truth is uncomfortable — food does not work on numbers directly. Food works on biology. And biology is highly individual. This is why fad diets often show short-term results and long-term failure — or worse, harm.'}]},
+  {type:'sec',id:'s1',icon:'⚠️',ic:'i0',eyebrow:'Section 1',title:'The Real Problem Is Not Food — It Is Metabolism',
+   items:[{t:'compare',bad:{label:'When metabolism is healthy',items:['Processes carbohydrates without spikes','Uses fats efficiently','Repairs tissues','Handles stress and inflammation']},good:{label:'When metabolism is dysfunctional',items:['Spikes blood sugar from the same foods','Increases inflammation','Worsens lipid imbalance','Stresses the liver and mitochondria']}},{t:'sp',text:'This is why unmonitored dieting is dangerous, especially in a disrupted metabolic state. Restricting calories, copying diet trends, or eliminating food groups without understanding internal biology can damage muscle, hormones, gut health, and mitochondrial function.'}]},
+  {type:'sec',id:'s2',icon:'🚫',ic:'i1',eyebrow:'Section 2',title:'Why "One Diet for All" Is a Myth',
+   items:[{t:'sp',text:'Nutrition does not act in isolation. Every meal interacts with blood sugar regulation, insulin sensitivity, liver fat, inflammation, gut microbes, and cellular energy production.'},{t:'insight',text:'This means there is no universal "healthy diet." There is only the right nutrition for your current metabolic state.'}]},
+  {type:'sec',id:'s3',icon:'🥗',ic:'i2',eyebrow:'Section 3',title:'Precision Nutrition: More Than Calories and Carbs',
+   items:[{t:'sp',text:'True precision nutrition is not about eating less. It is about eating right. At a biological level, healing metabolism requires balance across three layers.'},{t:'layers',items:[{cls:'lay-0',num:'Layer 1',head:'Macronutrients',body:'Carbohydrates, proteins, and fats — in the right type, in the right proportion, at the right time for your metabolism.'},{cls:'lay-1',num:'Layer 2',head:'Micronutrients',body:'Vitamins, minerals, and antioxidants — required for enzyme activity, critical for mitochondrial energy production, and often deficient in restrictive diets.'},{cls:'lay-2',num:'Layer 3',head:'Biota Nutrients',body:'Fibres, polyphenols, and fermented foods — they feed gut microbes, regulate inflammation, and influence insulin sensitivity and lipid metabolism.'}]},{t:'insight',text:'A diet that ignores any one of these three layers may change numbers temporarily — but cannot heal metabolism.'}]},
+  {type:'sec',id:'s4',icon:'🤖',ic:'i3',eyebrow:'Section 4',title:'How AI Digital Twin Makes Nutrition Truly Personal',
+   items:[{t:'sp',text:'This is where AI Digital Twin–based Precision Treatment changes everything. Instead of guessing, the Digital Twin continuously learns how your body responds to foods, which foods help or stress your metabolism, and when tolerance improves as healing progresses. Food is no longer judged by theory or trends — it is judged by real biological response.'},{t:'colours',items:[{cls:'gfy',lbl:'🟢 Green-For-You (GFY)',txt:'Foods that best support your metabolism right now — personalised and updated as you heal.'},{cls:'orange',lbl:'🟠 Orange',txt:'Foods that may suit you in moderation, timing, or combination based on your current state.'},{cls:'red-card',lbl:'🔴 Red',txt:'Foods that currently strain your metabolism — temporary, not permanent.'}]},{t:'insight',text:'Food colours are NOT permanent. As your body heals — insulin sensitivity improves, inflammation reduces, liver and gut function recover — foods that were once Red become Orange, and eventually Green. This is not restriction. This is biological rehabilitation.'}]},
+  {type:'sec',id:'s5',icon:'🔬',ic:'i4',eyebrow:'Section 5',title:'Why Twin Focuses on Mitochondria, Not Just Numbers',
+   items:[{t:'sp',text:'Blood reports show peripheral outcomes: sugar, cholesterol, weight. But the root control system lies deeper — inside the cell, at the mitochondrial level.'},{t:'sp',text:'Mitochondria decide how energy is produced, how fat and sugar are used, how inflammation is regulated, and how the body adapts to food. Twin Precision Treatment focuses on repairing this control system — not chasing numbers.'},{t:'insight',text:'When mitochondria heal: numbers follow, tolerance improves, and sustainability returns.'}]},
+  {type:'sec',id:'s6',icon:'⚡',ic:'i5',eyebrow:'Section 6',title:'The Big Difference Between Dieting and Healing',
+   items:[{t:'sp',text:'The contrast between conventional dieting and Twin Precision Treatment runs across every dimension of health management.'},{t:'diffgrid',bad:{head:'Dieting',items:['Static plans','One-size-fits-all','Calorie obsession','Short-term control','Peripheral focus']},good:{head:'Precision Treatment',items:['Dynamic adaptation','Fully personalised','Biological balance','Long-term healing','Mitochondrial repair']}}]},
+  {type:'final',id:'s7',icon:'✨',ic:'i7',eyebrow:'Closing',title:'The Science and Promise of Precision Nutrition',
+   items:[{t:'final-big',text:'Food does not fix numbers — it fixes biology. Unmonitored dieting can harm a stressed metabolic system. Healing requires macro, micro, and biota balance. Food tolerance improves as metabolism heals. AI Digital Twin enables safe, adaptive, precision nutrition. The goal is system-level repair — not temporary control.'},{t:'final-tagline',text:'You do not need a perfect diet. You need the right food, at the right time, for your healing body. That is the science — and the promise — of Precision Nutrition powered by an AI Digital Twin.'}]}
+];
+const registry=[],secEls=[],mainEl=document.getElementById('main'),tocEl=document.getElementById('toc'),chipEl=document.getElementById('chipBar');
+DOC.forEach((sec,si)=>{
+  const tr=document.createElement('div');tr.className='toc-row';tr.innerHTML=`<div class="toc-num">${si+1}</div><div class="toc-txt">${sec.title}</div>`;tr.onclick=()=>{stop();jumpTo(si);};tocEl.appendChild(tr);
+  const ch=document.createElement('div');ch.className='chip';const ws=sec.title.split(' ');ch.textContent=ws.slice(0,4).join(' ')+(ws.length>4?'…':'');ch.onclick=()=>{stop();jumpTo(si);};chipEl.appendChild(ch);
+  let block;
+  if(sec.type==='hero'){
+    block=document.createElement('div');block.className='hero';block.id='sec-'+si;block.innerHTML=`<div class="hero-eyebrow">${sec.eyebrow}</div>`;
+    sec.items.forEach(it=>{const el=document.createElement(it.t==='sp'?'p':'div');el.className=it.t;el.dataset.si=si;el.dataset.spk=it.text;el.textContent=it.text;block.appendChild(el);});
+  }else if(sec.type==='sec'){
+    block=document.createElement('section');block.className='sec';block.id='sec-'+si;
+    let h=`<div class="sec-hd"><div class="sec-icon ${sec.ic}">${sec.icon}</div><div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div></div><div class="sec-body">`;
+    let cDone=false,layDone=false,colDone=false,difDone=false;
+    sec.items.forEach(it=>{
+      if(it.t==='sp') h+=`<p class="sp" data-si="${si}">${it.text}</p>`;
+      else if(it.t==='insight') h+=`<div class="insight" data-si="${si}">${it.text}</div>`;
+      else if(it.t==='compare'&&!cDone){cDone=true;h+=`<div class="compare"><div class="cmp-col cmp-bad" data-si="${si}"><div class="cmp-lbl">${it.bad.label}</div><div class="cmp-items">${it.bad.items.map(x=>`• ${x}`).join('<br>')}</div></div><div class="cmp-col cmp-good" data-si="${si}"><div class="cmp-lbl">${it.good.label}</div><div class="cmp-items">${it.good.items.map(x=>`• ${x}`).join('<br>')}</div></div></div>`;}
+      else if(it.t==='layers'&&!layDone){layDone=true;h+=`<div class="layer-grid">`;it.items.forEach(l=>{h+=`<div class="layer-card ${l.cls}" data-si="${si}"><div class="lay-num">${l.num}</div><div class="lay-head">${l.head}</div><div class="lay-body">${l.body}</div></div>`;});h+=`</div>`;}
+      else if(it.t==='colours'&&!colDone){colDone=true;h+=`<div class="colour-grid">`;it.items.forEach(c=>{h+=`<div class="colour-card ${c.cls}" data-si="${si}"><div class="clbl">${c.lbl}</div><div class="ctxt">${c.txt}</div></div>`;});h+=`</div>`;}
+      else if(it.t==='diffgrid'&&!difDone){difDone=true;h+=`<div class="diff-grid"><div class="diff-row diff-bad" data-si="${si}"><div class="diff-hd">${it.bad.head}</div><div class="diff-list">${it.bad.items.map(x=>`• ${x}`).join('<br>')}</div></div><div class="diff-row diff-good" data-si="${si}"><div class="diff-hd">${it.good.head}</div><div class="diff-list">${it.good.items.map(x=>`• ${x}`).join('<br>')}</div></div></div>`;}
+    });
+    h+=`</div>`;block.innerHTML=h;
+  }else if(sec.type==='final'){
+    block=document.createElement('section');block.className='sec';block.id='sec-'+si;
+    let h=`<div class="sec-hd"><div class="sec-icon ${sec.ic}">${sec.icon}</div><div><div class="sec-ey">${sec.eyebrow}</div><div class="sec-title">${sec.title}</div></div></div><div class="sec-body"><div class="final-wrap">`;
+    sec.items.forEach(it=>{h+=`<div class="${it.t}" data-si="${si}">${it.text}</div>`;if(it.t==='final-big')h+=`<div class="divider"></div>`;});
+    h+=`</div></div>`;block.innerHTML=h;
+  }
+  if(si<DOC.length-1){const d=document.createElement('div');d.className='divider';block.appendChild(d);}
+  mainEl.appendChild(block);secEls.push(block);
+});
+document.querySelectorAll('[data-si]').forEach(el=>{registry.push({el,si:+el.dataset.si});});
+const voiceSel=document.getElementById('voiceSel');let voiceList=[];
+function scoreVoice(v){let s=0;if(v.lang==='en-US')s+=40;else if(v.lang==='en-GB')s+=30;else if(v.lang==='en-AU')s+=20;else if(v.lang.startsWith('en'))s+=10;else return -1;const n=v.name.toLowerCase();if(n.includes('neural'))s+=30;if(n.includes('enhanced'))s+=25;if(n.includes('premium'))s+=25;if(n.includes('natural'))s+=20;if(n.includes('samantha'))s+=22;if(n.includes('ava'))s+=20;if(n.includes('allison'))s+=18;if(n.includes('victoria'))s+=16;if(n.includes('karen'))s+=16;if(n.includes('daniel'))s+=16;if(n.includes('moira'))s+=16;if(n.includes('zira'))s+=14;if(n.includes('susan'))s+=14;if(n.includes('alex'))s+=14;if(n.includes('compact'))s-=20;if(n.includes('espeak'))s-=30;if(n.includes('mbrola'))s-=30;return s;}
+function populateVoices(){const raw=window.speechSynthesis.getVoices();if(!raw.length)return;const sc=raw.map(v=>({v,s:scoreVoice(v)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);if(!sc.length)return;voiceList=sc.map(x=>x.v);voiceSel.innerHTML='';voiceList.forEach((v,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`${v.name} (${v.lang})`;voiceSel.appendChild(o);});voiceSel.value='0';}
+populateVoices();if(window.speechSynthesis.onvoiceschanged!==undefined)window.speechSynthesis.onvoiceschanged=populateVoices;
+function getVoice(){return voiceList[+voiceSel.value]||null;}
+let cur=0,playing=false,idx=0,active=null;const synth=window.speechSynthesis,total=registry.length;
+function hl(el,on){if(el)el.classList.toggle('hl',on);}function clearHl(){if(active){hl(active,false);active=null;}}
+function activate(el,si){clearHl();hl(el,true);active=el;el.scrollIntoView({behavior:'smooth',block:'center'});if(si!==cur)cur=si;ui();}
+function ui(){document.querySelectorAll('.toc-row').forEach((r,i)=>r.classList.toggle('active',i===cur));document.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('active',i===cur));secEls.forEach((s,i)=>s.classList.toggle('dim',i!==cur));const pct=total>0?Math.round((idx/total)*100):0;document.getElementById('fillBar').style.width=pct+'%';document.getElementById('pctLbl').textContent=pct+'%';document.getElementById('secLbl').textContent=DOC[cur].title;document.getElementById('playBtn').innerHTML=playing?'&#9646;&#9646;':'&#9654;';const pill=document.getElementById('livePill');if(playing){pill.classList.add('on');document.getElementById('liveText').textContent=DOC[cur].title;}else pill.classList.remove('on');}
+function jumpTo(si){cur=si;secEls[si].scrollIntoView({behavior:'smooth',block:'start'});const i=registry.findIndex(r=>r.si===si);if(i>=0)idx=i;ui();}
+function getCleanText(el){return(el.dataset.spk||el.innerText||'').replace(/•/g,'').trim();}
+function speakNext(){if(!playing)return;if(idx>=registry.length){playing=false;clearHl();ui();return;}const{el,si}=registry[idx++];activate(el,si);const text=getCleanText(el);if(!text){speakNext();return;}const u=new SpeechSynthesisUtterance(text);u.rate=+document.getElementById('spdSel').value;u.pitch=1.0;u.volume=1.0;const v=getVoice();if(v)u.voice=v;u.onend=()=>{if(playing)speakNext();};u.onerror=()=>{if(playing)speakNext();};synth.speak(u);}
+function start(){synth.cancel();playing=true;ui();speakNext();}function stop(){playing=false;synth.cancel();clearHl();ui();}
+document.getElementById('playBtn').onclick=()=>playing?stop():start();
+document.getElementById('prevBtn').onclick=()=>{stop();jumpTo(Math.max(0,cur-1));};
+document.getElementById('nextBtn').onclick=()=>{stop();jumpTo(Math.min(DOC.length-1,cur+1));};
+document.getElementById('spdSel').onchange=()=>{if(playing){synth.cancel();setTimeout(()=>{if(playing)speakNext();},80);}};
+document.getElementById('voiceSel').onchange=()=>{if(playing){synth.cancel();setTimeout(()=>{if(playing)speakNext();},80);}};
+secEls.forEach((s,i)=>s.classList.toggle('dim',i!==0));document.querySelectorAll('.toc-row')[0].classList.add('active');document.querySelectorAll('.chip')[0].classList.add('active');ui();
+const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting&&!playing){cur=+e.target.id.replace('sec-','');ui();}});},{threshold:0.3});secEls.forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
